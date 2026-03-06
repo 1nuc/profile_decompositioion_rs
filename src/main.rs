@@ -1,5 +1,3 @@
-use std::{default, env, fs, path::{Path, PathBuf}};
-use glob::glob;
 use polars::prelude::*;
 fn main() {
     // let mut paths: Vec<_>=glob("../../../datasets").unwrap().filter_map(Result::ok).collect();
@@ -28,5 +26,4 @@ fn main() {
         col("bldg_id").cast(DataType::UInt32),
         col("in.household_has_tribal_persons")]);
     let data=data.join(meta_data, [col("bldg_id")], [col("bldg_id")], Default::default()).collect().unwrap();
-    println!("{:?}", data);
 }
