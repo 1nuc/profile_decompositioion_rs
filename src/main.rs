@@ -4,7 +4,7 @@ use polars::{prelude::*};
 fn rename(d: LazyFrame) -> LazyFrame{
      d.rename(
          ["out.electricity.cooling.energy_consumption..kwh"],
-         ["out.electricity.AC.energy_consumption..kwh"])
+         ["out.electricity.AC.energy_consumption..kwh"], false)
 }
 fn create_timporal_features(d: LazyFrame) -> LazyFrame{
     d.with_columns([
@@ -16,14 +16,14 @@ fn create_timporal_features(d: LazyFrame) -> LazyFrame{
         col("timestamp").dt().month().alias("month of the year"),
         col("timestamp").dt().quarter().alias("quarter")]).with_columns([
         when(col("day of the week").is_in(
-                lit(Series::new("Weekend", &[6u32,7u32])))
+                lit(Series::new("Weekend", &[6u32,7u32])).into())
             ).then(lit("Yes")).otherwise(lit("No")).alias("IsWeekend")
     ])
 }
 
 fn feature_selection(d: LazyFrame) -> LazyFrame{
     // d.select([col("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$")])
-    d.select([col(PlSmallstr::)])
+    d.select([col(::)])
 }
 
 fn main() {
@@ -34,7 +34,7 @@ fn main() {
     };
 
     let t=time::Instant::now();
-    let meta_data=LazyFrame::scan_parquet("../../metadata/MetaData.parquet", Default::default()
+    let meta_data=LazyFrame::scan_parquet("../../metadata/MetaData.parquet".into(), Default::default()
         ).expect("error reading the file").with_columns(
         [col("bldg_id").cast(DataType::Int32)]).
         select([col("in.occupants").cast(DataType::Int32),
@@ -52,7 +52,7 @@ fn main() {
         col("in.household_has_tribal_persons")]).unique(None, Default::default());
 
     // Final Preprocessing step
-    let data=LazyFrame::scan_parquet("../../src/input/*.parquet",Default::default() 
+    let data=LazyFrame::scan_parquet("../../src/input/*.parquet".into(),Default::default() 
         ).expect("error").join(
         meta_data, [col("bldg_id")],
         [col("bldg_id")], Default::default()
