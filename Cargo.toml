@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 glob = "0.3.3"
 polars = { version = "0.38.0", features = ["lazy", "parquet", "streaming", "is_in"] }
+tap = "1.0.1"
