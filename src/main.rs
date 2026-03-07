@@ -8,22 +8,21 @@ fn rename(d: LazyFrame) -> LazyFrame{
 }
 fn create_timporal_features(d: LazyFrame) -> LazyFrame{
     d.with_columns([
-        col("timestamp").dt().weekday().alias("day of the week"),
+        col("timestamp").dt().weekday().alias("day of the week").cast(DataType::UInt32),
         col("timestamp").dt().hour().alias("hour of the day"),
         col("timestamp").dt().day().alias("day of the month"),
         col("timestamp").dt().ordinal_day().alias("day of the year"),
         col("timestamp").dt().week().alias("week of the year"),
         col("timestamp").dt().month().alias("month of the year"),
-        col("timestamp").dt().quarter().alias("quarter"),
+        col("timestamp").dt().quarter().alias("quarter")]).with_columns([
         when(col("day of the week").is_in(
-                lit(&[6u8,7u8][..]))
+                lit(Series::new("Weekend", &[6u32,7u32])))
             ).then(lit("Yes")).otherwise(lit("No")).alias("IsWeekend")
     ])
 }
 
 fn feature_selection(d: LazyFrame) -> LazyFrame{
-    d.select([
-        col("^out.electricity.*|^out.site_energy.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climatezone$")])
+    d.select([col("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$")])
 }
 
 fn main() {
@@ -56,5 +55,8 @@ fn main() {
         ).expect("error").join(
         meta_data, [col("bldg_id")],
         [col("bldg_id")], Default::default()
-        ).drop_nulls(None).pipe(rename).pipe(create_timporal_features).pipe(feature_selection);
+        ).pipe(rename).pipe(create_timporal_features);
+    println!("{:?}", data.clone().collect().unwrap().shape());
+    println!("{:?}", data.collect().unwrap().null_count());
+
 }
