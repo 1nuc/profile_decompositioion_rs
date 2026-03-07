@@ -21,7 +21,7 @@ fn create_timporal_features(d: LazyFrame) -> LazyFrame{
     ])
 }
 
-fn feature_select(d: LazyFrame) -> LazyFrame{
+fn feature_selection(d: LazyFrame) -> LazyFrame{
     d.select([
         col("^out.electricity.*|^out.site_energy.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climatezone$")])
 }
@@ -32,6 +32,7 @@ fn main() {
         cache: false,
         ..Default::default()
     };
+
     let t=time::Instant::now();
     let meta_data=LazyFrame::scan_parquet("../../metadata/MetaData.parquet", Default::default()
         ).expect("error reading the file").with_columns(
@@ -50,9 +51,10 @@ fn main() {
         col("bldg_id").cast(DataType::UInt32),
         col("in.household_has_tribal_persons")]);
 
+    // Final Preprocessing step
     let data=LazyFrame::scan_parquet("../../src/input/*.parquet",Default::default() 
         ).expect("error").join(
         meta_data, [col("bldg_id")],
         [col("bldg_id")], Default::default()
-        ).drop_nulls(None).pipe(rename);
+        ).drop_nulls(None).pipe(rename).pipe(create_timporal_features).pipe(feature_selection);
 }
