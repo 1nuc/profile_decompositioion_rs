@@ -13,9 +13,9 @@ impl Nrel{
     }
 
     pub fn init() -> Self{
-        let meta_data_=Self::scan_files("../../../metadata/MetaData.parquet".into()
+        let meta_data_=Self::scan_files("../metadata/MetaData.parquet".into()
             ).process_meta_data_variants().unique(None, Default::default());
-        let data_=Self::scan_files("../../../src/input/*.parquet".into()
+        let data_=Self::scan_files("../src/input/*.parquet".into()
             ).join(meta_data_.clone(), [col("bldg_id")],
             [col("bldg_id")], Default::default()
             ).rename_cols().create_temporal_features().feature_selection().drop_nulls(None);

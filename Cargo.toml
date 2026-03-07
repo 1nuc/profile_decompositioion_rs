@@ -7,5 +7,7 @@ edition = "2024"
 decomposer_engine={path="decomposer_engine"}
 glob = "0.3.3"
 linfa = "0.8.1"
-polars = { version = "0.53.0", features = ["lazy", "parquet", "is_in"] }
+linfa-preprocessing = "0.8.1"
+ndarray = "0.17.2"
+polars = { version = "0.53.0", features = ["lazy", "parquet", "is_in", "ndarray"] }
 tap = "1.0.1"
