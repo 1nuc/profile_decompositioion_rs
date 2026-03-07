@@ -11,14 +11,24 @@ impl Nrel{
         LazyFrame::scan_parquet(path, Default::default()).expect("Error reading the file")
     }
 
-    fn init(&self){
-        let meta_data=Self::scan_files("../../../metadata/MetaData.parquet".into()).
+    fn init(&self) -> Self{
+        let meta_data_=Self::scan_files("../../../metadata/MetaData.parquet".into()
+            ).process_meta_data_variants().unique(None, Default::default());
+        let data_=Self::scan_files("../../../src/input/*.parquet".into()
+            ).join(meta_data_.clone(), [col("bldg_id")],
+            [col("bldg_id")], Default::default()
+            ).rename_cols().create_temporal_features().feature_selection().drop_nulls(None);
+
+        Self {
+            data: data_,
+            meta_data: meta_data_,
+        }
     }
 
 }
 
 impl Actions for LazyFrame{
-    fn rename(&self) -> LazyFrame{
+    fn rename_cols(&self) -> LazyFrame{
          self.clone().rename(
              ["out.electricity.cooling.energy_consumption..kwh"],
              ["out.electricity.AC.energy_consumption..kwh"], false)
@@ -37,8 +47,8 @@ impl Actions for LazyFrame{
                 ).then(lit("Yes")).otherwise(lit("No")).alias("IsWeekend")
         ])
     }
-    fn process_meta_data_variants(&self, d: LazyFrame) -> LazyFrame{
-        d.with_columns(
+    fn process_meta_data_variants(&self) -> LazyFrame{
+        self.clone().with_columns(
                 [col("bldg_id").cast(DataType::Int32)]).
                 select([col("in.occupants").cast(DataType::Int32),
                 col("in.state"), col("in.county"), 

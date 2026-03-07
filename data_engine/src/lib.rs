@@ -6,7 +6,7 @@ mod preprocessor_engine;
 
 trait Actions{
 
-    fn rename(&self) -> LazyFrame;
+    fn rename_cols(&self) -> LazyFrame;
 
     fn create_temporal_features(&self) -> LazyFrame;
 
