@@ -1,8 +1,8 @@
 use polars::prelude::LazyFrame;
 
 
-mod polars_engine;
-mod preprocessor_engine;
+pub mod data_engine;
+pub mod preprocessor_engine;
 
 trait Actions{
 

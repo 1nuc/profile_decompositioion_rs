@@ -505,7 +505,16 @@ checksum = "7eed2c4702fa172d1ce21078faa7c5203e69f5394d48cc436d25928394a867a2"
 name = "decomposer"
 version = "0.1.0"
 dependencies = [
+ "decomposer_engine",
  "glob",
+ "polars",
+ "tap",
+]
+
+[[package]]
+name = "decomposer_engine"
+version = "0.1.0"
+dependencies = [
  "polars",
  "tap",
 ]

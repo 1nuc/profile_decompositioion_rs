@@ -1,17 +1,18 @@
 use polars::prelude::*;
-use tap::Pipe;
 use crate::Actions;
-struct Nrel{
-    data: LazyFrame,
-    meta_data: LazyFrame,
+
+pub struct Nrel{
+    pub data: LazyFrame,
+    pub meta_data: LazyFrame,
 }
+
 impl Nrel{
 
     fn scan_files(path: PlRefPath) -> LazyFrame{
         LazyFrame::scan_parquet(path, Default::default()).expect("Error reading the file")
     }
 
-    fn init(&self) -> Self{
+    pub fn init() -> Self{
         let meta_data_=Self::scan_files("../../../metadata/MetaData.parquet".into()
             ).process_meta_data_variants().unique(None, Default::default());
         let data_=Self::scan_files("../../../src/input/*.parquet".into()

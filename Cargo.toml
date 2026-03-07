@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+decomposer_engine={path="decomposer_engine"}
 glob = "0.3.3"
 polars = { version = "0.53.0", features = ["lazy", "parquet", "is_in"] }
 tap = "1.0.1"
