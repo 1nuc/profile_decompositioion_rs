@@ -16,14 +16,13 @@ fn create_timporal_features(d: LazyFrame) -> LazyFrame{
         col("timestamp").dt().month().alias("month of the year"),
         col("timestamp").dt().quarter().alias("quarter")]).with_columns([
         when(col("day of the week").is_in(
-                lit(Series::new("Weekend", &[6u32,7u32])).into())
+                lit(Series::new("Weekend".into(), &[6u32,7u32])), false)
             ).then(lit("Yes")).otherwise(lit("No")).alias("IsWeekend")
     ])
 }
 
 fn feature_selection(d: LazyFrame) -> LazyFrame{
-    // d.select([col("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$")])
-    d.select([col(::)])
+    d.select([col(PlSmallStr::from("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$"))])
 }
 
 fn main() {
@@ -56,8 +55,8 @@ fn main() {
         ).expect("error").join(
         meta_data, [col("bldg_id")],
         [col("bldg_id")], Default::default()
-        ).pipe(rename).pipe(create_timporal_features).pipe(feature_selection);
+        ).pipe(rename).pipe(create_timporal_features).pipe(feature_selection).drop_nulls(None);
     println!("{:?}", data.clone().collect().unwrap().shape());
-    println!("{}", data.collect().unwrap().null_count());
+    // println!("{}", data.collect().unwrap().null_count());
 
 }
