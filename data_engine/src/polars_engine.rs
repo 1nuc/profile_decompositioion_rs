@@ -1,5 +1,6 @@
 use polars::prelude::*;
-
+use tap::Pipe;
+use crate::Actions;
 struct Nrel{
     data: LazyFrame,
     meta_data: LazyFrame,
@@ -11,18 +12,19 @@ impl Nrel{
     }
 
     fn init(&self){
-        let meta_data=Self::scan_files("../../../metadata/MetaData.parquet")
+        let meta_data=Self::scan_files("../../../metadata/MetaData.parquet".into()).
     }
 
 }
+
 impl Actions for LazyFrame{
-    fn rename(&self, d: LazyFrame) -> LazyFrame{
-         d.rename(
+    fn rename(&self) -> LazyFrame{
+         self.clone().rename(
              ["out.electricity.cooling.energy_consumption..kwh"],
              ["out.electricity.AC.energy_consumption..kwh"], false)
     }
-    fn create_timporal_features(&self,d: LazyFrame) -> LazyFrame{
-        d.with_columns([
+    fn create_temporal_features(&self) -> LazyFrame{
+        self.clone().with_columns([
             col("timestamp").dt().weekday().alias("day of the week").cast(DataType::UInt32),
             col("timestamp").dt().hour().alias("hour of the day"),
             col("timestamp").dt().day().alias("day of the month"),
@@ -53,7 +55,9 @@ impl Actions for LazyFrame{
                 col("in.household_has_tribal_persons")])
     }
 
-    fn feature_selection(&self, d: LazyFrame) -> LazyFrame{
-        d.select([col(PlSmallStr::from("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$"))])
+    fn feature_selection(&self) -> LazyFrame{
+        self.clone().select([
+            col(
+                PlSmallStr::from("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$"))])
     }
 }
