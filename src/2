@@ -9,15 +9,15 @@ fn main() {
     // let data_array=data.collect().unwrap().to_ndarray::<UInt16Type>(IndexOrder::default());
     let schema=data.collect_schema().unwrap();
     // Selecting categorical columns
-    let categorical_columns: Vec<Expr>=schema.iter_names_and_dtypes().filter_map(|c| 
+    let categorical_columns: [&PlSmallStr]=schema.iter_names_and_dtypes().filter_map(|c| 
         {
             if c.1.is_string(){
-                Some(col(c.0.as_str()))
+                Some(c.0)
             }
             else{
                 None
             }
-        }).collect();
-    let encoded_columns=data.clone().with_columns(categorical_columns.iter().map(|x| x.clone().cast(DataType::UInt16)).collect::<Vec<_>>());
-    println!("{:?}", encoded_columns.select(categorical_columns).collect());
+        }).collect::<Vec<_>>().try_into().unwrap();
+    let categorical_columns=data.select(col[PlSmallStr::from])
+    println!("{:?}", data.select([col(PlSmallStr::from(categorical_columns))]).collect().unwrap());
 }
