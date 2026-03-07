@@ -22,7 +22,8 @@ fn create_timporal_features(d: LazyFrame) -> LazyFrame{
 }
 
 fn feature_selection(d: LazyFrame) -> LazyFrame{
-    d.select([col("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$")])
+    // d.select([col("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$")])
+    d.select([col(PlSmallstr::)])
 }
 
 fn main() {
@@ -48,15 +49,15 @@ fn main() {
         col("in.bedrooms").cast(DataType::Int32),
         col("in.tenure"),
         col("bldg_id").cast(DataType::UInt32),
-        col("in.household_has_tribal_persons")]);
+        col("in.household_has_tribal_persons")]).unique(None, Default::default());
 
     // Final Preprocessing step
     let data=LazyFrame::scan_parquet("../../src/input/*.parquet",Default::default() 
         ).expect("error").join(
         meta_data, [col("bldg_id")],
         [col("bldg_id")], Default::default()
-        ).pipe(rename).pipe(create_timporal_features);
+        ).pipe(rename).pipe(create_timporal_features).pipe(feature_selection);
     println!("{:?}", data.clone().collect().unwrap().shape());
-    println!("{:?}", data.collect().unwrap().null_count());
+    println!("{}", data.collect().unwrap().null_count());
 
 }
