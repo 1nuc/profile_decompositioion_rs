@@ -57,6 +57,6 @@ fn main() {
         [col("bldg_id")], Default::default()
         ).pipe(rename).pipe(create_timporal_features).pipe(feature_selection).drop_nulls(None);
     println!("{:?}", data.clone().collect().unwrap().shape());
-    // println!("{}", data.collect().unwrap().null_count());
+    println!("{}", data.collect().unwrap().null_count());
 
 }
