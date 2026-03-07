@@ -1,8 +1,32 @@
 use std::time;
 use tap::Pipe;
 use polars::{prelude::*};
+fn rename(d: LazyFrame) -> LazyFrame{
+     d.rename(
+         ["out.electricity.cooling.energy_consumption..kwh"],
+         ["out.electricity.AC.energy_consumption..kwh"])
+}
+fn create_timporal_features(d: LazyFrame) -> LazyFrame{
+    d.with_columns([
+        col("timestamp").dt().weekday().alias("day of the week"),
+        col("timestamp").dt().hour().alias("hour of the day"),
+        col("timestamp").dt().day().alias("day of the month"),
+        col("timestamp").dt().ordinal_day().alias("day of the year"),
+        col("timestamp").dt().week().alias("week of the year"),
+        col("timestamp").dt().month().alias("month of the year"),
+        col("timestamp").dt().quarter().alias("quarter"),
+        when(col("day of the week").is_in(
+                lit(&[6u8,7u8][..]))
+            ).then(lit("Yes")).otherwise(lit("No")).alias("IsWeekend")
+    ])
+}
+
+fn feature_select(d: LazyFrame) -> LazyFrame{
+    d.select([
+        col("^out.electricity.*|^out.site_energy.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climatezone$")])
+}
+
 fn main() {
-    // let mut paths: Vec<_>=glob("../../../datasets").unwrap().filter_map(Result::ok).collect();
     let args= ScanArgsParquet{
         low_memory: true,
         cache: false,
@@ -30,6 +54,5 @@ fn main() {
         ).expect("error").join(
         meta_data, [col("bldg_id")],
         [col("bldg_id")], Default::default()
-        ).drop_nulls(None);
-    println!("first time: {:?}", t.elapsed());
+        ).drop_nulls(None).pipe(rename);
 }
