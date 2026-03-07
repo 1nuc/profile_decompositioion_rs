@@ -18,6 +18,7 @@ fn main() {
                 None
             }
         }).collect();
-    let encoded_columns=data.clone().with_columns(categorical_columns.iter().map(|x| x.clone().cast(DataType::UInt16)).collect::<Vec<_>>());
-    println!("{:?}", encoded_columns.select(categorical_columns).collect());
+    // println!("{:?}", categorical_columns);
+    println!("{:?}", data.select(categorical_columns).collect());
+
 }
