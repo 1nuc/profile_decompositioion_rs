@@ -1,5 +1,5 @@
 use polars::prelude::*;
-use crate::Actions;
+use crate::{Actions, ExpressionActions};
 
 pub struct Nrel{
     pub data: LazyFrame,
@@ -45,30 +45,39 @@ impl Actions for LazyFrame{
             col("timestamp").dt().quarter().alias("quarter")]).with_columns([
             when(col("day of the week").is_in(
                     lit(Series::new("Weekend".into(), &[6u32,7u32])), false)
-                ).then(lit("Yes")).otherwise(lit("No")).alias("IsWeekend")
+                ).then(lit("Yes")).otherwise(lit("No")).alias("IsWeekend").cast_to_categorical()
         ])
     }
+
     fn process_meta_data_variants(&self) -> LazyFrame{
         self.clone().with_columns(
                 [col("bldg_id").cast(DataType::Int32)]).
                 select([col("in.occupants").cast(DataType::Int32),
-                col("in.state").cast(DataType::Categorical(Categories::global(), Categories::global().mapping())), col("in.county"), 
+                col("in.state").cast_to_categorical(),
+                col("in.county").cast_to_categorical(), 
                 col("in.representative_income"),
-                col("in.area_median_income"),
-                col("in.income"),
-                col("in.income_recs_2020"),
-                col("in.income_recs_2015"),
-                col("in.building_america_climate_zone"),
+                col("in.area_median_income").cast_to_categorical(),
+                col("in.income").cast_to_categorical(),
+                col("in.income_recs_2020").cast_to_categorical(),
+                col("in.income_recs_2015").cast_to_categorical(),
+                col("in.building_america_climate_zone").cast_to_categorical(),
                 col("in.ashrae_iecc_climate_zone_2004_sub_cz_split").alias("cliamte_zone"),
                 col("in.bedrooms").cast(DataType::Int32),
-                col("in.tenure"),
+                col("in.tenure").cast_to_categorical(),
                 col("bldg_id").cast(DataType::UInt32),
-                col("in.household_has_tribal_persons")])
+                col("in.household_has_tribal_persons").cast_to_categorical()])
     }
 
     fn feature_selection(&self) -> LazyFrame{
         self.clone().select([
             col(
                 PlSmallStr::from("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$"))])
+    }
+}
+
+impl ExpressionActions for Expr{
+
+    fn cast_to_categorical(&self) -> Expr{
+        self.clone().cast(DataType::Categorical(Categories::global(), Categories::global().mapping()))
     }
 }

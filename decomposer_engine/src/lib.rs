@@ -1,4 +1,4 @@
-use polars::prelude::LazyFrame;
+use polars::prelude::{Expr, LazyFrame};
 
 
 pub mod data_engine;
@@ -13,4 +13,9 @@ trait Actions{
     fn process_meta_data_variants(&self) -> LazyFrame;
 
     fn feature_selection(&self) -> LazyFrame;
+}
+
+trait ExpressionActions{
+
+    fn cast_to_categorical(&self) -> Expr;
 }
