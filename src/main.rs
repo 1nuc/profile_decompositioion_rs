@@ -1,3 +1,5 @@
+use std::{fs::File, ops::Sub};
+
 use decomposer_engine::{Actions, data_engine::*}; 
 use ndarray::Array2;
 use polars::prelude::*;
@@ -8,7 +10,16 @@ fn main() {
     let data_source=Nrel::init();
     let mut data=data_source.data;
     let encoded_data=data.encode_categoricals();
-    println!("{:?}",transformed_data);
+    // let std_dev=encoded_data.clone().with_columns([col("*").std(1)]); //according to the library 1 is the
+    //                                                          //standard
+    // let mean: Vec<f32>=encoded_data.clone().with_columns([col("*").mean()]).collect().unwrap().clone().get(0).unwrap();
+    //
+    // let transformed_data=encoded_data.with_columns([col(PlSmallStr::from_static("*")).sub(lit(mean))]);
+    // // println!("{:?}", mean.unwrap().get(0));
+
+    let standard_scalar_native=encoded_data.clone().with_columns([(col("*") - col("*").mean()) / (col("*").std(1))]);
+    let min_max_native=encoded_data.clone().with_columns([(col("*") - col("*").min()) / (col("*").max() - col("*").min())]);
+    print!("{:?}", min_max_native.collect().unwrap());
 }
 
     // let t: Array2<f32>=encoded_data.clone().collect().unwrap().to_ndarray::<Float32Type>(IndexOrder::C).expect("Error in converting to an array");
