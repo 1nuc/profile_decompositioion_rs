@@ -1,3 +1,5 @@
+use std::alloc::Layout;
+
 use polars::prelude::*;
 use crate::{Actions, ExpressionActions};
 
@@ -29,11 +31,13 @@ impl Nrel{
 }
 
 impl Actions for LazyFrame{
+    // Rename the vague fields to a more brief and descriptive names
     fn rename_cols(&self) -> LazyFrame{
          self.clone().rename(
              ["out.electricity.cooling.energy_consumption..kwh"],
              ["out.electricity.AC.energy_consumption..kwh"], false)
     }
+    //Creating the temporal features to boost the model's performance
     fn create_temporal_features(&self) -> LazyFrame{
         self.clone().with_columns([
             col("timestamp").dt().weekday().alias("day of the week").cast(DataType::UInt32),
@@ -49,6 +53,7 @@ impl Actions for LazyFrame{
         ])
     }
 
+    //process the meta data columns and prepare them for further preprocessing
     fn process_meta_data_variants(&self) -> LazyFrame{
         self.clone().with_columns(
                 [col("bldg_id").cast(DataType::Int32)]).
@@ -68,12 +73,14 @@ impl Actions for LazyFrame{
                 col("in.household_has_tribal_persons").cast_to_categorical()])
     }
 
+    // Specify the selection of the inclusive variables for modelling
     fn feature_selection(&self) -> LazyFrame{
         self.clone().select([
             col(
                 PlSmallStr::from("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$"))])
     }
 
+    // Extracting the categorical columns
     fn categorical_cols(&mut self)-> Vec<Expr>{
         self.collect_schema().unwrap(
         ).iter_names_and_dtypes().filter_map(|c|{
@@ -85,10 +92,19 @@ impl Actions for LazyFrame{
             }
         }).collect::<Vec<Expr>>()
     }
+
+    // Encode categorical columns in the data to UInt32 Type
+    fn encode_categoricals(&mut self) -> LazyFrame{
+        let cols=self.categorical_cols();
+        self.clone().with_columns(
+            cols.iter().map(|x| x.clone().cast(DataType::UInt32)
+                ).collect::<Vec<_>>())
+    }
 }
 
 impl ExpressionActions for Expr{
 
+    // Fixing current polars limitation with categoricals conversion
     fn cast_to_categorical(&self) -> Expr{
         let hasher= PlSeedableRandomStateQuality::fixed();
         let mapping=CategoricalMapping::with_hasher(usize::MAX, hasher);

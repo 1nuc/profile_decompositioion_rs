@@ -15,6 +15,8 @@ trait Actions{
     fn feature_selection(&self) -> LazyFrame;
 
     fn categorical_cols(&mut self)-> Vec<Expr>;
+    
+    fn encode_categoricals(&mut self) -> LazyFrame;
 }
 
 trait ExpressionActions{
