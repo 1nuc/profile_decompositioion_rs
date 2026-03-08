@@ -18,7 +18,9 @@ fn main() {
     // // println!("{:?}", mean.unwrap().get(0));
 
     let standard_scalar_native=encoded_data.clone().with_columns([(col("*") - col("*").mean()) / (col("*").std(1))]);
-    let min_max_native=encoded_data.clone().with_columns([(col("*") - col("*").min()) / (col("*").max() - col("*").min())]);
+    let min_max_native=encoded_data.clone().with_columns([
+        when(col("*").max().eq(col("*").min())
+            ).then(0).otherwise((col("*") - col("*").min()) / (col("*").max() - col("*").min()))]);
     print!("{:?}", min_max_native.collect().unwrap());
 }
 
