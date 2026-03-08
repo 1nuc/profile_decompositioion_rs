@@ -52,7 +52,7 @@ impl Actions for LazyFrame{
         self.clone().with_columns(
                 [col("bldg_id").cast(DataType::Int32)]).
                 select([col("in.occupants").cast(DataType::Int32),
-                col("in.state"), col("in.county"), 
+                col("in.state").cast(DataType::Categorical(Categories::global(), Categories::global().mapping())), col("in.county"), 
                 col("in.representative_income"),
                 col("in.area_median_income"),
                 col("in.income"),

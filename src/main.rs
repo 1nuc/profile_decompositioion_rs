@@ -18,7 +18,7 @@ fn main() {
                 None
             }
         }).collect();
-    // println!("{:?}", categorical_columns);
-    println!("{:?}", data.select(categorical_columns).collect());
+    println!("{:?}", categorical_columns);
+    // println!("{:?}", data.select(categorical_columns).collect());
 
 }
