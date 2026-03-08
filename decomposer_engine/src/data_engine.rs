@@ -49,7 +49,8 @@ impl Actions for LazyFrame{
             col("timestamp").dt().quarter().alias("quarter")]).with_columns([
             when(col("day of the week").is_in(
                     lit(Series::new("Weekend".into(), &[6u32,7u32])), false)
-                ).then(lit("Yes")).otherwise(lit("No")).alias("IsWeekend").cast_to_categorical()
+                ).then(lit("Yes")).otherwise(lit("No")).alias("IsWeekend").cast_to_categorical(),
+                col("timestamp").dt().timestamp(TimeUnit::Milliseconds)
         ])
     }
 
