@@ -86,20 +86,32 @@ impl ExpressionActions for Expr{
     }
 }
 
-fn trial(){
-    let data= df![
-        "in.state"=> ["CA", "TX", "NY", "CA", "TX"]
-    ].unwrap().lazy();
-    let encoded_c=data.with_columns([col("in.state").cast_to_categorical()]);
-    let encoded=encoded_c.with_columns([col("in.state").cast(DataType::UInt16)]);
-    let values=encoded.collect().unwrap().column("in.state").unwrap().u16().unwrap().iter().collect::<Vec<_>>();
-    assert_eq!(values[0], values[3]);
-    assert_eq!(values[1], values[4]);
-}
 #[cfg(test)]
-mod tests{
-    use polars::{df, prelude::IntoLazy};
+mod test{
 
+    use super::*;
     #[test]
-    trial();
+    fn trial(){
+        let data= df![
+            "in.state"=> ["CA", "TX", "NY", "CA", "TX"]
+        ].unwrap().lazy();
+        let encoded_c=data.with_columns([col("in.state").cast_to_categorical()]);
+        let encoded=encoded_c.with_columns([col("in.state").cast(DataType::UInt32)]);
+        let values=encoded.collect().unwrap().column("in.state").unwrap().u32().unwrap().iter().collect::<Vec<_>>();
+        println!("CA={:?}, {:?}, TX={:?}, {:?}, NY={:?}", values[0],values[3], values[1],values[4], values[2]);
+        assert_eq!(values[0], values[3]);
+        assert_eq!(values[1], values[4]);
+    }
+    #[test]
+    fn trial2(){
+        let data= df![
+            "in.state"=> ["CA", "TX", "NY", "CA", "TX"]
+        ].unwrap().lazy();
+        let encoded_c=data.with_columns([col("in.state").cast_to_categorical()]);
+        let encoded=encoded_c.with_columns([col("in.state").cast(DataType::UInt32)]);
+        let values=encoded.collect().unwrap().column("in.state").unwrap().u32().unwrap().iter().collect::<Vec<_>>();
+        println!("CA={:?}, {:?}, TX={:?}, {:?}, NY={:?}", values[0],values[3], values[1],values[4], values[2]);
+        assert_eq!(values[0], values[3]);
+        assert_eq!(values[1], values[4]);
+    }
 }
