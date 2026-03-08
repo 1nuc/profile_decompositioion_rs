@@ -80,8 +80,26 @@ impl Actions for LazyFrame{
 impl ExpressionActions for Expr{
 
     fn cast_to_categorical(&self) -> Expr{
-        let hasher= PlSeedableRandomStateQuality::seed_from_u64(42);
+        let hasher= PlSeedableRandomStateQuality::fixed();
         let mapping=CategoricalMapping::with_hasher(usize::MAX, hasher);
         self.clone().cast(DataType::Categorical(Categories::global(), mapping.into()))
     }
+}
+
+fn trial(){
+    let data= df![
+        "in.state"=> ["CA", "TX", "NY", "CA", "TX"]
+    ].unwrap().lazy();
+    let encoded_c=data.with_columns([col("in.state").cast_to_categorical()]);
+    let encoded=encoded_c.with_columns([col("in.state").cast(DataType::UInt16)]);
+    let values=encoded.collect().unwrap().column("in.state").unwrap().u16().unwrap().iter().collect::<Vec<_>>();
+    assert_eq!(values[0], values[3]);
+    assert_eq!(values[1], values[4]);
+}
+#[cfg(test)]
+mod tests{
+    use polars::{df, prelude::IntoLazy};
+
+    #[test]
+    trial();
 }
