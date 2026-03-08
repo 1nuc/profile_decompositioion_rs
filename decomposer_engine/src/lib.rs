@@ -13,6 +13,8 @@ trait Actions{
     fn process_meta_data_variants(&self) -> LazyFrame;
 
     fn feature_selection(&self) -> LazyFrame;
+
+    fn categorical_cols(&mut self)-> Vec<Expr>;
 }
 
 trait ExpressionActions{

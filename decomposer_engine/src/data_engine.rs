@@ -1,5 +1,3 @@
-use std::usize;
-
 use polars::prelude::*;
 use crate::{Actions, ExpressionActions};
 
@@ -74,6 +72,18 @@ impl Actions for LazyFrame{
         self.clone().select([
             col(
                 PlSmallStr::from("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$"))])
+    }
+
+    fn categorical_cols(&mut self)-> Vec<Expr>{
+        self.collect_schema().unwrap(
+        ).iter_names_and_dtypes().filter_map(|c|{
+            if c.1.is_categorical(){
+                Some(col(c.0.as_str()))
+            }
+            else {
+                None
+            }
+        }).collect::<Vec<Expr>>()
     }
 }
 
