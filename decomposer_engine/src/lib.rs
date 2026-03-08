@@ -4,7 +4,7 @@ use polars::prelude::{Expr, LazyFrame};
 pub mod data_engine;
 pub mod preprocessor_engine;
 
-trait Actions{
+pub trait Actions{
 
     fn rename_cols(&self) -> LazyFrame;
 

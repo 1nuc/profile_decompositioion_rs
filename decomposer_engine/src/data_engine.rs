@@ -56,8 +56,8 @@ impl Actions for LazyFrame{
     //process the meta data columns and prepare them for further preprocessing
     fn process_meta_data_variants(&self) -> LazyFrame{
         self.clone().with_columns(
-                [col("bldg_id").cast(DataType::Int32)]).
-                select([col("in.occupants").cast(DataType::Int32),
+                [col("bldg_id").cast(DataType::UInt32)]).
+                select([col("in.occupants").cast(DataType::UInt32),
                 col("in.state").cast_to_categorical(),
                 col("in.county").cast_to_categorical(), 
                 col("in.representative_income"),
@@ -67,7 +67,7 @@ impl Actions for LazyFrame{
                 col("in.income_recs_2015").cast_to_categorical(),
                 col("in.building_america_climate_zone").cast_to_categorical(),
                 col("in.ashrae_iecc_climate_zone_2004_sub_cz_split").alias("cliamte_zone"),
-                col("in.bedrooms").cast(DataType::Int32),
+                col("in.bedrooms").cast(DataType::UInt32),
                 col("in.tenure").cast_to_categorical(),
                 col("bldg_id").cast(DataType::UInt32),
                 col("in.household_has_tribal_persons").cast_to_categorical()])
