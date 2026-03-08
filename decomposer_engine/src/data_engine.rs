@@ -1,3 +1,5 @@
+use std::usize;
+
 use polars::prelude::*;
 use crate::{Actions, ExpressionActions};
 
@@ -78,6 +80,8 @@ impl Actions for LazyFrame{
 impl ExpressionActions for Expr{
 
     fn cast_to_categorical(&self) -> Expr{
-        self.clone().cast(DataType::Categorical(Categories::global(), Categories::global().mapping()))
+        let hasher= PlSeedableRandomStateQuality::seed_from_u64(42);
+        let mapping=CategoricalMapping::with_hasher(usize::MAX, hasher);
+        self.clone().cast(DataType::Categorical(Categories::global(), mapping.into()))
     }
 }
