@@ -21,6 +21,10 @@ pub trait Actions{
     fn standard_scalar(&mut self)-> LazyFrame;
 
     fn min_max_scalar(&mut self)-> LazyFrame;
+
+    fn get_mean(&mut self)-> LazyFrame;
+
+    fn get_std(&mut self)-> LazyFrame;
 }
 
 trait ExpressionActions{

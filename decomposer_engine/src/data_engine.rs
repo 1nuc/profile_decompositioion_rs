@@ -104,8 +104,11 @@ impl Actions for LazyFrame{
 
     fn standard_scalar(&mut self)-> LazyFrame {
         self.clone().with_columns([
+            when(
+                col("*").std(1).eq(0)
+                ).then(0).otherwise(
             (col("*") - col("*").mean())
-            / col("*").std(1)])
+            / col("*").std(1))])
     }
     
     fn min_max_scalar(&mut self)-> LazyFrame {
@@ -117,6 +120,14 @@ impl Actions for LazyFrame{
                 /(col("*").max() - col("*").min())
                 )
         ])
+    }
+
+    fn get_mean(&mut self)-> LazyFrame {
+        self.clone().mean()
+    }
+
+    fn get_std(&mut self)-> LazyFrame {
+        self.clone().std(1)
     }
 }
 
