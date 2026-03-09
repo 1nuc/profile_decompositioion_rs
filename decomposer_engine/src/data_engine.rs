@@ -67,7 +67,7 @@ impl Actions for LazyFrame{
                 col("in.income_recs_2020").cast_to_categorical(),
                 col("in.income_recs_2015").cast_to_categorical(),
                 col("in.building_america_climate_zone").cast_to_categorical(),
-                col("in.ashrae_iecc_climate_zone_2004_sub_cz_split").alias("cliamte_zone"),
+                col("in.ashrae_iecc_climate_zone_2004_sub_cz_split").alias("climate_zone"),
                 col("in.bedrooms").cast(DataType::UInt32),
                 col("in.tenure").cast_to_categorical(),
                 col("bldg_id").cast(DataType::UInt32),
@@ -102,7 +102,7 @@ impl Actions for LazyFrame{
                 ).collect::<Vec<_>>())
     }
 
-    fn standard_scalar(&mut self)-> LazyFrame {
+    fn standard_scalar(&mut self)-> LazyFrame{
         self.clone().with_columns([
             when(
                 col("*").std(1).eq(0)
@@ -111,7 +111,7 @@ impl Actions for LazyFrame{
             / col("*").std(1))])
     }
     
-    fn min_max_scalar(&mut self)-> LazyFrame {
+    fn min_max_scalar(&mut self)-> LazyFrame{
         self.clone().with_columns([
             when(
                 col("*").min().eq(col("*").max())

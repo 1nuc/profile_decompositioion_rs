@@ -9,9 +9,16 @@ fn main() {
 
     let data_source=Nrel::init();
     let mut data=data_source.data;
-    let mut encoded_data=data.encode_categoricals();
-    let standard_scaled=encoded_data.standard_scalar();
-    println!("{}", standard_scaled.collect().unwrap());
+    let mut encoded_data=data.encode_categoricals().min_max_scalar();
+    // let standard_scaled=encoded_data.standard_scalar().collect().unwrap();
+    let standard=encoded_data.clone().with_columns([
+            when(
+                col("*").std(1).eq(0)
+                ).then(0).otherwise(
+            (col("*") - col("*").mean())
+            / col("*").std(1))]).collect().unwrap();
+    // println!("{:?}", encoded_data.collect().unwrap());
+    println!("{:?}", standard);
 }
 
     // let t: Array2<f32>=encoded_data.clone().collect().unwrap().to_ndarray::<Float32Type>(IndexOrder::C).expect("Error in converting to an array");
