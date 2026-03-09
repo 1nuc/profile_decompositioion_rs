@@ -25,6 +25,7 @@ fn main() {
 }
 
     // let t: Array2<f32>=encoded_data.clone().collect().unwrap().to_ndarray::<Float32Type>(IndexOrder::C).expect("Error in converting to an array");
+    // TODO: Convert polars to a vector
     // let ncols=t.ncols();
     // let c_t=t.clone().into_raw_vec_and_offset().0;
     // let vec_t=c_t.chunks(ncols).map(|x| x.to_vec()).collect::<Vec<Vec<f32>>>();
