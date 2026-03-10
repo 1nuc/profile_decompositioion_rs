@@ -1,6 +1,6 @@
 use std::{fs::File, ops::Sub};
 
-use decomposer_engine::{Actions, data_engine::*}; 
+use decomposer_engine::{Actions, data_engine::*, preprocessor_engine::Preprocessor}; 
 use ndarray::Array2;
 use polars::prelude::*;
 use rand::{SeedableRng, rngs::SmallRng, seq::SliceRandom};
@@ -13,21 +13,12 @@ fn main() {
     let data_source=Nrel::init();
     let mut data=data_source.data;
     let mut encoded_data=data.encode_categoricals();
-    let n= encoded_data.collect().unwrap().shape().1;
-    println!("{:?}", n);
-    // let total_rows= encoded_data.clone().collect().unwrap().height();
-    // let test_rows=total_rows as f32 * 0.3;
-    // let training_rows=total_rows as f32 - test_rows;
-    // let mut arr: Vec<u32>= (0..total_rows as u32).collect();
-    // let seed_rng=&mut <SmallRng as SeedableRng>::seed_from_u64(2);
-    // arr.shuffle(seed_rng);
-    // let test_arr=&arr[training_rows as usize..];
-    // let train_arr=&arr[..training_rows as usize];
-    // let t=ChunkedArray::from_slice("new".into(), test_arr);
-    // let r=ChunkedArray::from_slice("new".into(), train_arr);
-    // let test_t=encoded_data.clone().collect().unwrap().take(&t);
-    // let train_t=encoded_data.clone().collect().unwrap().take(&r);
-
+    let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
+    let (x_train, x_test, y_train, y_test)=preprocessor.split_x_y();
+    println!("{:?}", x_train.collect().unwrap());
+    println!("{:?}", x_test.collect().unwrap());
+    println!("{:?}", y_train.collect().unwrap());
+    println!("{:?}", y_test.collect().unwrap());
     // println!("The size of the full set of the data: {:?}", total_rows);
     // println!("the size of the testing set is: {:?}", test_rows);
     // println!("{:?}", test_t);

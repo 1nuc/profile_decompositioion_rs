@@ -1,23 +1,23 @@
 use polars::prelude::*;
 use rand::{SeedableRng, rngs::SmallRng, seq::SliceRandom};
 
-struct Preprocessor {
-    x: LazyFrame,
-    y: LazyFrame,
-    n: usize,
-    x_n: usize,
-    y_n: usize,
-    test_size: f32,
-    rnd_state: u64,
-    labels: Vec<String>,
-    x_labels: Vec<String>,
-    y_labels: Vec<String>,
-    x_labels_size: usize,
-    y_labels_size: usize,
+pub struct Preprocessor{
+    pub x: LazyFrame,
+    pub y: LazyFrame,
+    pub n: usize,
+    pub x_n: usize,
+    pub y_n: usize,
+    pub test_size: f32,
+    pub rnd_state: u64,
+    pub labels: Vec<String>,
+    pub x_labels: Vec<String>,
+    pub y_labels: Vec<String>,
+    pub x_labels_size: usize,
+    pub y_labels_size: usize,
 }
 
 impl Preprocessor{
-    fn new(&self, d: LazyFrame, rnd_state_: u64, test_size_: f32) -> Self{
+    pub fn new(d: LazyFrame, rnd_state_: u64, test_size_: f32) -> Self{
         let (x_, y_)=Self::extract_x_nd_y(d.clone());
         Self{
             x: x_.clone(),
@@ -39,8 +39,12 @@ impl Preprocessor{
         let x=d.clone().select([
             col(
                 PlSmallStr::from("^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climatezone$")
-                ),col("out.electricity.total.energy_consumption").alias("total_usage")
-        ]);
+                ),col("out.electricity.total.energy_consumption..kwh").alias("total_usage")
+        ]).drop(
+        Selector::ByName {
+            names: Arc::new([PlSmallStr::from_str("in.sqft")]),
+            strict: true
+        });
         let y=d.clone().select([
             col(
                 PlSmallStr::from("^out.electricity.*..kwh$")
@@ -55,7 +59,7 @@ impl Preprocessor{
             ).collect::<Vec<String>>()
     }
 
-    fn split_x_y(&self)-> (LazyFrame, LazyFrame, LazyFrame, LazyFrame){
+    pub fn split_x_y(&self)-> (LazyFrame, LazyFrame, LazyFrame, LazyFrame){
         let x_test_n=self.x_n as f32 * self.test_size;
         let x_train_n=self.x_n as f32 - x_test_n;
 
@@ -81,5 +85,5 @@ impl Preprocessor{
         (train_t.lazy(), test_t.lazy())
     }
 
-    fn labelling(&self);
+    // fn labelling(&self);
 }
