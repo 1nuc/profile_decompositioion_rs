@@ -6,6 +6,9 @@ use polars::prelude::*;
 use tap::Conv;
 fn main() {
 
+    //TODO: Finish the train test and split function in polars
+    //TODO: train the xgboost
+    //TODO: Extract x and y features
     let data_source=Nrel::init();
     let mut data=data_source.data;
     let mut encoded_data=data.encode_categoricals();
@@ -13,8 +16,9 @@ fn main() {
     let n_rows=total_rows * 0.2 as usize;
     let arr: Vec<usize>= (0..total_rows).collect();
     let t_arr=&arr[..n_rows];
-    let r=ChunkedArray::from_slice("new".into(), t_arr);
-    let train_t=encoded_data.collect().unwrap().take(&r);
+    println!("{:?}", t_arr);
+    // let r=ChunkedArray::from_slice("new".into(), t_arr);
+    // let train_t=encoded_data.collect().unwrap().take(&r);
 }
 
     // let t: Array2<f32>=encoded_data.clone().collect().unwrap().to_ndarray::<Float32Type>(IndexOrder::C).expect("Error in converting to an array");
