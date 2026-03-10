@@ -115,26 +115,6 @@ impl Actions for LazyFrame{
                 /(col("*").max() - col("*").min())
         ]).fill_nan(0)
     }
-    // fn standard_scalar(&mut self)-> LazyFrame{
-    //     self.clone().with_columns([
-    //         when(
-    //             col("*").std(1).eq(0)
-    //             ).then(0).otherwise(
-    //         (col("*") - col("*").mean())
-    //         / col("*").std(1))])
-    // }
-    //
-    // fn min_max_scalar(&mut self)-> LazyFrame{
-    //     self.clone().with_columns([
-    //         when(
-    //             col("*").min().eq(col("*").max())
-    //             ).then(0).otherwise(
-    //             (col("*") - col("*").min())
-    //             /(col("*").max() - col("*").min())
-    //             )
-    //     ])
-    // }
-
 }
 
 impl ExpressionActions for Expr{

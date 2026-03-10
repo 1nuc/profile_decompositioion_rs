@@ -9,9 +9,8 @@ fn main() {
     let data_source=Nrel::init();
     let mut data=data_source.data;
     let mut encoded_data=data.encode_categoricals();
-    let standard_scaled=encoded_data.standard_scalar().std(1).collect().unwrap();
-    println!("{:?}", standard_scaled);
-
+    let total_rows= encoded_data.collect().unwrap().height();
+    let standard_scaled=encoded_data.standard_scalar().std(1).collect().unwrap().take();
 }
 
     // let t: Array2<f32>=encoded_data.clone().collect().unwrap().to_ndarray::<Float32Type>(IndexOrder::C).expect("Error in converting to an array");
