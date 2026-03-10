@@ -548,6 +548,7 @@ name = "decomposer_engine"
 version = "0.1.0"
 dependencies = [
  "polars",
+ "rand 0.10.0",
  "tap",
 ]
 

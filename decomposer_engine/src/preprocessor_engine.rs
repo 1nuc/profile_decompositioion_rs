@@ -1,9 +1,12 @@
 use polars::prelude::*;
+use rand::{SeedableRng, rngs::SmallRng, seq::SliceRandom};
 
 struct Preprocessor {
     x: LazyFrame,
     y: LazyFrame,
     n: usize,
+    x_n: usize,
+    y_n: usize,
     test_size: f32,
     rnd_state: u64,
     labels: Vec<String>,
@@ -20,6 +23,8 @@ impl Preprocessor{
             x: x_.clone(),
             y: y_.clone(),
             n: d.clone().collect().unwrap().height(),
+            x_n: x_.clone().collect().unwrap().height(),
+            y_n: y_.clone().collect().unwrap().height(),
             test_size: test_size_,
             rnd_state: rnd_state_,
             labels: Self::extract_labels(d),
@@ -50,7 +55,31 @@ impl Preprocessor{
             ).collect::<Vec<String>>()
     }
 
-    // fn split_x_y(&self);
-    // fn splitting(&self);
-    // fn labelling(&self);
+    fn split_x_y(&self)-> (LazyFrame, LazyFrame, LazyFrame, LazyFrame){
+        let x_test_n=self.x_n as f32 * self.test_size;
+        let x_train_n=self.x_n as f32 - x_test_n;
+
+        let y_test_n=self.y_n as f32 * self.test_size;
+        let y_train_n=self.y_n as f32 - y_test_n;
+
+        let (x_train, x_test)=Self::splitting(self.x.clone(), self.x_n, x_train_n);
+        let (y_train, y_test)=Self::splitting(self.y.clone(), self.y_n, y_train_n);
+
+        (x_train, x_test, y_train, y_test)
+    }
+
+    fn splitting(d: LazyFrame,n: usize, x_n: f32) -> (LazyFrame, LazyFrame){
+        let mut arr: Vec<u32>= (0..n as u32).collect();
+        let seed_rng=&mut <SmallRng as SeedableRng>::seed_from_u64(2);
+        arr.shuffle(seed_rng);
+        let train_arr=&arr[..x_n as usize];
+        let test_arr=&arr[x_n as usize..];
+        let t=ChunkedArray::from_slice("new".into(), test_arr);
+        let r=ChunkedArray::from_slice("new".into(), train_arr);
+        let test_t=d.clone().collect().unwrap().take(&t).expect("error fetching the testing data");
+        let train_t=d.clone().collect().unwrap().take(&r).expect("error fetching the training data");
+        (train_t.lazy(), test_t.lazy())
+    }
+
+    fn labelling(&self);
 }
