@@ -6,19 +6,29 @@ use polars::prelude::*;
 use tap::Conv;
 fn main() {
 
-    //TODO: Finish the train test and split function in polars
+    //TODO: Finish the train test and split function in polars Done
     //TODO: train the xgboost
     //TODO: Extract x and y features
     let data_source=Nrel::init();
     let mut data=data_source.data;
     let mut encoded_data=data.encode_categoricals();
-    let total_rows= encoded_data.collect().unwrap().height();
-    let n_rows=total_rows * 0.2 as usize;
-    let arr: Vec<usize>= (0..total_rows).collect();
-    let t_arr=&arr[..n_rows];
-    println!("{:?}", t_arr);
-    // let r=ChunkedArray::from_slice("new".into(), t_arr);
-    // let train_t=encoded_data.collect().unwrap().take(&r);
+    let total_rows= encoded_data.clone().collect().unwrap().height();
+    let test_rows=total_rows as f32 * 0.3;
+    let training_rows=total_rows as f32 - test_rows;
+    let arr: Vec<u32>= (0..total_rows as u32).collect();
+    let test_arr=&arr[training_rows as usize..];
+    let train_arr=&arr[..training_rows as usize];
+    let t=ChunkedArray::from_slice("new".into(), test_arr);
+    let r=ChunkedArray::from_slice("new".into(), train_arr);
+    let test_t=encoded_data.clone().collect().unwrap().take(&t);
+    let train_t=encoded_data.clone().collect().unwrap().take(&r);
+
+    println!("The size of the full set of the data: {:?}", total_rows);
+    println!("the size of the testing set is: {:?}", test_rows);
+    println!("{:?}", test_t);
+
+    println!("the size of the testing set is: {:?}", training_rows);
+    println!("{:?}", train_t);
 }
 
     // let t: Array2<f32>=encoded_data.clone().collect().unwrap().to_ndarray::<Float32Type>(IndexOrder::C).expect("Error in converting to an array");
