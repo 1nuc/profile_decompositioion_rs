@@ -3,6 +3,7 @@ use std::{fs::File, ops::Sub};
 use decomposer_engine::{Actions, data_engine::*}; 
 use ndarray::Array2;
 use polars::prelude::*;
+use rand::{SeedableRng, rngs::SmallRng, seq::SliceRandom};
 use tap::Conv;
 fn main() {
 
@@ -15,7 +16,9 @@ fn main() {
     let total_rows= encoded_data.clone().collect().unwrap().height();
     let test_rows=total_rows as f32 * 0.3;
     let training_rows=total_rows as f32 - test_rows;
-    let arr: Vec<u32>= (0..total_rows as u32).collect();
+    let mut arr: Vec<u32>= (0..total_rows as u32).collect();
+    let seed_rng=&mut <SmallRng as SeedableRng>::seed_from_u64(2);
+    arr.shuffle(seed_rng);
     let test_arr=&arr[training_rows as usize..];
     let train_arr=&arr[..training_rows as usize];
     let t=ChunkedArray::from_slice("new".into(), test_arr);
@@ -23,12 +26,12 @@ fn main() {
     let test_t=encoded_data.clone().collect().unwrap().take(&t);
     let train_t=encoded_data.clone().collect().unwrap().take(&r);
 
-    println!("The size of the full set of the data: {:?}", total_rows);
-    println!("the size of the testing set is: {:?}", test_rows);
-    println!("{:?}", test_t);
-
-    println!("the size of the testing set is: {:?}", training_rows);
-    println!("{:?}", train_t);
+    // println!("The size of the full set of the data: {:?}", total_rows);
+    // println!("the size of the testing set is: {:?}", test_rows);
+    // println!("{:?}", test_t);
+    //
+    // println!("the size of the testing set is: {:?}", training_rows);
+    // println!("{:?}", train_t);
 }
 
     // let t: Array2<f32>=encoded_data.clone().collect().unwrap().to_ndarray::<Float32Type>(IndexOrder::C).expect("Error in converting to an array");
