@@ -1,4 +1,5 @@
-use polars::prelude::{Expr, LazyFrame};
+use ndarray::Array2;
+use polars::prelude::*;
 
 
 pub mod data_engine;
@@ -6,26 +7,29 @@ pub mod preprocessor_engine;
 
 pub trait Actions{
 
-    fn rename_cols(&self) -> LazyFrame;
+    fn rename_cols(&self) -> Self;
 
-    fn create_temporal_features(&self)-> LazyFrame;
+    fn create_temporal_features(&self)-> Self;
 
-    fn process_meta_data_variants(&self)-> LazyFrame;
+    fn process_meta_data_variants(&self)-> Self;
 
-    fn feature_selection(&self)-> LazyFrame;
+    fn feature_selection(&self)-> Self;
 
     fn categorical_cols(&mut self)-> Vec<Expr>;
     
-    fn encode_categoricals(&mut self)-> LazyFrame;
+    fn encode_categoricals(&mut self)-> Self;
     
-    fn standard_scalar(&mut self)-> LazyFrame;
+    fn standard_scalar(&mut self)-> Self;
 
-    fn min_max_scalar(&mut self)-> LazyFrame;
+    fn min_max_scalar(&mut self)-> Self;
 
+    fn to_ndarry(&self) -> Array2<f32>;
+
+    fn to_vec(&self) -> Vec<f32>;
 }
 
 trait ExpressionActions{
 
-    fn cast_to_categorical(&self) -> Expr;
+    fn cast_to_categorical(&self) -> Self;
 }
 

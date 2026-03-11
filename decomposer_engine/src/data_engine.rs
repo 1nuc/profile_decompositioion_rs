@@ -1,5 +1,6 @@
-use std::alloc::Layout;
+use std::{alloc::Layout, cmp::Ordering};
 
+use ndarray::Array2;
 use polars::prelude::*;
 use crate::{Actions, ExpressionActions};
 
@@ -32,13 +33,13 @@ impl Nrel{
 
 impl Actions for LazyFrame{
     // Rename the vague fields to a more brief and descriptive names
-    fn rename_cols(&self) -> LazyFrame{
+    fn rename_cols(&self) -> Self{
          self.clone().rename(
              ["out.electricity.cooling.energy_consumption..kwh"],
              ["out.electricity.AC.energy_consumption..kwh"], false)
     }
     //Creating the temporal features to boost the model's performance
-    fn create_temporal_features(&self) -> LazyFrame{
+    fn create_temporal_features(&self) -> Self{
         self.clone().with_columns([
             col("timestamp").dt().weekday().alias("day of the week").cast(DataType::UInt32),
             col("timestamp").dt().hour().alias("hour of the day"),
@@ -55,7 +56,7 @@ impl Actions for LazyFrame{
     }
 
     //process the meta data columns and prepare them for further preprocessing
-    fn process_meta_data_variants(&self) -> LazyFrame{
+    fn process_meta_data_variants(&self) -> Self{
         self.clone().with_columns(
                 [col("bldg_id").cast(DataType::UInt32)]).
                 select([col("in.occupants").cast(DataType::UInt32),
@@ -75,7 +76,7 @@ impl Actions for LazyFrame{
     }
 
     // Specify the selection of the inclusive variables for modelling
-    fn feature_selection(&self) -> LazyFrame{
+    fn feature_selection(&self) -> Self{
         self.clone().select([
             col(
                 PlSmallStr::from("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$"))])
@@ -95,7 +96,7 @@ impl Actions for LazyFrame{
     }
 
     // Encode categorical columns in the data to UInt32 Type
-    fn encode_categoricals(&mut self) -> LazyFrame{
+    fn encode_categoricals(&mut self) -> Self{
         let cols=self.categorical_cols();
         self.clone().with_columns(
             cols.iter().map(|x| x.clone().cast(DataType::UInt32)
@@ -103,24 +104,31 @@ impl Actions for LazyFrame{
     }
 
 
-    fn standard_scalar(&mut self)-> LazyFrame{
+    fn standard_scalar(&mut self)-> Self{
         self.clone().with_columns([
             (col("*") - col("*").mean())
             / col("*").std(1)]).fill_nan(0)
     }
     
-    fn min_max_scalar(&mut self)-> LazyFrame{
+    fn min_max_scalar(&mut self)-> Self{
         self.clone().with_columns([
                 (col("*") - col("*").min())
                 /(col("*").max() - col("*").min())
         ]).fill_nan(0)
+    }
+
+    fn to_ndarry(&self) -> Array2<f32>{
+        self.clone().
+            collect().
+            unwrap().
+            to_ndarray::<Float32Type>(IndexOrder::C).expect("unable to to return an array")
     }
 }
 
 impl ExpressionActions for Expr{
 
     // Fixing current polars limitation with categoricals conversion
-    fn cast_to_categorical(&self) -> Expr{
+    fn cast_to_categorical(&self) -> Self{
         let hasher= PlSeedableRandomStateQuality::fixed();
         let mapping=CategoricalMapping::with_hasher(usize::MAX, hasher);
         self.clone().cast(DataType::Categorical(Categories::global(), mapping.into()))
