@@ -74,7 +74,7 @@ impl Preprocessor{
 
     fn splitting(d: LazyFrame,n: usize, x_n: f32) -> (LazyFrame, LazyFrame){
         let mut arr: Vec<u32>= (0..n as u32).collect();
-        let seed_rng=&mut <SmallRng as SeedableRng>::seed_from_u64(2);
+        let seed_rng=&mut <SmallRng as SeedableRng>::seed_from_u64(42);
         arr.shuffle(seed_rng);
         let train_arr=&arr[..x_n as usize];
         let test_arr=&arr[x_n as usize..];

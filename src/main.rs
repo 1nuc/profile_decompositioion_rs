@@ -1,8 +1,7 @@
 use decomposer_engine::{Actions, data_engine::*, preprocessor_engine::Preprocessor}; 
-use smartcore::{linalg::basic::{arrays::Array2, matrix::DenseMatrix}, metrics::r2, xgboost::{self, XGRegressor, XGRegressorParameters}};
-use ndarray::Array2;
 use polars::prelude::*;
 use rand::{SeedableRng, rngs::SmallRng, seq::SliceRandom};
+use smartcore::linalg::basic::matrix::DenseMatrix;
 use tap::Conv;
 fn main() {
 
@@ -11,34 +10,13 @@ fn main() {
     //TODO: Extract x and y features Done
     let data_source=Nrel::init();
     let mut data=data_source.data;
-    let mut encoded_data=data.encode_categoricals();
+    let encoded_data=data.encode_categoricals();
     let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
     let (x_train, x_test, y_train, y_test)=preprocessor.split_x_y();
+    let y_train=y_train.select([col("out.electricity.AC.energy_consumption..kwh")]);
+    let y_test=y_test.select([col("out.electricity.AC.energy_consumption..kwh")]);
 
-    let x_train_=DenseMatrix::from_2d_vec(&x_train.to_vec()).unwrap();
-    let y_train_=DenseMatrix::from_2d_vec(&y_train.to_vec()).unwrap();
-
-    let parameters=XGRegressorParameters::default().with_n_estimators(50).with_max_depth(3).with_learning_rate(0.1);
-    let model=XGRegressor::fit(&x_train_, &y_train_, parameters).expect("Error with the model");
-    //
-    // let t_t: Array2<f32>=x_test.clone().collect().unwrap().to_ndarray::<Float32Type>(IndexOrder::C).expect("Error in converting to an array");
-    // let ncols=t_t.ncols();
-    // let t_t_v=t_t.clone().into_raw_vec_and_offset().0;
-    // let vec_test=t_t_v.chunks(ncols).map(|x| x.to_vec()).collect::<Vec<Vec<f32>>>();
-    // let x_test=DenseMatrix::from_2d_vec(&vec_test).unwrap();
-    //
-    // let predicted=model.predict(&x_test).unwrap();
-    //
-    //
-    // let y_predict=DenseMatrix::from(&predicted);
-    //
-    // let y_t: Array2<f32>=y_test.clone().collect().unwrap().to_ndarray::<Float32Type>(IndexOrder::C).expect("Error in converting to an array");
-    // let ncols=y_t.ncols();
-    // let y_t_v=y_t.clone().into_raw_vec_and_offset().0;
-    // let vec_y_test=y_t_v.chunks(ncols).map(|x| x.to_vec()).collect::<Vec<Vec<f32>>>();
-    // let y_test=DenseMatrix::from_2d_vec(&vec_y_test).unwrap();
-    //
-    // let r_score=r2(&y_test, &predicted);
+    let x_train=DenseMatrix::from_2d_vec(&x_train.to_vec());
 
 
 }
