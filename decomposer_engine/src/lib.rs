@@ -25,7 +25,7 @@ pub trait Actions{
 
     fn to_ndarry(&self) -> Array2<f32>;
 
-    fn to_vec(&self) -> Vec<f32>;
+    fn to_vec(&self) -> Vec<Vec<f32>>;
 }
 
 trait ExpressionActions{

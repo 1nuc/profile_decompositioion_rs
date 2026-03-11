@@ -123,6 +123,13 @@ impl Actions for LazyFrame{
             unwrap().
             to_ndarray::<Float32Type>(IndexOrder::C).expect("unable to to return an array")
     }
+
+    fn to_vec(&self) -> Vec<Vec<f32>> {
+        let n_cols=self.clone().collect().unwrap().height();
+        let array_d=Self::to_ndarry(self);
+        let to_1d_vec=array_d.into_raw_vec_and_offset().0;
+        to_1d_vec.chunks(n_cols).map(|x| x.to_vec()).collect::<Vec<Vec<f32>>>()
+    }
 }
 
 impl ExpressionActions for Expr{
