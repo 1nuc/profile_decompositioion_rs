@@ -28,24 +28,7 @@ fn main() {
 
     let bst=Booster::train(&parameters).unwrap();
     let predicted=bst.predict(&d_test).unwrap();
-    for o in predicted.iter(){
-        if *o==0.5{
-            continue;
-        }
-        else{
-            println!("{o}");
-        }
-    }
-
-    // assert_eq!(x_train.shape().0, y_train.len());
-    // println!("{:?}", x_train.shape().0);
-    // println!("{:?}", y_train.len());
-    // let parameters=XGRegressorParameters::default().with_learning_rate(0.1).with_max_depth(4);
-    // let model=XGRegressor::fit(&x_train,&y_train, parameters).expect("Error in the model");
-    // let x_test=DenseMatrix::from_2d_vec(&x_test.to_2d_vec()).unwrap().transpose();
-    // let predicted=model.predict(&x_test).unwrap();
-    // let r2=r2(&y_test.to_1d_vec(), &predicted);
-    // println!("{:?}", r2);
+    println!("{:?}", predicted);
 }
 
     // let dense_file=DenseMatrix::from_2d_vec(&vec_t).unwrap();
