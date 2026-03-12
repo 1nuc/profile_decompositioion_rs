@@ -43,7 +43,7 @@ impl Preprocessor{
     fn extract_x_nd_y(d: LazyFrame) -> (LazyFrame, LazyFrame){
         let x=d.clone().select([
             col(
-                PlSmallStr::from("^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climatezone$")
+                PlSmallStr::from("^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$")
                 ),col("out.electricity.total.energy_consumption..kwh").alias("total_usage")
         ]).drop(
         Selector::ByName {
