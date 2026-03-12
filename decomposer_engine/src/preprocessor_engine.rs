@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use polars::prelude::*;
 use rand::{SeedableRng, rngs::SmallRng, seq::SliceRandom};
 
@@ -19,19 +21,22 @@ pub struct Preprocessor{
 impl Preprocessor{
     pub fn new(d: LazyFrame, rnd_state_: u64, test_size_: f32) -> Self{
         let (x_, y_)=Self::extract_x_nd_y(d.clone());
+        let d_=d.clone().collect().unwrap();
+        let x_d =x_.clone().collect().unwrap();
+        let y_d=y_.clone().collect().unwrap();
         Self{
             x: x_.clone(),
             y: y_.clone(),
-            n: d.clone().collect().unwrap().height(),
-            x_n: x_.clone().collect().unwrap().height(),
-            y_n: y_.clone().collect().unwrap().height(),
+            n: d_.height(),
+            x_n: x_d.height(),
+            y_n: y_d.height(),
             test_size: test_size_,
             rnd_state: rnd_state_,
             labels: Self::extract_labels(d),
             x_labels: Self::extract_labels(x_.clone()),
             y_labels: Self::extract_labels(y_.clone()),
-            x_labels_size: x_.collect().unwrap().shape().1,
-            y_labels_size: y_.collect().unwrap().shape().1,
+            x_labels_size: x_d.shape().1,
+            y_labels_size: y_d.shape().1,
         }
     }
 
