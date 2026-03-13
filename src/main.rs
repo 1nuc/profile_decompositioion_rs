@@ -1,6 +1,5 @@
 use decomposer_engine::{Actions, data_engine::*, preprocessor_engine::Preprocessor, xgboost::Xgb}; 
 use polars::prelude::*;
-use xgboost::{parameters::{BoosterParametersBuilder, TrainingParametersBuilder, learning::{self, EvaluationMetric, LearningTaskParametersBuilder}, tree::TreeBoosterParametersBuilder}, *};
 use tap::Conv;
 
 fn main() {
@@ -15,17 +14,8 @@ fn main() {
     let d_test=x_test.to_matrix(true);
     let mut xgb=Xgb::new(d_train, d_test);
     xgb.set_y_train(y_train.to_1d_vec());
-    xgb.set_y_test(y_test.to_1d_vec());
-    let param=xgb.set_training_param();
-
-    let bst=Booster::train(&param).unwrap();
-    let preds=bst.predict(&d_test).unwrap();
-    let y_true = d_test.get_labels().unwrap();
-    let mean = y_true.iter().sum::<f32>() / y_true.len() as f32;
-    let ss_tot: f32 = y_true.iter().map(|y| (y - mean).powi(2)).sum();
-    let ss_res: f32 = y_true.iter().zip(preds.iter()).map(|(y, p)| (y - p).powi(2)).sum();
-    let r2 = 1.0 - ss_res / ss_tot;
-    println!("R2: {}", r2);
+    let r2=xgb.set_y_test(y_test.to_1d_vec()).train().predict().r2_score();
+    println!("{:?}", r2);
 }
 
     // let dense_file=DenseMatrix::from_2d_vec(&vec_t).unwrap();

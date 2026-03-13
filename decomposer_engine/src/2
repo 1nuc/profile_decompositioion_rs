@@ -6,24 +6,26 @@ use xgboost::{
     parameters::{
         BoosterParameters, BoosterParametersBuilder, TrainingParameters, TrainingParametersBuilder,
         learning::{self, EvaluationMetric, LearningTaskParameters, LearningTaskParametersBuilder},
-        tree::{TreeBoosterParameters, TreeBoosterParametersBuilder, TreeMethod},
+        tree::{TreeBoosterParameters, TreeBoosterParametersBuilder},
     },
     *,
 };
 
-pub struct Xgb {
+pub struct Xgb <'a>{
+    pub parametrs: TrainingParameters<'a>,
     pub d_train: DMatrix,
     pub d_test: DMatrix,
     pub booster: Booster,
     pub preds: Vec<f32>,
 }
 
-impl Xgb{
+impl <'a> Xgb<'a>{
 
     pub fn new(d_train: DMatrix,d_test: DMatrix)-> Self{
         Self{
             d_train,
             d_test,
+            parametrs: TrainingParametersBuilder::default().build().unwrap(),
             booster: Booster::new(&Self::set_booster_param()).unwrap(),
             preds: Vec::new(),
         }
@@ -46,7 +48,6 @@ impl Xgb{
         TreeBoosterParametersBuilder::default()
             .eta(0.1)
             .subsample(0.7)
-            .tree_method(TreeMethod::Hist)
             .build()
             .unwrap()
     }
@@ -70,37 +71,28 @@ impl Xgb{
             .unwrap()
     }
 
-    pub fn set_training_param<'a>(&'a mut self) -> TrainingParameters<'a>{
+    pub fn set_training_param(&'a mut self) -> &'a mut Self{
         let booster_param = Self::set_booster_param();
-        TrainingParametersBuilder::default()
+        self.parametrs=TrainingParametersBuilder::default()
             .dtrain(&self.d_train)
             .booster_params(booster_param)
             .boost_rounds(100)
             .build()
-            .unwrap()
-    }
-    pub fn train(&mut self) -> &mut Self{
-        let param=self.set_training_param();
-        self.booster=Booster::train(&param).unwrap();
+            .unwrap();
         self
     }
 
-    pub fn predict(&mut self) -> &mut Self{
+    pub fn train(&'a mut self) -> &'a mut Self{
+        self.booster=Booster::train(&self.parametrs).unwrap();
+        self
+    }
+
+    pub fn predict(&'a mut self) -> &'a mut Self{
         self.preds=self.booster.predict(&self.d_test).unwrap();
         self
     }
-    pub fn evaluation(&mut self){
+    pub fn evaluation(&'a mut self){
         let metric=self.booster.evaluate(&self.d_test).unwrap();
         println!("{:?}", metric);
-    }
-    pub fn r2_score(&self) -> f32{
-        //1- Total sum of residuals / total sum of squares
-        let y_true=self.d_test.get_labels().unwrap();
-        let mean=y_true.iter().sum::<f32>() / y_true.len() as f32;
-        let total_sum_residuals=y_true.iter().zip(
-            self.preds.iter()).map(|(x, y)| (x-y).powi(2)).sum::<f32>();
-        let total_sum_squares=y_true.iter().map(|x| (x-mean).powi(2)).sum::<f32>();
-
-        1_f32- (total_sum_residuals / total_sum_squares)
     }
 }

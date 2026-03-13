@@ -627,7 +627,6 @@ dependencies = [
  "polars",
  "rand 0.10.0",
  "tap",
- "xgboost",
 ]
 
 [[package]]
@@ -4078,8 +4077,6 @@ dependencies = [
 [[package]]
 name = "xgboost-sys"
 version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0b9f2d703ec8f70d5f250b1ad5d89d90ae2970b3547570aad5a2d72595f18b06"
 dependencies = [
  "bindgen",
  "libc",
