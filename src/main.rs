@@ -9,8 +9,8 @@ fn main() {
     let encoded_data=data.encode_categoricals();
     let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
     let (mut x_train, mut x_test, y_train, y_test)=preprocessor.split_x_y();
-    let y_train=y_train.select([col("out.electricity.AC.energy_consumption..kwh")]);
-    let y_test=y_test.select([col("out.electricity.AC.energy_consumption..kwh")]);
+    // let y_train=y_train.select([col("out.electricity.AC.energy_consumption..kwh")]);
+    // let y_test=y_test.select([col("out.electricity.AC.energy_consumption..kwh")]);
     let train_n=x_train.clone().collect().unwrap().height();
     let test_n=x_test.clone().collect().unwrap().height();
     let mut d_train=DMatrix::from_dense(&x_train.standard_scalar().to_1d_vec(), train_n).unwrap();
