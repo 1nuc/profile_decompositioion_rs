@@ -1,5 +1,3 @@
-use std::time::Instant;
-
 use polars::prelude::*;
 use rand::{SeedableRng, rngs::SmallRng, seq::SliceRandom};
 
@@ -52,14 +50,14 @@ impl Preprocessor {
         });
         let y = d
             .clone()
-            .select([col(PlSmallStr::from("^out.electricity.*..kwh$"))]).drop(
-        Selector::ByName {
-            names: Arc::new([
-                       PlSmallStr::from_str("out.electricity.total.energy_consumption..kwh"),
-                       PlSmallStr::from_str("out.electricity.net.energy_consumption..kwh")]),
-            strict: true
-        });
-;
+            .select([col(PlSmallStr::from("^out.electricity.*..kwh$"))])
+            .drop(Selector::ByName {
+                names: Arc::new([
+                    PlSmallStr::from_str("out.electricity.total.energy_consumption..kwh"),
+                    PlSmallStr::from_str("out.electricity.net.energy_consumption..kwh"),
+                ]),
+                strict: true,
+            });
         (x, y)
     }
 

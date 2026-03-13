@@ -10,4 +10,4 @@ rand = "0.10.0"
 tap = "1.0.1"
 xgboost = "0.1.4"
 [patch.crates-io]
-xgboost-sys={ path = "../patches/xgboost-sys/" }
+xgboost-sys= { path= "../patches/xgboost-sys" }

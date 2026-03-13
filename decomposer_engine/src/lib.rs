@@ -1,10 +1,10 @@
-use ::xgboost::DMatrix;
 use ndarray::Array2;
 use polars::prelude::*;
+use xgboost::DMatrix;
 
 pub mod data_engine;
 pub mod preprocessor_engine;
-pub mod xgboost;
+pub mod xgb;
 
 pub trait Actions {
     fn rename_cols(&self) -> Self;

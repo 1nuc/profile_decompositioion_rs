@@ -1,5 +1,3 @@
-use std::{alloc::Layout, cmp::Ordering};
-
 use crate::{Actions, ExpressionActions};
 use ndarray::Array2;
 use polars::prelude::*;
@@ -167,12 +165,11 @@ impl Actions for LazyFrame {
         array_d.into_raw_vec_and_offset().0
     }
     fn to_matrix(&mut self, with_scalar: bool) -> DMatrix {
-        let data: Vec<f32>;
-        if with_scalar {
-            data = self.standard_scalar().to_1d_vec();
+        let data=if with_scalar {
+            self.standard_scalar().to_1d_vec()
         } else {
-            data = self.to_1d_vec();
-        }
+            self.to_1d_vec()
+        };
         let num_rows = self.clone().collect().unwrap().height();
         DMatrix::from_dense(&data, num_rows).expect("Unable to create DM matrix")
     }
