@@ -13,6 +13,7 @@ pub struct Xgb <'a>{
     pub d_train: DMatrix,
     pub d_test: DMatrix,
     pub booster: Booster,
+    pub preds: Vec<f32>,
 }
 
 impl <'a> Xgb<'a>{
@@ -23,6 +24,7 @@ impl <'a> Xgb<'a>{
             d_test,
             parametrs: TrainingParametersBuilder::default().build().unwrap(),
             booster: Booster::new(&Self::set_booster_param()).unwrap(),
+            preds: Vec::new(),
         }
     }
     pub fn set_y_train(&mut self, d: Vec<f32>){
@@ -74,12 +76,13 @@ impl <'a> Xgb<'a>{
             .unwrap()
     }
 
-    pub fn train(){
-
+    pub fn train(&mut self){
+        self.booster=Booster::train(&self.parametrs).unwrap();
     }
 
-    pub fn predict(){
-
+    pub fn predict(&mut self) -> Vec<f32>{
+        self.preds=self.booster.predict(&self.d_test).unwrap();
+        self.preds.clone()
     }
     pub fn r2_score(){
 
