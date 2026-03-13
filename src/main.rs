@@ -18,6 +18,3 @@ fn main() {
     println!("{:?}", r2);
 }
 
-    // let dense_file=DenseMatrix::from_2d_vec(&vec_t).unwrap();
-    // let transformer =StandardScaler::fit(&dense_file, Default::default()).unwrap();
-    // let transformed_data=transformer.transform(&dense_file);
