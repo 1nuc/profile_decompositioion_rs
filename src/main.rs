@@ -7,14 +7,12 @@ fn main() {
     let mut data=data_source.data;
     let encoded_data=data.encode_categoricals();
     let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
-    let (mut x_train, mut x_test, y_train, y_test)=preprocessor.split_x_y();
-    let y_train=y_train.select([col("out.electricity.AC.energy_consumption..kwh")]);
-    let y_test=y_test.select([col("out.electricity.AC.energy_consumption..kwh")]);
+    let (mut x_train, mut x_test, mut y_train, y_test)=preprocessor.split_x_y();
+    let mut cols=y_train.clone().collect_schema().unwrap().iter_names().map(|x|x.as_str().to_string()).collect::<Vec<String>>();
+
     let d_train=x_train.to_matrix(true);
     let d_test=x_test.to_matrix(true);
     let mut xgb=Xgb::new(d_train, d_test);
-    xgb.set_y_train(y_train.to_1d_vec());
-    let r2=xgb.set_y_test(y_test.to_1d_vec()).train().predict().r2_score();
-    println!("{:?}", r2);
+    let r2=xgb.apply_modelling(y_train, y_test);
 }
 
