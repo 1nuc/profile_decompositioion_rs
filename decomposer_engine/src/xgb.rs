@@ -134,11 +134,7 @@ impl Xgb {
             self.set_y_train(y_train.to_1d_vec())
                 .set_y_test(y_test.to_1d_vec());
             let r2 = self.train().predict().r2_score();
-            if r2 < 0.0 {
-                println!("{:?}", column);
-            } else {
-                r2_score.push(r2);
-            }
+            r2_score.push(r2);
         }
         r2_score
     }

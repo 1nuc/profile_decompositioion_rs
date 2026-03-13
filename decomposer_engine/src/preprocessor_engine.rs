@@ -55,6 +55,10 @@ impl Preprocessor {
                 names: Arc::new([
                     PlSmallStr::from_str("out.electricity.total.energy_consumption..kwh"),
                     PlSmallStr::from_str("out.electricity.net.energy_consumption..kwh"),
+                    PlSmallStr::from_str("out.electricity.pv.energy_consumption..kwh"),
+                    PlSmallStr::from_str("out.electricity.pool_heater.energy_consumption..kwh"),
+                    PlSmallStr::from_str("out.electricity.hot_water_solar_th.energy_consumption..kwh"),
+                    PlSmallStr::from_str("out.electricity.ev_charging.energy_consumption..kwh"),
                 ]),
                 strict: true,
             });
