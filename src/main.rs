@@ -9,14 +9,15 @@ fn main() {
     let encoded_data=data.encode_categoricals();
     let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
     let (mut x_train, mut x_test, y_train, y_test)=preprocessor.split_x_y();
-    // let y_train=y_train.select([col("out.electricity.AC.energy_consumption..kwh")]);
-    // let y_test=y_test.select([col("out.electricity.AC.energy_consumption..kwh")]);
+    let y_train=y_train.select([col("out.electricity.AC.energy_consumption..kwh")]);
+    let y_test=y_test.select([col("out.electricity.AC.energy_consumption..kwh")]);
     let train_n=x_train.clone().collect().unwrap().height();
     let test_n=x_test.clone().collect().unwrap().height();
     let mut d_train=DMatrix::from_dense(&x_train.standard_scalar().to_1d_vec(), train_n).unwrap();
     d_train.set_labels(&y_train.to_1d_vec()).unwrap();
     let mut d_test=DMatrix::from_dense(&x_test.standard_scalar().to_1d_vec(), test_n).unwrap();
     d_test.set_labels(&y_test.to_1d_vec()).unwrap();
+
     let tree_param=TreeBoosterParametersBuilder::default().eta(0.1).subsample(0.7).build().unwrap();
     let learning_param=LearningTaskParametersBuilder::default().eval_metrics(
         learning::Metrics::Custom(vec![EvaluationMetric::MAE])).objective(parameters::learning::Objective::RegLinear).build().unwrap();
@@ -25,7 +26,7 @@ fn main() {
         parameters::BoosterType::Tree(tree_param)).threads(None).learning_params(learning_param).build().unwrap();
     let parameters=parameters::TrainingParametersBuilder::default().
         dtrain(&d_train).booster_params(booster_param).
-        boost_rounds(100).evaluation_sets(Some(eval_set)).build().unwrap();
+        boost_rounds(100).build().unwrap();
 
     let bst=Booster::train(&parameters).unwrap();
     let preds=bst.predict(&d_test).unwrap();
