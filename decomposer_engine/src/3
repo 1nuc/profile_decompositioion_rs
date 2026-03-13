@@ -1,0 +1,20 @@
+use xgboost::{parameters::{BoosterParameters, TrainingParameters, learning::LearningTaskParameters, tree::TreeBoosterParameters}, *};
+struct Xgb<'a>{
+    tree_param: TreeBoosterParameters,
+    learning_param: LearningTaskParameters,
+    booster_param: BoosterParameters,
+    parameters: TrainingParameters<'a>,
+    d_train: DMatrix,
+    d_test: DMatrix,
+}
+
+impl <'a> Xgb<'a>{
+
+    fn new() -> Self{
+        Self{
+            ..Default,
+        }
+    }
+
+    
+}
