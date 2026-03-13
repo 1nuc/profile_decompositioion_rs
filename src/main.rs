@@ -1,4 +1,4 @@
-use decomposer_engine::{Actions, data_engine::*, preprocessor_engine::Preprocessor}; 
+use decomposer_engine::{Actions, data_engine::*, preprocessor_engine::Preprocessor, xgboost::Xgb}; 
 use polars::prelude::*;
 use xgboost::{parameters::{BoosterParametersBuilder, TrainingParametersBuilder, learning::{self, EvaluationMetric, LearningTaskParametersBuilder}, tree::TreeBoosterParametersBuilder}, *};
 use tap::Conv;
@@ -11,24 +11,14 @@ fn main() {
     let (mut x_train, mut x_test, y_train, y_test)=preprocessor.split_x_y();
     let y_train=y_train.select([col("out.electricity.AC.energy_consumption..kwh")]);
     let y_test=y_test.select([col("out.electricity.AC.energy_consumption..kwh")]);
-    let train_n=x_train.clone().collect().unwrap().height();
-    let test_n=x_test.clone().collect().unwrap().height();
-    let mut d_train=DMatrix::from_dense(&x_train.standard_scalar().to_1d_vec(), train_n).unwrap();
-    d_train.set_labels(&y_train.to_1d_vec()).unwrap();
-    let mut d_test=DMatrix::from_dense(&x_test.standard_scalar().to_1d_vec(), test_n).unwrap();
-    d_test.set_labels(&y_test.to_1d_vec()).unwrap();
+    let d_train=x_train.to_matrix(true);
+    let d_test=x_test.to_matrix(true);
+    let mut xgb=Xgb::new(d_train, d_test);
+    xgb.set_y_train(y_train.to_1d_vec());
+    xgb.set_y_test(y_test.to_1d_vec());
+    let param=xgb.set_training_param();
 
-    let tree_param=TreeBoosterParametersBuilder::default().eta(0.1).subsample(0.7).build().unwrap();
-    let learning_param=LearningTaskParametersBuilder::default().eval_metrics(
-        learning::Metrics::Custom(vec![EvaluationMetric::MAE])).objective(parameters::learning::Objective::RegLinear).build().unwrap();
-    let eval_set=&[(&d_train, "train"), (&d_test, "test")];
-    let booster_param=BoosterParametersBuilder::default().booster_type(
-        parameters::BoosterType::Tree(tree_param)).threads(None).learning_params(learning_param).build().unwrap();
-    let parameters=parameters::TrainingParametersBuilder::default().
-        dtrain(&d_train).booster_params(booster_param).
-        boost_rounds(100).build().unwrap();
-
-    let bst=Booster::train(&parameters).unwrap();
+    let bst=Booster::train(&param).unwrap();
     let preds=bst.predict(&d_test).unwrap();
     let y_true = d_test.get_labels().unwrap();
     let mean = y_true.iter().sum::<f32>() / y_true.len() as f32;

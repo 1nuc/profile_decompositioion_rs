@@ -3,7 +3,7 @@ use std::time::Instant;
 use polars::prelude::*;
 use rand::{SeedableRng, rngs::SmallRng, seq::SliceRandom};
 
-pub struct Preprocessor{
+pub struct Preprocessor {
     pub x: LazyFrame,
     pub y: LazyFrame,
     pub n: usize,
@@ -18,13 +18,13 @@ pub struct Preprocessor{
     pub y_labels_size: usize,
 }
 
-impl Preprocessor{
-    pub fn new(d: LazyFrame, rnd_state_: u64, test_size_: f32) -> Self{
-        let (x_, y_)=Self::extract_x_nd_y(d.clone());
-        let d_=d.clone().collect().unwrap();
-        let x_d =x_.clone().collect().unwrap();
-        let y_d=y_.clone().collect().unwrap();
-        Self{
+impl Preprocessor {
+    pub fn new(d: LazyFrame, rnd_state_: u64, test_size_: f32) -> Self {
+        let (x_, y_) = Self::extract_x_nd_y(d.clone());
+        let d_ = d.clone().collect().unwrap();
+        let x_d = x_.clone().collect().unwrap();
+        let y_d = y_.clone().collect().unwrap();
+        Self {
             x: x_.clone(),
             y: y_.clone(),
             n: d_.height(),
@@ -40,7 +40,7 @@ impl Preprocessor{
         }
     }
 
-    fn extract_x_nd_y(d: LazyFrame) -> (LazyFrame, LazyFrame){
+    fn extract_x_nd_y(d: LazyFrame) -> (LazyFrame, LazyFrame) {
         let x=d.clone().select([
             col(
                 PlSmallStr::from("^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$")
@@ -50,43 +50,54 @@ impl Preprocessor{
             names: Arc::new([PlSmallStr::from_str("in.sqft")]),
             strict: true
         });
-        let y=d.clone().select([
-            col(
-                PlSmallStr::from("^out.electricity.*..kwh$")
-            )]);
-        (x,y)
+        let y = d
+            .clone()
+            .select([col(PlSmallStr::from("^out.electricity.*..kwh$"))]);
+        (x, y)
     }
 
-    fn extract_labels(d: LazyFrame) -> Vec<String>{
-          d.clone().collect_schema(
-          ).unwrap().iter_names().map(
-                |x| x.as_str().to_string()
-            ).collect::<Vec<String>>()
+    fn extract_labels(d: LazyFrame) -> Vec<String> {
+        d.clone()
+            .collect_schema()
+            .unwrap()
+            .iter_names()
+            .map(|x| x.as_str().to_string())
+            .collect::<Vec<String>>()
     }
 
-    pub fn split_x_y(&self)-> (LazyFrame, LazyFrame, LazyFrame, LazyFrame){
-        let x_test_n=self.x_n as f32 * self.test_size;
-        let x_train_n=self.x_n as f32 - x_test_n;
+    pub fn split_x_y(&self) -> (LazyFrame, LazyFrame, LazyFrame, LazyFrame) {
+        let x_test_n = self.x_n as f32 * self.test_size;
+        let x_train_n = self.x_n as f32 - x_test_n;
 
-        let y_test_n=self.y_n as f32 * self.test_size;
-        let y_train_n=self.y_n as f32 - y_test_n;
+        let y_test_n = self.y_n as f32 * self.test_size;
+        let y_train_n = self.y_n as f32 - y_test_n;
 
-        let (x_train, x_test)=Self::splitting(self.x.clone(), self.x_n, x_train_n);
-        let (y_train, y_test)=Self::splitting(self.y.clone(), self.y_n, y_train_n);
+        let (x_train, x_test) = Self::splitting(self.x.clone(), self.x_n, x_train_n);
+        let (y_train, y_test) = Self::splitting(self.y.clone(), self.y_n, y_train_n);
 
         (x_train, x_test, y_train, y_test)
     }
 
-    fn splitting(d: LazyFrame,n: usize, x_n: f32) -> (LazyFrame, LazyFrame){
-        let mut arr: Vec<u32>= (0..n as u32).collect();
-        let seed_rng=&mut <SmallRng as SeedableRng>::seed_from_u64(42);
+    fn splitting(d: LazyFrame, n: usize, x_n: f32) -> (LazyFrame, LazyFrame) {
+        let mut arr: Vec<u32> = (0..n as u32).collect();
+        let seed_rng = &mut <SmallRng as SeedableRng>::seed_from_u64(42);
         arr.shuffle(seed_rng);
-        let train_arr=&arr[..x_n as usize];
-        let test_arr=&arr[x_n as usize..];
-        let t=ChunkedArray::from_slice("new".into(), test_arr);
-        let r=ChunkedArray::from_slice("new".into(), train_arr);
-        let test_t=d.clone().collect().unwrap().take(&t).expect("error fetching the testing data");
-        let train_t=d.clone().collect().unwrap().take(&r).expect("error fetching the training data");
+        let train_arr = &arr[..x_n as usize];
+        let test_arr = &arr[x_n as usize..];
+        let t = ChunkedArray::from_slice("new".into(), test_arr);
+        let r = ChunkedArray::from_slice("new".into(), train_arr);
+        let test_t = d
+            .clone()
+            .collect()
+            .unwrap()
+            .take(&t)
+            .expect("error fetching the testing data");
+        let train_t = d
+            .clone()
+            .collect()
+            .unwrap()
+            .take(&r)
+            .expect("error fetching the training data");
         (train_t.lazy(), test_t.lazy())
     }
 
