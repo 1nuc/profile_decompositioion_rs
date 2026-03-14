@@ -79,7 +79,7 @@ impl Xgb {
             .build()
             .unwrap()
     }
-    pub fn train(&mut self) -> &Self {
+    pub fn train(&mut self) -> &mut Self {
         let param = self.set_training_param();
         self.booster.push(Booster::train(&param).unwrap());
         self
@@ -96,13 +96,13 @@ impl Xgb {
         println!("{:?}", metric);
     }
 
-    pub fn r2_score(&self) -> f32 {
+    pub fn r2_score(&self,preds: Vec<f32>) -> f32 {
         //1- Total sum of residuals / total sum of squares
         let y_true = self.d_test.get_labels().unwrap();
         let mean = y_true.iter().sum::<f32>() / y_true.len() as f32;
         let total_sum_residuals = y_true
             .iter()
-            .zip(self.preds.iter())
+            .zip(preds.iter())
             .map(|(x, y)| (x - y).powi(2))
             .sum::<f32>();
         let total_sum_squares = y_true.iter().map(|x| (x - mean).powi(2)).sum::<f32>();
@@ -132,7 +132,7 @@ impl Xgb {
                 .select([col(PlSmallStr::from_string(column.clone()))]);
             self.set_y_train(y_train.to_1d_vec())
                 .set_y_test(y_test.to_1d_vec());
-            let r2 = self.train().predict().r2_score();
+            // let r2 = self.train().predict().r2_score();
             r2_score.push(r2);
         }
         r2_score
