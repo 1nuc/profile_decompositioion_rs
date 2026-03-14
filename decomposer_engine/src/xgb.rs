@@ -70,7 +70,7 @@ impl Xgb {
             .unwrap()
     }
 
-    pub fn set_training_param<'a>(&'a mut self) -> TrainingParameters<'a> {
+    pub fn set_training_param<'a>(&'a self) -> TrainingParameters<'a> {
         let booster_param = Self::set_booster_param();
         TrainingParametersBuilder::default()
             .dtrain(&self.d_train)
@@ -79,14 +79,14 @@ impl Xgb {
             .build()
             .unwrap()
     }
-    pub fn train(&mut self) -> &mut Self {
+    pub fn train_(&mut self) -> &mut Self {
         let param = self.set_training_param();
-        self.booster.push(Booster::train(&param).unwrap());
+        self.booster.push(Booster::train(&param).unwrap()).to_owned();
         self
     }
     
 
-    pub fn predict(&mut self,booster: Booster) -> &Self{
+    pub fn predict(&mut self, booster: &Booster) -> &Self{
         self.preds.push(booster.predict(&self.d_test).unwrap());
         self
     }
@@ -110,31 +110,23 @@ impl Xgb {
         1_f32 - (total_sum_residuals / total_sum_squares)
     }
 
-    pub fn apply_modelling(&mut self, y_train: LazyFrame, y_test: LazyFrame) -> Vec<f32> {
-        let mut cols = y_train
-            .clone()
-            .collect_schema()
-            .unwrap()
-            .iter_names()
-            .map(|x| x.as_str().to_string())
-            .collect::<Vec<String>>();
-
-        let mut r2_score = Vec::new();
+    pub fn train(&mut self, y_train: LazyFrame, y_test: LazyFrame){
         // loop through the columns
         // if the index is 0 train the first column
         // if the index is not zero containue updating the model
-        while let Some(column) = cols.pop() {
+        let mut cols = y_train.return_cols();
+        let mut r2_score = Vec::new();
+        cols.iter().map(|x|{
             let y_train = y_train
                 .clone()
-                .select([col(PlSmallStr::from_string(column.clone()))]);
+                .select([col(PlSmallStr::from_string(x.clone()))]);
             let y_test = y_test
                 .clone()
-                .select([col(PlSmallStr::from_string(column.clone()))]);
+                .select([col(PlSmallStr::from_string(x.clone()))]);
             self.set_y_train(y_train.to_1d_vec())
                 .set_y_test(y_test.to_1d_vec());
-            // let r2 = self.train().predict().r2_score();
-            r2_score.push(r2);
-        }
-        r2_score
+            let  _= self.train_();
+            self.booster.iter().map(|x| self.predict(x)).collect();
+        });
     }
 }

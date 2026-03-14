@@ -15,6 +15,8 @@ pub trait Actions {
 
     fn feature_selection(&self) -> Self;
 
+    fn return_cols(&self)-> Vec<String>;
+
     fn categorical_cols(&mut self) -> Vec<Expr>;
 
     fn encode_categoricals(&mut self) -> Self;

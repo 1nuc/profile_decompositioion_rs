@@ -105,6 +105,14 @@ impl Actions for LazyFrame {
                 PlSmallStr::from("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$"))])
     }
 
+    fn return_cols(&self)-> Vec<String>{
+        self.clone()
+            .collect_schema()
+            .unwrap()
+            .iter_names()
+            .map(|x| x.as_str().to_string())
+            .collect::<Vec<String>>()
+    }
     // Extracting the categorical columns
     fn categorical_cols(&mut self) -> Vec<Expr> {
         self.collect_schema()
