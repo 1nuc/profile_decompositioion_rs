@@ -111,8 +111,8 @@ impl Xgb {
         // loop through the columns
         // if the index is 0 train the first column
         // if the index is not zero containue updating the model
-        let mut cols = y_train.return_cols();
-        cols.iter().map(|x|{
+        let cols = y_train.return_cols();
+        cols.iter().for_each(|x|{
             let y_train = y_train
                 .clone()
                 .select([col(PlSmallStr::from_string(x.clone()))]);
