@@ -15,8 +15,8 @@ use xgboost::{
 pub struct Xgb {
     pub d_train: DMatrix,
     pub d_test: DMatrix,
-    pub booster: Booster,
-    pub preds: Vec<f32>,
+    pub booster: Vec<Booster>,
+    pub preds: Vec<Vec<f32>>,
 }
 
 impl Xgb {
@@ -24,7 +24,7 @@ impl Xgb {
         Self {
             d_train,
             d_test,
-            booster: Booster::new(&Self::set_booster_param()).unwrap(),
+            booster: vec![Booster::new(&Self::set_booster_param()).unwrap()],
             preds: Vec::new(),
         }
     }
@@ -79,24 +79,23 @@ impl Xgb {
             .build()
             .unwrap()
     }
-    pub fn train(&mut self) -> &mut Self {
+    pub fn train(&mut self) -> &Self {
         let param = self.set_training_param();
-        self.booster = Booster::train(&param).unwrap();
+        self.booster.push(Booster::train(&param).unwrap());
         self
     }
-    pub fn update(&mut self) -> &mut Self {
-        self.booster.update(&self.d_train, 100).unwrap();
+    
+
+    pub fn predict(&mut self,booster: Booster) -> &Self{
+        self.preds.push(booster.predict(&self.d_test).unwrap());
         self
     }
 
-    pub fn predict(&mut self) -> &mut Self {
-        self.preds = self.booster.predict(&self.d_test).unwrap();
-        self
-    }
-    pub fn evaluation(&mut self) {
-        let metric = self.booster.evaluate(&self.d_test).unwrap();
+    pub fn evaluation(&self, booster: Booster) {
+        let metric = booster.evaluate(&self.d_test).unwrap();
         println!("{:?}", metric);
     }
+
     pub fn r2_score(&self) -> f32 {
         //1- Total sum of residuals / total sum of squares
         let y_true = self.d_test.get_labels().unwrap();
