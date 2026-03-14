@@ -48,7 +48,7 @@ impl Xgb {
         TreeBoosterParametersBuilder::default()
             .eta(0.1)
             .subsample(0.7)
-            .tree_method(TreeMethod::Hist)
+            .tree_method(TreeMethod::GpuHist)
             .build()
             .unwrap()
     }
@@ -83,12 +83,11 @@ impl Xgb {
     }
     pub fn modelling(&mut self) -> &mut Self {
         let param = self.set_training_param();
-        let boost=Arc::new(Booster::train(&param).unwrap());
-        let boost_clone=Arc::clone(&boost);
-        self.booster.push(Arc::into_inner(boost).unwrap());
-        let preds=boost_clone.predict(&self.d_test).unwrap();
+        let boost=Booster::train(&param).unwrap();
+        let preds=boost.predict(&self.d_test).unwrap();
         self.preds.push(preds.clone());
         self.metric(preds);
+        self.booster.push(boost);
         self
     }
 
@@ -132,7 +131,8 @@ impl Xgb {
         self
     }
 
-    pub fn evaluate(&self){
-        let mean_r2=self.r2_score.iter().sum::<f32>() / self.r2_score.len() as f32;
+    pub fn evaluate(&self) -> f32{
+        self.r2_score.iter().sum::<f32>() /
+            self.r2_score.len() as f32
     }
 }

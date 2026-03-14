@@ -13,8 +13,7 @@ fn main() {
     let d_train=x_train.to_matrix(true);
     let d_test=x_test.to_matrix(true);
     let mut xgb=Xgb::new(d_train, d_test);
-    let r2=xgb.apply_modelling(y_train, y_test);
-    let mean=r2.iter().sum::<f32>() / r2.len() as f32;
+    let mean=xgb.train(y_train, y_test).evaluate();
     println!("r2 is: {:?}", mean);
 }
 
