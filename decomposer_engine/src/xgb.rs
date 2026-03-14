@@ -17,6 +17,7 @@ pub struct Xgb {
     pub d_test: DMatrix,
     pub booster: Vec<Booster>,
     pub preds: Vec<Vec<f32>>,
+    pub r2_score: Vec<f32>,
 }
 
 impl Xgb {
@@ -26,6 +27,7 @@ impl Xgb {
             d_test,
             booster: vec![Booster::new(&Self::set_booster_param()).unwrap()],
             preds: Vec::new(),
+            r2_score: Vec::new(),
         }
     }
     pub fn set_y_train(&mut self, d: Vec<f32>) -> &mut Self {
@@ -84,18 +86,22 @@ impl Xgb {
         let boost=Arc::new(Booster::train(&param).unwrap());
         let boost_clone=Arc::clone(&boost);
         self.booster.push(Arc::into_inner(boost).unwrap());
-        self.preds.push(boost_clone.predict(&self.d_test).unwrap());
+        let preds=boost_clone.predict(&self.d_test).unwrap();
+        self.preds.push(preds.clone());
+        self.evaluate(preds);
         self
     }
 
-    pub fn evaluation(&self, booster: Booster) {
-        let metric = booster.evaluate(&self.d_test).unwrap();
-        println!("{:?}", metric);
+    pub fn evaluate(&mut self, preds:Vec<f32>) {
+        self.r2_score.push(
+            Self::r2_score(
+                preds,
+                self.d_test.get_labels().unwrap().to_vec())
+            );
     }
 
-    pub fn r2_score(&self,preds: Vec<f32>) -> f32 {
+    pub fn r2_score(preds: Vec<f32>, y_true: Vec<f32>) -> f32 {
         //1- Total sum of residuals / total sum of squares
-        let y_true = self.d_test.get_labels().unwrap();
         let mean = y_true.iter().sum::<f32>() / y_true.len() as f32;
         let total_sum_residuals = y_true
             .iter()
@@ -107,7 +113,7 @@ impl Xgb {
         1_f32 - (total_sum_residuals / total_sum_squares)
     }
 
-    pub fn train(&mut self, y_train: LazyFrame, y_test: LazyFrame){
+    pub fn train(&mut self, y_train: LazyFrame, y_test: LazyFrame) -> &Self{
         // loop through the columns
         // if the index is 0 train the first column
         // if the index is not zero containue updating the model
@@ -123,5 +129,6 @@ impl Xgb {
                 .set_y_test(y_test.to_1d_vec());
             self.modelling();
         });
+        self
     }
 }
