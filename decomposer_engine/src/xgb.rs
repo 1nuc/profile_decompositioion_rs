@@ -88,11 +88,11 @@ impl Xgb {
         self.booster.push(Arc::into_inner(boost).unwrap());
         let preds=boost_clone.predict(&self.d_test).unwrap();
         self.preds.push(preds.clone());
-        self.evaluate(preds);
+        self.metric(preds);
         self
     }
 
-    pub fn evaluate(&mut self, preds:Vec<f32>) {
+    pub fn metric(&mut self, preds:Vec<f32>) {
         self.r2_score.push(
             Self::r2_score(
                 preds,
@@ -130,5 +130,9 @@ impl Xgb {
             self.modelling();
         });
         self
+    }
+
+    pub fn evaluate(&self){
+        let mean_r2=self.r2_score.iter().sum::<f32>() / self.r2_score.len() as f32;
     }
 }
