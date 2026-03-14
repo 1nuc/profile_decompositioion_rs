@@ -79,15 +79,12 @@ impl Xgb {
             .build()
             .unwrap()
     }
-    pub fn train_(&mut self) -> &mut Self {
+    pub fn modelling(&mut self) -> &mut Self {
         let param = self.set_training_param();
-        self.booster.push(Booster::train(&param).unwrap()).to_owned();
-        self
-    }
-    
-
-    pub fn predict(&mut self, booster: &Booster) -> &Self{
-        self.preds.push(booster.predict(&self.d_test).unwrap());
+        let boost=Arc::new(Booster::train(&param).unwrap());
+        let boost_clone=Arc::clone(&boost);
+        self.booster.push(Arc::into_inner(boost).unwrap());
+        self.preds.push(boost_clone.predict(&self.d_test).unwrap());
         self
     }
 
@@ -115,7 +112,6 @@ impl Xgb {
         // if the index is 0 train the first column
         // if the index is not zero containue updating the model
         let mut cols = y_train.return_cols();
-        let mut r2_score = Vec::new();
         cols.iter().map(|x|{
             let y_train = y_train
                 .clone()
@@ -125,8 +121,7 @@ impl Xgb {
                 .select([col(PlSmallStr::from_string(x.clone()))]);
             self.set_y_train(y_train.to_1d_vec())
                 .set_y_test(y_test.to_1d_vec());
-            let  _= self.train_();
-            self.booster.iter().map(|x| self.predict(x)).collect();
+            self.modelling();
         });
     }
 }
