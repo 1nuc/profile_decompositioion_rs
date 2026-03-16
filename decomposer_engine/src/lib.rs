@@ -2,6 +2,7 @@ use ndarray::Array2;
 use polars::prelude::*;
 use xgboost::DMatrix;
 
+pub mod lstm;
 pub mod data_engine;
 pub mod preprocessor_engine;
 pub mod xgb;
