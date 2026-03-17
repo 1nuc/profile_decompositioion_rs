@@ -1,4 +1,4 @@
-use burn::{backend::{Autodiff, Wgpu}, config::Config, data::dataloader::DataLoaderBuilder, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, train::SupervisedTraining, *};
+use burn::{backend::{Autodiff, Wgpu}, config::Config, data::dataloader::DataLoaderBuilder, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, train::{Learner, SupervisedTraining}, *};
 use polars::prelude::last;
 
 use crate::{Actions, data_engine::Nrel, preprocessor_engine::Preprocessor};
@@ -16,7 +16,7 @@ impl<B: Backend> Mybatcher<B> {
 }
 
 #[derive(Config, Debug)]
-struct NucLstmConfig{
+pub struct NucLstmConfig{
     input_size: usize,
     output_size: usize,
     hidden_size: usize,
@@ -48,18 +48,18 @@ impl <B: Backend>NucLstm<B>{
         self.output_model.forward(last_output)
     }
     fn train(){
-        let Mybackend=Wgpu<f32, i32>;
+        type Mybackend=Wgpu<f32, i32>;
         let data_source=Nrel::init();
         let mut data=data_source.data;
         let encoded_data=data.encode_categoricals();
         let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
         let (mut x_train, mut x_test, mut y_train, y_test)=preprocessor.split_x_y();
         let device=Default::default();
-        let tensor_train=Tensor::<B,2>::from_data(x_train.to_ndarry().as_slice().unwrap(), &device);
-        let tensor_test=Tensor::<B,2>::from_data(x_test.to_ndarry().as_slice().unwrap(), &device);
-        let batcher=Mybatcher<Mybackend>::new();
-        let train_batcher=DataLoaderBuilder::new(batcher).batch_size(32).num_workers(4).build(tensor_train);
-        let test_batcher=DataLoaderBuilder::new(batcher).batch_size(32).num_workers(4).build(tensor_test);
-        let config=SupervisedTraining::new("artifact_dir/", , dataloader_valid)
+        let tensor_train=Tensor::<Mybackend,2>::from_data(x_train.to_ndarry().as_slice().unwrap(), &device);
+        let tensor_test=Tensor::<Mybackend,2>::from_data(x_test.to_ndarry().as_slice().unwrap(), &device);
+        let model=NucLstmConfig::new(preprocessor.x_labels_size, preprocessor.y_labels_size, 20, 2, 0.0).init::<Mybackend>(device.clone());
+        for i in 0..50{
+           let preds=model.forward(tensor_train); 
+        }
     }
 }
