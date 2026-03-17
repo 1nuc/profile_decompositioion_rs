@@ -2,8 +2,8 @@ use ndarray::Array2;
 use polars::prelude::*;
 use xgboost::DMatrix;
 
-pub mod lstm;
 pub mod data_engine;
+pub mod lstm;
 pub mod preprocessor_engine;
 pub mod xgb;
 
@@ -16,7 +16,7 @@ pub trait Actions {
 
     fn feature_selection(&self) -> Self;
 
-    fn return_cols(&self)-> Vec<String>;
+    fn return_cols(&self) -> Vec<String>;
 
     fn categorical_cols(&mut self) -> Vec<Expr>;
 

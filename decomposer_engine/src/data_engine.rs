@@ -105,7 +105,7 @@ impl Actions for LazyFrame {
                 PlSmallStr::from("^out.electricity.*|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$"))])
     }
 
-    fn return_cols(&self)-> Vec<String>{
+    fn return_cols(&self) -> Vec<String> {
         self.clone()
             .collect_schema()
             .unwrap()
@@ -173,7 +173,7 @@ impl Actions for LazyFrame {
         array_d.into_raw_vec_and_offset().0
     }
     fn to_matrix(&mut self, with_scalar: bool) -> DMatrix {
-        let data=if with_scalar {
+        let data = if with_scalar {
             self.standard_scalar().to_1d_vec()
         } else {
             self.to_1d_vec()

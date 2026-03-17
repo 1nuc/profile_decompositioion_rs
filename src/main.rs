@@ -8,10 +8,11 @@ fn main() {
     let encoded_data=data.encode_categoricals();
     let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
     let (mut x_train, mut x_test, mut y_train, y_test)=preprocessor.split_x_y();
-    let d_train=x_train.to_matrix(true);
-    let d_test=x_test.to_matrix(true);
-    let mut xgb=Xgb::new(d_train, d_test);
-    let mean=xgb.train(y_train, y_test).evaluate();
-    println!("r2 is: {:?}", mean);
+    println!("{:?}", x_train.to_2d_vec().as_slice()[0][2]);
+    // let d_train=x_train.to_matrix(true);
+    // let d_test=x_test.to_matrix(true);
+    // let mut xgb=Xgb::new(d_train, d_test);
+    // let mean=xgb.train(y_train, y_test).evaluate();
+    // println!("r2 is: {:?}", mean);
 }
 

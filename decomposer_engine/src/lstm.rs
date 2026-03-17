@@ -1,5 +1,19 @@
-use burn::{config::Config, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, prelude::Backend, *};
+use burn::{backend::{Autodiff, Wgpu}, config::Config, data::dataloader::DataLoaderBuilder, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, train::SupervisedTraining, *};
 use polars::prelude::last;
+
+use crate::{Actions, data_engine::Nrel, preprocessor_engine::Preprocessor};
+
+#[derive(Clone)]
+
+pub struct Mybatcher<B: Backend> {
+    device: B::Device,
+}
+
+impl<B: Backend> Mybatcher<B> {
+    pub fn new(device: B::Device) -> Self {
+        Self { device }
+    }
+}
 
 #[derive(Config, Debug)]
 struct NucLstmConfig{
@@ -32,5 +46,20 @@ impl <B: Backend>NucLstm<B>{
         let [batch_size, seq_length, hidden_size]=output.dims();
         let last_output=output.narrow(1, seq_length-1, 1).reshape([batch_size, hidden_size]);
         self.output_model.forward(last_output)
+    }
+    fn train(){
+        let Mybackend=Wgpu<f32, i32>;
+        let data_source=Nrel::init();
+        let mut data=data_source.data;
+        let encoded_data=data.encode_categoricals();
+        let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
+        let (mut x_train, mut x_test, mut y_train, y_test)=preprocessor.split_x_y();
+        let device=Default::default();
+        let tensor_train=Tensor::<B,2>::from_data(x_train.to_ndarry().as_slice().unwrap(), &device);
+        let tensor_test=Tensor::<B,2>::from_data(x_test.to_ndarry().as_slice().unwrap(), &device);
+        let batcher=Mybatcher<Mybackend>::new();
+        let train_batcher=DataLoaderBuilder::new(batcher).batch_size(32).num_workers(4).build(tensor_train);
+        let test_batcher=DataLoaderBuilder::new(batcher).batch_size(32).num_workers(4).build(tensor_test);
+        let config=SupervisedTraining::new("artifact_dir/", , dataloader_valid)
     }
 }
