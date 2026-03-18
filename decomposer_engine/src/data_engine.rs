@@ -128,6 +128,19 @@ impl Actions for LazyFrame {
             .collect::<Vec<Expr>>()
     }
 
+    fn return_time_sequenced(&self) -> Self{
+        let options=DynamicGroupOptions{
+            index_column: PlSmallStr::from_str("timestamp"),
+            every: Duration::parse("1d"),
+            period: Duration::parse("1d"),
+            offset: Duration::parse("1d"),
+            ..Default::default()
+        };
+        self.clone().sort(
+            vec![PlSmallStr::from_str("timestamp")], Default::default()
+            ).group_by_dynamic(col("timestamp"), [], options).agg([col("*")])
+    }
+
     // Encode categorical columns in the data to UInt32 Type
     fn encode_categoricals(&mut self) -> Self {
         let cols = self.categorical_cols();
