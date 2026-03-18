@@ -70,7 +70,7 @@ impl Actions for LazyFrame {
                 .otherwise(lit("No"))
                 .alias("IsWeekend")
                 .cast_to_categorical(),
-                col("timestamp").dt().timestamp(TimeUnit::Milliseconds),
+                col("timestamp").cast(DataType::Datetime(TimeUnit::Milliseconds, Some(TimeZone::UTC)))
             ])
     }
 
