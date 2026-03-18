@@ -83,15 +83,15 @@ impl Preprocessor {
         let y_test_n = self.y_n as f32 * self.test_size;
         let y_train_n = self.y_n as f32 - y_test_n;
 
-        let (x_train, x_test) = Self::splitting(self.x.clone(), self.x_n, x_train_n);
-        let (y_train, y_test) = Self::splitting(self.y.clone(), self.y_n, y_train_n);
+        let (x_train, x_test) = self.splitting(self.x.clone(), self.x_n, x_train_n);
+        let (y_train, y_test) = self.splitting(self.y.clone(), self.y_n, y_train_n);
 
         (x_train, x_test, y_train, y_test)
     }
 
-    fn splitting(d: LazyFrame, n: usize, x_n: f32) -> (LazyFrame, LazyFrame) {
+    fn splitting(&self,d: LazyFrame, n: usize, x_n: f32) -> (LazyFrame, LazyFrame) {
         let mut arr: Vec<u32> = (0..n as u32).collect();
-        let seed_rng = &mut <SmallRng as SeedableRng>::seed_from_u64(42);
+        let seed_rng = &mut <SmallRng as SeedableRng>::seed_from_u64(self.rnd_state);
         arr.shuffle(seed_rng);
         let train_arr = &arr[..x_n as usize];
         let test_arr = &arr[x_n as usize..];
