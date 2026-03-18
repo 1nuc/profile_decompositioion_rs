@@ -33,6 +33,8 @@ pub trait Actions {
     fn to_1d_vec(&self) -> Vec<f32>;
 
     fn to_matrix(&mut self, with_scalar: bool) -> DMatrix;
+
+    fn return_time_sequenced(&self) -> Self;
 }
 
 trait ExpressionActions {
