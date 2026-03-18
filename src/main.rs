@@ -6,7 +6,17 @@ fn main() {
     let data_source=Nrel::init();
     let mut data=data_source.data;
     let encoded_data=data.encode_categoricals();
-    // let a= encoded_data.();
+    let options=DynamicGroupOptions{
+        index_column: PlSmallStr::from_str("timestamp"),
+        every: Duration::parse("1d"),
+        period: Duration::parse("1d"),
+        offset: Duration::parse("1d"),
+        ..Default::default()
+    };
+    let a= encoded_data.sort(
+        vec![PlSmallStr::from_str("timestamp")], Default::default()
+        ).group_by_dynamic(col("timestamp"), [], options).agg([col("*")]).collect().unwrap();
+    println!("{:?}", a);
 
     // let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
     
