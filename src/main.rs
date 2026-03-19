@@ -6,7 +6,9 @@ fn main() {
     let data_source=Nrel::init();
     let mut data=data_source.data;
     let encoded_data=data.encode_categoricals().return_time_sequenced();
-    println!("{:?}", encoded_data.collect().unwrap().select_sequence());
+    let d=encoded_data.collect().unwrap();
+    let cols=d.return_x_columns();
+    println!("{:?}", d.select_sequence(cols).get_column_names());
     // let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
     // let (mut x_train, mut x_test, mut y_train, y_test)=preprocessor.split_x_y();
     // let d_train=x_train.to_matrix(true);

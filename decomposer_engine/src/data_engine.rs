@@ -2,6 +2,7 @@ use crate::{Actions, EagerActions, ExpressionActions};
 use ndarray::Array2;
 use polars::prelude::*;
 use xgboost::DMatrix;
+use regex::Regex;
 
 pub struct Nrel {
     pub data: LazyFrame,
@@ -211,13 +212,25 @@ impl ExpressionActions for Expr {
 }
 impl EagerActions for DataFrame{
     
-    fn select_sequence(&self)-> Self{
-        self.clone().select([
-            PlSmallStr::from("^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$")
-           ,PlSmallStr::from("out.electricity.total.energy_consumption..kwh")
-        ]).expect("Columns do not exist").drop("in.sqft").expect("Error dropping unnecessary columns")
+    fn select_sequence(&self, cols: Vec<&str>, is_x: bool)-> Self{
+        self.clone().select(
+            cols
+        ).expect("Columns do not exist").drop("in.sqft").expect("Error dropping unnecessary columns")
     }
 
+    fn return_x_columns(&self)->Vec<&str>{
+        let pattern=Regex::new("^out.electricity.total.energy_consumption..kwh|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$").unwrap();
+        self.get_column_names().iter().map(
+            |x| x.as_str()
+            ).filter(|x| pattern.is_match(x)).collect::<Vec<&str>>()
+    }
+
+    fn return_y_columns(&self)->Vec<&str> {
+        let pattern=Regex::new("^out.electricity.*..kwh$").unwrap();
+        self.get_column_names().iter().map(
+            |x| x.as_str()
+            ).filter(|x| pattern.is_match(x)).collect::<Vec<&str>>()
+    }
 }
 
 #[cfg(test)]

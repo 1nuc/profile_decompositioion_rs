@@ -9,7 +9,11 @@ pub mod xgb;
 
 pub trait EagerActions{
 
-    fn select_sequence(&self)-> Self;
+    fn select_sequence(&self, cols: Vec<&str>, is_x: bool)-> Self;
+
+    fn return_x_columns(&self)->Vec<&str>;
+
+    fn return_y_columns(&self)->Vec<&str>;
 }
 pub trait Actions {
     fn rename_cols(&self) -> Self;
