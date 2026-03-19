@@ -213,9 +213,23 @@ impl ExpressionActions for Expr {
 impl EagerActions for DataFrame{
     
     fn select_sequence(&self, cols: Vec<&str>, is_x: bool)-> Self{
-        self.clone().select(
-            cols
-        ).expect("Columns do not exist").drop("in.sqft").expect("Error dropping unnecessary columns")
+        if is_x{
+            self.clone().select(
+                cols
+            ).expect("Columns do not exist").drop("in.sqft").expect("Error dropping unnecessary columns")
+        }
+        else{
+            self.clone().select(
+                cols
+            ).expect("Columns do not exist").drop_many([
+                "out.electricity.total.energy_consumption..kwh",
+                "out.electricity.net.energy_consumption..kwh",
+                "out.electricity.pv.energy_consumption..kwh",
+                "out.electricity.pool_heater.energy_consumption..kwh",
+                "out.electricity.hot_water_solar_th.energy_consumption..kwh",
+                "out.electricity.ev_charging.energy_consumption..kwh",
+            ])
+        }
     }
 
     fn return_x_columns(&self)->Vec<&str>{
