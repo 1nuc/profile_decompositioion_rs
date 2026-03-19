@@ -1,5 +1,5 @@
 use crate::{Actions, EagerActions, ExpressionActions};
-use ndarray::Array2;
+use ndarray::{Array2, Data};
 use polars::prelude::*;
 use xgboost::DMatrix;
 use regex::Regex;
@@ -142,8 +142,8 @@ impl Actions for LazyFrame {
         };
         self.clone()
             .sort(vec![PlSmallStr::from_str("timestamp")], Default::default())
-            .group_by_dynamic(col("timestamp"), [], options)
-            .agg([col("*")]).with_columns([col("timestamp").dt().timestamp(TimeUnit::Milliseconds)])
+            .group_by_dynamic(col("timestamp"), [col("bldg_id")], options)
+            .agg([col("*").cast(DataType::Float32), len().alias("count")]).with_columns([col("timestamp").dt().timestamp(TimeUnit::Milliseconds)])
     }
 
     // Encode categorical columns in the data to UInt32 Type
