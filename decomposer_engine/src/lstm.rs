@@ -1,6 +1,6 @@
 use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::Batcher}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining}, *};
-use polars::{frame::DataFrame, prelude::{AnyValue, last}};
-use crate::{Actions, data_engine::Nrel, preprocessor_engine::Preprocessor};
+use polars::{frame::{DataFrame, row::Row}, prelude::{AnyValue, last}};
+use crate::{Actions, EagerActions, data_engine::Nrel, preprocessor_engine::Preprocessor};
 
 
 //TODO: Create Nrel Dataset struct and perform the get and len operation (implement Dataset trait)
@@ -10,19 +10,37 @@ use crate::{Actions, data_engine::Nrel, preprocessor_engine::Preprocessor};
 //TODO: Use config values for the preprocessor to separate x and y in this code
 //TODO: Make separate methods to split the data to first traint and test then here in this code
 //split them manually to x and y by calling the functions
-pub struct NrelDatasetItem<'a>{
-    sequence: Vec<AnyValue<'a>>,
-    target: Vec<AnyValue<'a>>,
+pub struct NrelDatasetItem{
+    sequence_item: Row<'static>,
+    target_item: Row<'static>,
 }
 pub struct NrelDataset{
-    dataset: DataFrame,
+    sequence: DataFrame,
+    target: DataFrame,
 }
-// impl Dataset<NrelDatasetItem<'a>> for NrelDataset{
-//     fn get(&self, index: usize) -> Option<NrelDatasetItem<'a>> {
-//
+impl NrelDataset{
+    fn new(dataset: DataFrame, x_cols: Vec<&str>, y_cols: Vec<&str>) -> Self{
+        Self{
+            sequence: dataset.clone().select_sequence(x_cols, true),
+            target: dataset.clone().select_sequence(y_cols, false),
+        }
+    }
+}
+
+// impl Dataset<NrelDatasetItem> for NrelDataset{
+//     fn get(&self, index: usize) -> Option<NrelDatasetItem> {
+//         Some(NrelDatasetItem{
+//            sequence_item: self.sequence
+//                .get_row(index)
+//                .unwrap(),
+//            target_item: self.target
+//                .get_row(index)
+//                .unwrap().into(),
+//         })
 //     }
-//     fn len(&self) -> usize {
 //
+//     fn len(&self) -> usize {
+//         self.sequence.height()
 //     }
 //
 // }
