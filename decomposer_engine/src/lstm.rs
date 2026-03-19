@@ -1,19 +1,7 @@
 use burn::{backend::{Autodiff, Wgpu}, config::Config, data::dataloader::{DataLoaderBuilder, batcher::Batcher}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining}, *};
 use polars::prelude::last;
-
 use crate::{Actions, data_engine::Nrel, preprocessor_engine::Preprocessor};
 
-#[derive(Clone)]
-
-pub struct Mybatcher<B: Backend> {
-    device: B::Device,
-}
-
-impl<B: Backend> Mybatcher<B> {
-    pub fn new(device: B::Device) -> Self {
-        Self { device }
-    }
-}
 
 #[derive(Config, Debug)]
 pub struct NucLstmConfig{
@@ -35,7 +23,7 @@ impl NucLstmConfig{
 }
 
 #[derive(Module, Debug)]
-pub struct NucLstm<B :Backend> {
+pub struct NucLstm<B :Backend>{
     model: Lstm<B>,
     output_model: Linear<B>,
 }
