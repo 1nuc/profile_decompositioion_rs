@@ -70,7 +70,10 @@ impl Actions for LazyFrame {
                 .otherwise(lit("No"))
                 .alias("IsWeekend")
                 .cast_to_categorical(),
-                col("timestamp").cast(DataType::Datetime(TimeUnit::Milliseconds, Some(TimeZone::UTC)))
+                col("timestamp").cast(DataType::Datetime(
+                    TimeUnit::Milliseconds,
+                    Some(TimeZone::UTC),
+                )),
             ])
     }
 
@@ -128,17 +131,18 @@ impl Actions for LazyFrame {
             .collect::<Vec<Expr>>()
     }
 
-    fn return_time_sequenced(&self) -> Self{
-        let options=DynamicGroupOptions{
+    fn return_time_sequenced(&self) -> Self {
+        let options = DynamicGroupOptions {
             index_column: PlSmallStr::from_str("timestamp"),
             every: Duration::parse("1d"),
             period: Duration::parse("1d"),
             offset: Duration::parse("1d"),
             ..Default::default()
         };
-        self.clone().sort(
-            vec![PlSmallStr::from_str("timestamp")], Default::default()
-            ).group_by_dynamic(col("timestamp"), [], options).agg([col("*")])
+        self.clone()
+            .sort(vec![PlSmallStr::from_str("timestamp")], Default::default())
+            .group_by_dynamic(col("timestamp"), [], options)
+            .agg([col("*")])
     }
 
     // Encode categorical columns in the data to UInt32 Type
@@ -148,7 +152,7 @@ impl Actions for LazyFrame {
             cols.iter()
                 .map(|x| x.clone().cast(DataType::UInt32))
                 .collect::<Vec<_>>(),
-        )
+        ).with_columns([col("timestamp").dt().timestamp(TimeUnit::Milliseconds)])
     }
 
     fn standard_scalar(&mut self) -> Self {
