@@ -1,7 +1,31 @@
-use burn::{backend::{Autodiff, Wgpu}, config::Config, data::dataloader::{DataLoaderBuilder, batcher::Batcher}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining}, *};
-use polars::prelude::last;
+use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::Batcher}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining}, *};
+use polars::{frame::DataFrame, prelude::{AnyValue, last}};
 use crate::{Actions, data_engine::Nrel, preprocessor_engine::Preprocessor};
 
+
+//TODO: Create Nrel Dataset struct and perform the get and len operation (implement Dataset trait)
+//TODO: Create the item struct that will be the output of the get method and the input for the batch
+//TODO: Create the batcher struct which will be the x and y 
+//TODO: the batcher will be a vector of the item struct 
+//TODO: Use config values for the preprocessor to separate x and y in this code
+//TODO: Make separate methods to split the data to first traint and test then here in this code
+//split them manually to x and y by calling the functions
+pub struct NrelDatasetItem<'a>{
+    sequence: Vec<AnyValue<'a>>,
+    target: Vec<AnyValue<'a>>,
+}
+pub struct NrelDataset{
+    dataset: DataFrame,
+}
+// impl Dataset<NrelDatasetItem<'a>> for NrelDataset{
+//     fn get(&self, index: usize) -> Option<NrelDatasetItem<'a>> {
+//
+//     }
+//     fn len(&self) -> usize {
+//
+//     }
+//
+// }
 
 #[derive(Config, Debug)]
 pub struct NucLstmConfig{

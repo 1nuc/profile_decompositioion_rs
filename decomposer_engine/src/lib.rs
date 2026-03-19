@@ -7,6 +7,10 @@ pub mod lstm;
 pub mod preprocessor_engine;
 pub mod xgb;
 
+pub trait EagerActions{
+
+    fn select_sequence(&self)-> Self;
+}
 pub trait Actions {
     fn rename_cols(&self) -> Self;
 
