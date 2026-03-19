@@ -15,8 +15,9 @@ use xgboost::{
 pub struct Xgb {
     pub d_train: DMatrix,
     pub d_test: DMatrix,
-    pub booster: Booster,
-    pub preds: Vec<f32>,
+    pub booster: Vec<Booster>,
+    pub preds: Vec<Vec<f32>>,
+    pub r2_score: Vec<f32>,
 }
 
 impl Xgb {
@@ -24,8 +25,9 @@ impl Xgb {
         Self {
             d_train,
             d_test,
-            booster: Booster::new(&Self::set_booster_param()).unwrap(),
+            booster: vec![Booster::new(&Self::set_booster_param()).unwrap()],
             preds: Vec::new(),
+            r2_score: Vec::new(),
         }
     }
     pub fn set_y_train(&mut self, d: Vec<f32>) -> &mut Self {
@@ -46,7 +48,7 @@ impl Xgb {
         TreeBoosterParametersBuilder::default()
             .eta(0.1)
             .subsample(0.7)
-            .tree_method(TreeMethod::Hist)
+            .tree_method(TreeMethod::GpuHist)
             .build()
             .unwrap()
     }
@@ -70,7 +72,7 @@ impl Xgb {
             .unwrap()
     }
 
-    pub fn set_training_param<'a>(&'a mut self) -> TrainingParameters<'a> {
+    pub fn set_training_param<'a>(&'a self) -> TrainingParameters<'a> {
         let booster_param = Self::set_booster_param();
         TrainingParametersBuilder::default()
             .dtrain(&self.d_train)
@@ -79,31 +81,29 @@ impl Xgb {
             .build()
             .unwrap()
     }
-    pub fn train(&mut self) -> &mut Self {
+    pub fn modelling(&mut self) -> &mut Self {
         let param = self.set_training_param();
-        self.booster = Booster::train(&param).unwrap();
-        self
-    }
-    pub fn update(&mut self) -> &mut Self {
-        self.booster.update(&self.d_train, 100).unwrap();
+        let boost = Booster::train(&param).unwrap();
+        let preds = boost.predict(&self.d_test).unwrap();
+        self.preds.push(preds.clone());
+        self.metric(preds);
+        self.booster.push(boost);
         self
     }
 
-    pub fn predict(&mut self) -> &mut Self {
-        self.preds = self.booster.predict(&self.d_test).unwrap();
-        self
+    pub fn metric(&mut self, preds: Vec<f32>) {
+        self.r2_score.push(Self::r2_score(
+            preds,
+            self.d_test.get_labels().unwrap().to_vec(),
+        ));
     }
-    pub fn evaluation(&mut self) {
-        let metric = self.booster.evaluate(&self.d_test).unwrap();
-        println!("{:?}", metric);
-    }
-    pub fn r2_score(&self) -> f32 {
+
+    pub fn r2_score(preds: Vec<f32>, y_true: Vec<f32>) -> f32 {
         //1- Total sum of residuals / total sum of squares
-        let y_true = self.d_test.get_labels().unwrap();
         let mean = y_true.iter().sum::<f32>() / y_true.len() as f32;
         let total_sum_residuals = y_true
             .iter()
-            .zip(self.preds.iter())
+            .zip(preds.iter())
             .map(|(x, y)| (x - y).powi(2))
             .sum::<f32>();
         let total_sum_squares = y_true.iter().map(|x| (x - mean).powi(2)).sum::<f32>();
@@ -111,31 +111,26 @@ impl Xgb {
         1_f32 - (total_sum_residuals / total_sum_squares)
     }
 
-    pub fn apply_modelling(&mut self, y_train: LazyFrame, y_test: LazyFrame) -> Vec<f32> {
-        let mut cols = y_train
-            .clone()
-            .collect_schema()
-            .unwrap()
-            .iter_names()
-            .map(|x| x.as_str().to_string())
-            .collect::<Vec<String>>();
-
-        let mut r2_score = Vec::new();
+    pub fn train(&mut self, y_train: LazyFrame, y_test: LazyFrame) -> &Self {
         // loop through the columns
         // if the index is 0 train the first column
         // if the index is not zero containue updating the model
-        while let Some(column) = cols.pop() {
+        let cols = y_train.return_cols();
+        cols.iter().for_each(|x| {
             let y_train = y_train
                 .clone()
-                .select([col(PlSmallStr::from_string(column.clone()))]);
+                .select([col(PlSmallStr::from_string(x.clone()))]);
             let y_test = y_test
                 .clone()
-                .select([col(PlSmallStr::from_string(column.clone()))]);
+                .select([col(PlSmallStr::from_string(x.clone()))]);
             self.set_y_train(y_train.to_1d_vec())
                 .set_y_test(y_test.to_1d_vec());
-            let r2 = self.train().predict().r2_score();
-            r2_score.push(r2);
-        }
-        r2_score
+            self.modelling();
+        });
+        self
+    }
+
+    pub fn evaluate(&self) -> f32 {
+        self.r2_score.iter().sum::<f32>() / self.r2_score.len() as f32
     }
 }
