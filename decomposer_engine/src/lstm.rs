@@ -18,14 +18,14 @@ pub struct NrelDataset{
     sequence: DataFrame,
     target: DataFrame,
 }
-impl NrelDataset{
-    fn new(dataset: DataFrame, x_cols: Vec<&str>, y_cols: Vec<&str>) -> Self{
-        Self{
-            sequence: dataset.clone().select_sequence(x_cols, true),
-            target: dataset.clone().select_sequence(y_cols, false),
-        }
-    }
-}
+// impl NrelDataset{
+//     fn new(dataset: DataFrame, x_cols: Vec<&str>, y_cols: Vec<&str>) -> Self{
+//         Self{
+//             sequence: dataset.clone().select_sequence(x_cols, true),
+//             target: dataset.clone().select_sequence(y_cols, false),
+//         }
+//     }
+// }
 
 // impl Dataset<NrelDatasetItem> for NrelDataset{
 //     fn get(&self, index: usize) -> Option<NrelDatasetItem> {
