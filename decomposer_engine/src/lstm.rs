@@ -11,8 +11,8 @@ use crate::{Actions, EagerActions, data_engine::Nrel, preprocessor_engine::Prepr
 //TODO: Make separate methods to split the data to first traint and test then here in this code
 //split them manually to x and y by calling the functions
 pub struct NrelDatasetItem{
-    sequence_item: Row<'static>,
-    target_item: Row<'static>,
+    sequence_item: Vec<Vec<f32>>,
+    target_item: Vec<Vec<f32>>,
 }
 pub struct NrelDataset{
     sequence: DataFrame,
@@ -32,7 +32,7 @@ impl NrelDataset{
 //         Some(NrelDatasetItem{
 //            sequence_item: self.sequence
 //                .get_row(index)
-//                .unwrap(),
+//                .unwrap().into(),
 //            target_item: self.target
 //                .get_row(index)
 //                .unwrap().into(),
@@ -43,7 +43,7 @@ impl NrelDataset{
 //         self.sequence.height()
 //     }
 //
-// }
+// // }
 
 #[derive(Config, Debug)]
 pub struct NucLstmConfig{
