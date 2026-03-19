@@ -1,4 +1,5 @@
 use decomposer_engine::{Actions, EagerActions, data_engine::*, lstm::*, preprocessor_engine::Preprocessor, xgb::Xgb}; 
+use ndarray::Array3;
 use polars::prelude::*;
 use tap::Conv;
 
@@ -10,8 +11,9 @@ fn main() {
     let cols=d.return_y_columns();
     let samples=d.height();
     let seq=d.column("count");
-    // let data=d.select_sequence(cols, false).to_ndarray::<Float32Type>(Default::default());
-    println!("{:?}", seq);
+    let data=d.select_sequence(cols.clone(), false).slice_par(0, 1).explode(cols.clone(), ExplodeOptions { empty_as_null: false, keep_nulls: false });
+
+    println!("{:?}", cols);
     // let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
     // let (mut x_train, mut x_test, mut y_train, y_test)=preprocessor.split_x_y();
     // let d_train=x_train.to_matrix(true);

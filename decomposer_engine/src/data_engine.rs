@@ -137,7 +137,7 @@ impl Actions for LazyFrame {
             index_column: PlSmallStr::from_str("timestamp"),
             every: Duration::parse("1d"),
             period: Duration::parse("1d"),
-            offset: Duration::parse("1d"),
+            offset: Duration::parse("15m"),
             ..Default::default()
         };
         self.clone()
@@ -213,37 +213,31 @@ impl ExpressionActions for Expr {
 impl EagerActions for DataFrame{
     
     fn select_sequence(&self, cols: Vec<&str>, is_x: bool)-> Self{
-        if is_x{
-            self.clone().select(
-                cols
-            ).expect("Columns do not exist").drop("in.sqft").expect("Error dropping unnecessary columns")
-        }
-        else{
-            self.clone().select(
-                cols
-            ).expect("Columns do not exist").drop_many([
+        self.select(cols).expect("Columns do not exist")
+    }
+
+    fn return_x_columns(&self)->Vec<&str>{
+        let pattern=Regex::new("^out.electricity.total.energy_consumption..kwh|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$").unwrap();
+        let unwanted_cols=["bldg_id"];
+        self.get_column_names().iter().map(
+            |x| x.as_str()
+            ).filter(|x| pattern.is_match(x) & !unwanted_cols.contains(x)).collect::<Vec<&str>>()
+    }
+
+    fn return_y_columns(&self)->Vec<&str> {
+        let pattern=Regex::new("^out.electricity.*..kwh$").unwrap();
+        let unwanted_cols=[
                 "out.electricity.total.energy_consumption..kwh",
                 "out.electricity.net.energy_consumption..kwh",
                 "out.electricity.pv.energy_consumption..kwh",
                 "out.electricity.pool_heater.energy_consumption..kwh",
                 "out.electricity.hot_water_solar_th.energy_consumption..kwh",
                 "out.electricity.ev_charging.energy_consumption..kwh",
-            ])
-        }
-    }
-
-    fn return_x_columns(&self)->Vec<&str>{
-        let pattern=Regex::new("^out.electricity.total.energy_consumption..kwh|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$").unwrap();
+        ];
         self.get_column_names().iter().map(
             |x| x.as_str()
-            ).filter(|x| pattern.is_match(x)).collect::<Vec<&str>>()
-    }
+            ).filter(|x| pattern.is_match(x) & !unwanted_cols.contains(x)).collect::<Vec<&str>>()
 
-    fn return_y_columns(&self)->Vec<&str> {
-        let pattern=Regex::new("^out.electricity.*..kwh$").unwrap();
-        self.get_column_names().iter().map(
-            |x| x.as_str()
-            ).filter(|x| pattern.is_match(x)).collect::<Vec<&str>>()
     }
 }
 
