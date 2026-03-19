@@ -142,7 +142,7 @@ impl Actions for LazyFrame {
         self.clone()
             .sort(vec![PlSmallStr::from_str("timestamp")], Default::default())
             .group_by_dynamic(col("timestamp"), [], options)
-            .agg([col("*")])
+            .agg([col("*")]).with_columns([col("timestamp").dt().timestamp(TimeUnit::Milliseconds)])
     }
 
     // Encode categorical columns in the data to UInt32 Type
@@ -152,7 +152,7 @@ impl Actions for LazyFrame {
             cols.iter()
                 .map(|x| x.clone().cast(DataType::UInt32))
                 .collect::<Vec<_>>(),
-        ).with_columns([col("timestamp").dt().timestamp(TimeUnit::Milliseconds)])
+        )
     }
 
     fn standard_scalar(&mut self) -> Self {
