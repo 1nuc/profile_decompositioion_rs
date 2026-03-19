@@ -212,7 +212,7 @@ impl ExpressionActions for Expr {
 }
 impl EagerActions for DataFrame{
     
-    fn select_sequence(&self, cols: Vec<&str>, is_x: bool)-> Self{
+    fn select_sequence(&self, cols: Vec<&str>)-> Self{
         self.select(cols).expect("Columns do not exist")
     }
 
