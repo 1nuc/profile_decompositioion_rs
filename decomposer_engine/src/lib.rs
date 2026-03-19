@@ -3,6 +3,7 @@ use polars::prelude::*;
 use xgboost::DMatrix;
 
 pub mod data_engine;
+pub mod lstm;
 pub mod preprocessor_engine;
 pub mod xgb;
 
@@ -14,6 +15,8 @@ pub trait Actions {
     fn process_meta_data_variants(&self) -> Self;
 
     fn feature_selection(&self) -> Self;
+
+    fn return_cols(&self) -> Vec<String>;
 
     fn categorical_cols(&mut self) -> Vec<Expr>;
 
