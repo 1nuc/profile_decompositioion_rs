@@ -1,4 +1,4 @@
-use crate::{Actions, ExpressionActions};
+use crate::{Actions, EagerActions, ExpressionActions};
 use ndarray::Array2;
 use polars::prelude::*;
 use xgboost::DMatrix;
@@ -208,6 +208,16 @@ impl ExpressionActions for Expr {
         self.clone()
             .cast(DataType::Categorical(Categories::global(), mapping.into()))
     }
+}
+impl EagerActions for DataFrame{
+    
+    fn select_sequence(&self)-> Self{
+        self.clone().select([
+            PlSmallStr::from("^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$")
+           ,PlSmallStr::from("out.electricity.total.energy_consumption..kwh")
+        ]).expect("Columns do not exist").drop("in.sqft").expect("Error dropping unnecessary columns")
+    }
+
 }
 
 #[cfg(test)]
