@@ -1,4 +1,4 @@
-use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, tensor::{TensorData, backend::AutodiffBackend}, train::{Learner, SupervisedTraining}, *};
+use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, tensor::{TensorData, backend::AutodiffBackend}, train::{Learner, RegressionOutput, SupervisedTraining, TrainStep}, *};
 use ndarray::{Array2, Array3};
 use polars::prelude::*;
 use crate::{Actions, EagerActions};
@@ -127,17 +127,30 @@ pub struct NucLstm<B :Backend>{
 }
 
 impl <B: Backend>NucLstm<B> {
-    pub fn forward(&self, input: Tensor<B,3>) -> Tensor<B, 2>{
+    pub fn forward(&self, input: Tensor<B,3>) -> Tensor<B, 3>{
         let (output,_) =self.model.forward(input, None);
         let [batch_size, seq_length, hidden_size]=output.dims();
-        let last_output=output.narrow(1, seq_length-1, 1).reshape([batch_size, hidden_size]);
+        let last_output=output.narrow(2, seq_length-1, 2).reshape([batch_size, seq_length,hidden_size]);
         self.output_model.forward(last_output)
     }
-
+    pub fn forward_step(&self, items: NrelBatch<B>) ->RegressionOutput<B>{
+        let targets: Tensor<B, 3>=items.target;
+        let output=self.forward(items.sequence);
+        let loss=MseLoss::new().forward(output.clone(), targets, nn::loss::Reduction::Mean);
+        RegressionOutput{
+            loss,
+            output,
+            targets,
+        }
+    }
 }
-
-
- 
+impl <B: AutodiffBackend>TrainStep for NucLstm<B>{
+    type Output= RegressionOutput<B>;
+    type Input=NrelBatch<B>;
+    fn step(&self, item: Self::Input) -> train::TrainOutput<Self::Output> {
+        
+    }
+}
 // fn train(){
 //     type Mybackend=Autodiff<Wgpu<f32, i32>>;
 //     let data_source=Nrel::init();
