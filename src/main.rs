@@ -2,7 +2,7 @@ use decomposer_engine::{Actions, EagerActions, data_engine::*, lstm::*, preproce
 use ndarray::{Array3, s};
 use polars::prelude::*;
 use tap::Conv;
-use burn::{Tensor, backend::{self, wgpu::WgpuDevice}, prelude::Backend, tensor::TensorData};
+use burn::{Tensor, backend::{self, wgpu::WgpuDevice}, prelude::Backend, tensor::{Int, TensorData}};
 
 fn main(){
     let data_source=Nrel::init();
@@ -13,10 +13,11 @@ fn main(){
     let cols=binding.return_y_columns();
     let samples=d.height();
     let sequenced_data=d.select_sequence(cols.clone(), samples);
-    let arr=sequenced_data.slice(s![3,..,..]).to_owned().into_raw_vec_and_offset().0.chunks(cols.len()).map(|x| x.to_vec()).collect::<Vec<Vec<f32>>>();
+    let arr=sequenced_data.slice(s![3,..,..]).to_owned();
     let device=WgpuDevice::default();
     type MyBackend=backend::Wgpu<f32,i32>;
-    let tensor=Tensor::<MyBackend, 2>::from_data(TensorData::new(arr,[1,96,cols.len()]), &device);
+    // let tensor=Tensor::<MyBackend, 3>::from_data(TensorData::new(arr.clone(),[1,96,cols.len()]), &device);
+    let tensor=Tensor::<MyBackend, 2>::from_data(TensorData::new(arr.into_raw_vec_and_offset().0,[96, cols.len()]), &device);
     println!("{:?}",tensor);
     // let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
     // let (mut x_train, mut x_test, mut y_train, y_test)=preprocessor.split_x_y();
