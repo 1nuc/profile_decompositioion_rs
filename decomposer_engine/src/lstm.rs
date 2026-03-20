@@ -1,4 +1,4 @@
-use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining}, *};
+use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, tensor::{TensorData, backend::AutodiffBackend}, train::{Learner, SupervisedTraining}, *};
 use ndarray::{Array2, Array3};
 use polars::prelude::*;
 use crate::{Actions, EagerActions};
@@ -16,10 +16,12 @@ pub struct NrelDatasetItem{
     pub sequence_item: Array2<f32>,
     pub target_item: Array2<f32>,
 }
+
 pub struct NrelDataset{
     pub sequence: Array3<f32>,
     pub target: Array3<f32>,
 }
+
 impl NrelDataset{
     pub fn new(dataset: LazyFrame) -> Self{
         let data=dataset.return_time_sequenced().collect().unwrap();
@@ -70,15 +72,24 @@ pub struct NrelBatch<B: Backend>{
 }
 impl <B: Backend> Batcher<B, NrelDatasetItem, NrelBatch<B>> for NrelBatcher<B>{
     fn batch(&self, items: Vec<NrelDatasetItem>, device: &<B as Backend>::Device) -> NrelBatch<B> {
-        todo!()
-        // let mut sequences=Vec::new();
-        // let mut targets=Vec::new();
-        // let batch_len=items.len();
-        // items.iter().clone().map(|x|{
-        //     let tensor_sequence=Tensor::<B,2>::from_data(x.sequence_item.as_slice().unwrap(), device);
-        //     // sequences.push();
-        //     // targets.push();
-        // });
+        let mut sequences=Vec::new();
+        let mut targets=Vec::new();
+        let batch_len=items.len();
+        items.iter().clone().map(|x|{
+            let tensor_sequence=Tensor::<B,2>::from_data(
+                TensorData::new(
+                    x.sequence_item.into_raw_vec_and_offset().0, 
+                    [96, 24]),
+            device);
+
+            let tensor_target=Tensor::<B,2>::from_data(
+                TensorData::new(
+                    x.target_item.into_raw_vec_and_offset().0, 
+                    [96, 24]),
+            device);
+            sequences.push(tensor_sequence);
+            targets.push(tensor_target);
+        });
     }
 }
 
