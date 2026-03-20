@@ -70,26 +70,34 @@ pub struct NrelBatch<B: Backend>{
     pub sequence: Tensor<B, 3>,
     pub target: Tensor<B, 3>,
 }
+
+#[allow(unused_variables)]
 impl <B: Backend> Batcher<B, NrelDatasetItem, NrelBatch<B>> for NrelBatcher<B>{
     fn batch(&self, items: Vec<NrelDatasetItem>, device: &<B as Backend>::Device) -> NrelBatch<B> {
         let mut sequences=Vec::new();
         let mut targets=Vec::new();
         let batch_len=items.len();
-        items.iter().clone().map(|x|{
+        let _=items.iter().clone().map(|x|{
             let tensor_sequence=Tensor::<B,2>::from_data(
                 TensorData::new(
-                    x.sequence_item.into_raw_vec_and_offset().0, 
+                    x.sequence_item.clone().into_raw_vec_and_offset().0, 
                     [96, 24]),
             device);
 
             let tensor_target=Tensor::<B,2>::from_data(
                 TensorData::new(
-                    x.target_item.into_raw_vec_and_offset().0, 
+                    x.target_item.clone().into_raw_vec_and_offset().0, 
                     [96, 24]),
             device);
             sequences.push(tensor_sequence);
             targets.push(tensor_target);
         });
+        let sequence=Tensor::stack(sequences, 0);
+        let target=Tensor::stack(targets, 0);
+        NrelBatch{
+            sequence,
+            target,
+        }
     }
 }
 
