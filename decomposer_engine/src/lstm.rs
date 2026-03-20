@@ -53,6 +53,22 @@ impl Dataset<NrelDatasetItem> for NrelDataset{
 
 }
 
+pub struct NrelBatcher<B: Backend>{
+    pub device: B::Device,
+}
+impl <B: Backend> NrelBatcher<B>{
+    pub fn new(device: B::Device)-> Self{
+        Self{
+            device
+        }
+    }
+}
+
+pub struct NrelBatch<B: Backend>{
+    pub sequence: Tensor<B, 3>,
+    pub target: Tensor<B, 3>,
+}
+
 #[derive(Config, Debug)]
 pub struct NucLstmConfig{
     input_size: usize,
@@ -79,7 +95,7 @@ pub struct NucLstm<B :Backend>{
 }
 
 impl <B: Backend>NucLstm<B> {
-    fn forward(&self, input: Tensor<B,3>) -> Tensor<B, 2>{
+    pub fn forward(&self, input: Tensor<B,3>) -> Tensor<B, 2>{
         let (output,_) =self.model.forward(input, None);
         let [batch_size, seq_length, hidden_size]=output.dims();
         let last_output=output.narrow(1, seq_length-1, 1).reshape([batch_size, hidden_size]);
