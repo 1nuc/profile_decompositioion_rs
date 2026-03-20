@@ -1,8 +1,8 @@
 use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::Batcher}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining}, *};
 use ndarray::{Array2, Array3};
-use polars::{frame::{DataFrame, row::Row}, prelude::{AnyValue, ExplodeOptions, Float32Type, LazyFrame, last}};
-use crate::{Actions, EagerActions, data_engine::Nrel, preprocessor_engine::Preprocessor};
-
+use polars::prelude::*;
+use crate::{Actions, EagerActions};
+use ndarray::s;
 
 //TODO: Create Nrel Dataset struct and perform the get and len operation (implement Dataset trait)
 //TODO: Create the item struct that will be the output of the get method and the input for the batch
@@ -10,10 +10,11 @@ use crate::{Actions, EagerActions, data_engine::Nrel, preprocessor_engine::Prepr
 //TODO: the batcher will be a vector of the item struct 
 //TODO: Use config values for the preprocessor to separate x and y in this code
 //TODO: Make separate methods to split the data to first traint and test then here in this code
-//split them manually to x and y by calling the functions
+//TODO: split them manually to x and y by calling the functions
+
 pub struct NrelDatasetItem{
-    sequence_item: Array2<f32>,
-    target_item: Array2<f32>,
+    pub sequence_item: Array2<f32>,
+    pub target_item: Array2<f32>,
 }
 pub struct NrelDataset{
     pub sequence: Array3<f32>,
@@ -36,23 +37,21 @@ impl NrelDataset{
     }
 }
 
-// impl Dataset<NrelDatasetItem> for NrelDataset{
-//     fn get(&self, index: usize) -> Option<NrelDatasetItem> {
-//         Some(NrelDatasetItem{
-//            sequence_item: self.sequence
-//                .get_row(index)
-//                .unwrap().into(),
-//            target_item: self.target
-//                .get_row(index)
-//                .unwrap().into(),
-//         })
-//     }
-//
-//     fn len(&self) -> usize {
-//         self.sequence.height()
-//     }
-//
-// // }
+impl Dataset<NrelDatasetItem> for NrelDataset{
+    fn get(&self, index: usize) -> Option<NrelDatasetItem> {
+        Some(NrelDatasetItem{
+           sequence_item: self.sequence
+               .slice(s![index,..,..]).to_owned(),
+           target_item: self.target
+               .slice(s![index,..,..]).to_owned(),
+        })
+    }
+
+    fn len(&self) -> usize {
+        self.sequence.len()
+    }
+
+}
 
 #[derive(Config, Debug)]
 pub struct NucLstmConfig{
