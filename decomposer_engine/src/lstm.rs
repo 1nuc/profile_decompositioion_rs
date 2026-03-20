@@ -70,7 +70,15 @@ pub struct NrelBatch<B: Backend>{
 }
 impl <B: Backend> Batcher<B, NrelDatasetItem, NrelBatch<B>> for NrelBatcher<B>{
     fn batch(&self, items: Vec<NrelDatasetItem>, device: &<B as Backend>::Device) -> NrelBatch<B> {
-       todo!() 
+        todo!()
+        // let mut sequences=Vec::new();
+        // let mut targets=Vec::new();
+        // let batch_len=items.len();
+        // items.iter().clone().map(|x|{
+        //     let tensor_sequence=Tensor::<B,2>::from_data(x.sequence_item.as_slice().unwrap(), device);
+        //     // sequences.push();
+        //     // targets.push();
+        // });
     }
 }
 
