@@ -1,4 +1,4 @@
-use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, tensor::{TensorData, backend::AutodiffBackend}, train::{Learner, RegressionOutput, SupervisedTraining, TrainStep}, *};
+use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, tensor::{TensorData, backend::AutodiffBackend}, train::{Learner, RegressionOutput, SupervisedTraining, TrainStep, metric::{Adaptor, LossInput}}, *};
 use ndarray::{Array2, Array3};
 use polars::prelude::*;
 use crate::{Actions, EagerActions};
@@ -119,6 +119,18 @@ impl NucLstmConfig{
         }
     }
 }
+//TODO: Prepare the output type to be a sequence
+pub struct NrelSequenceOutput<B: Backend>{
+    loss: Tensor<B, 1>,
+    output: Tensor<B, 3>,
+    targets: Tensor<B, 3>,
+}
+
+impl <B: Backend>Adaptor<LossInput<B>>for NrelSequenceOutput<B>{
+    fn adapt(&self) -> LossInput<B> {
+        LossInput::new(self.loss.clone())
+    }
+}
 
 #[derive(Module, Debug)]
 pub struct NucLstm<B :Backend>{
@@ -133,11 +145,11 @@ impl <B: Backend>NucLstm<B> {
         let last_output=output.narrow(2, seq_length-1, 2).reshape([batch_size, seq_length,hidden_size]);
         self.output_model.forward(last_output)
     }
-    pub fn forward_step(&self, items: NrelBatch<B>) ->RegressionOutput<B>{
+    pub fn forward_step(&self, items: NrelBatch<B>) ->NrelSequenceOutput<B>{
         let targets: Tensor<B, 3>=items.target;
         let output=self.forward(items.sequence);
-        let loss=MseLoss::new().forward(output.clone(), targets, nn::loss::Reduction::Mean);
-        RegressionOutput{
+        let loss=MseLoss::new().forward(output.clone(), targets.clone(), nn::loss::Reduction::Mean);
+        NrelSequenceOutput{
             loss,
             output,
             targets,
