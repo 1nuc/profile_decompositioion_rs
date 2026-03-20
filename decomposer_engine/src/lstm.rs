@@ -1,5 +1,5 @@
 use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::Batcher}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining}, *};
-use ndarray::Array3;
+use ndarray::{Array2, Array3};
 use polars::{frame::{DataFrame, row::Row}, prelude::{AnyValue, ExplodeOptions, Float32Type, LazyFrame, last}};
 use crate::{Actions, EagerActions, data_engine::Nrel, preprocessor_engine::Preprocessor};
 
@@ -12,15 +12,15 @@ use crate::{Actions, EagerActions, data_engine::Nrel, preprocessor_engine::Prepr
 //TODO: Make separate methods to split the data to first traint and test then here in this code
 //split them manually to x and y by calling the functions
 pub struct NrelDatasetItem{
-    sequence_item: Vec<Vec<f32>>,
-    target_item: Vec<Vec<f32>>,
+    sequence_item: Array2<f32>,
+    target_item: Array2<f32>,
 }
 pub struct NrelDataset{
-    sequence: Array3<f32>
-    target: Array3<f32>,
+    pub sequence: Array3<f32>,
+    pub target: Array3<f32>,
 }
 impl NrelDataset{
-    pub fn new(dataset: LazyFrame, x_cols: Vec<&str>, y_cols: Vec<&str>) -> Self{
+    pub fn new(dataset: LazyFrame) -> Self{
         let data=dataset.return_time_sequenced().collect().unwrap();
         let x_cols=data.return_x_columns();
         let y_cols=data.return_y_columns();
@@ -28,30 +28,10 @@ impl NrelDataset{
         Self{
             sequence: data 
                 .clone()
-                .select_sequence(x_cols.clone())
-                .explode(
-                    x_cols.clone(), ExplodeOptions {
-                        empty_as_null: false,
-                        keep_nulls: false 
-                    })
-                .expect("unable to explode the data")
-                .to_ndarray::<Float32Type>(Default::default())
-                .expect("Error in converting to ndarray")
-                .to_shape((batches, 96, x_cols.len()))
-                .expect("error in shaping the data").to_owned(),
+                .select_sequence(x_cols.clone(), batches),
             target: data 
                 .clone()
-                .select_sequence(y_cols.clone())
-                .explode(
-                    y_cols.clone(), ExplodeOptions {
-                        empty_as_null: false,
-                        keep_nulls: false 
-                    })
-                .expect("unable to explode the data")
-                .to_ndarray::<Float32Type>(Default::default())
-                .expect("Error in converting to ndarray")
-                .to_shape((batches, 96, y_cols.len()))
-                .expect("error in shaping the data").to_owned(),
+                .select_sequence(y_cols.clone(), batches),
         }
     }
 }
