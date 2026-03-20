@@ -1,5 +1,5 @@
 use crate::{Actions, EagerActions, ExpressionActions};
-use ndarray::{Array2, Data};
+use ndarray::{Array2, Array3, Data};
 use polars::prelude::*;
 use xgboost::DMatrix;
 use regex::Regex;
@@ -212,8 +212,19 @@ impl ExpressionActions for Expr {
 }
 impl EagerActions for DataFrame{
     
-    fn select_sequence(&self, cols: Vec<&str>)-> Self{
-        self.select(cols).expect("Columns do not exist")
+    fn select_sequence(&self, cols: Vec<&str>, batches: usize)-> Array3<f32>{
+        self.select(cols.clone())
+            .expect("Columns do not exist")
+            .explode(
+                cols.clone(), ExplodeOptions {
+                    empty_as_null: false,
+                    keep_nulls: false 
+                })
+            .expect("unable to explode the data")
+            .to_ndarray::<Float32Type>(Default::default())
+            .expect("Error in converting to ndarray")
+            .to_shape((batches, 96, cols.len()))
+            .expect("error in shaping the data").to_owned()
     }
 
     fn return_x_columns(&self)->Vec<&str>{
