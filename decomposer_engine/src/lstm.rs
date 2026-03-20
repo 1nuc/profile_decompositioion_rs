@@ -1,4 +1,4 @@
-use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, tensor::{TensorData, backend::AutodiffBackend}, train::{ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainStep, metric::{Adaptor, LossInput}}, *};
+use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput}}, *};
 use ndarray::{Array2, Array3};
 use polars::prelude::*;
 use crate::{Actions, EagerActions};
@@ -173,10 +173,19 @@ impl <B: Backend>NucLstm<B> {
 impl <B: AutodiffBackend>TrainStep for NucLstm<B>{
     type Output= NrelSequenceOutput<B>;
     type Input=NrelBatch<B>;
-    fn step(&self, item: Self::Input) ->  {
-        
+    fn step(&self, item: Self::Input) -> TrainOutput<Self::Output> {
+        let item=self.forward_step(item);
+        TrainOutput::new(self, item.loss.backward(), item)
     }
 }
+impl <B: Backend> InferenceStep for NucLstm<B>{
+    type Input = NrelBatch<B>;
+    type Output= NrelSequenceOutput<B>;
+    fn step(&self, item: Self::Input) -> Self::Output {
+        self.forward_step(item)
+    }
+}
+
 // fn train(){
 //     type Mybackend=Autodiff<Wgpu<f32, i32>>;
 //     let data_source=Nrel::init();
