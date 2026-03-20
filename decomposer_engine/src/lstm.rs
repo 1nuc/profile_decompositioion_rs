@@ -1,5 +1,6 @@
 use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::Batcher}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining}, *};
-use polars::{frame::{DataFrame, row::Row}, prelude::{AnyValue, last}};
+use ndarray::Array3;
+use polars::{frame::{DataFrame, row::Row}, prelude::{AnyValue, ExplodeOptions, Float32Type, LazyFrame, last}};
 use crate::{Actions, EagerActions, data_engine::Nrel, preprocessor_engine::Preprocessor};
 
 
@@ -15,17 +16,45 @@ pub struct NrelDatasetItem{
     target_item: Vec<Vec<f32>>,
 }
 pub struct NrelDataset{
-    sequence: DataFrame,
-    target: DataFrame,
+    sequence: Array3<f32>
+    target: Array3<f32>,
 }
-// impl NrelDataset{
-//     fn new(dataset: DataFrame, x_cols: Vec<&str>, y_cols: Vec<&str>) -> Self{
-//         Self{
-//             sequence: dataset.clone().select_sequence(x_cols, true),
-//             target: dataset.clone().select_sequence(y_cols, false),
-//         }
-//     }
-// }
+impl NrelDataset{
+    pub fn new(dataset: LazyFrame, x_cols: Vec<&str>, y_cols: Vec<&str>) -> Self{
+        let data=dataset.return_time_sequenced().collect().unwrap();
+        let x_cols=data.return_x_columns();
+        let y_cols=data.return_y_columns();
+        let batches=data.height();
+        Self{
+            sequence: data 
+                .clone()
+                .select_sequence(x_cols.clone())
+                .explode(
+                    x_cols.clone(), ExplodeOptions {
+                        empty_as_null: false,
+                        keep_nulls: false 
+                    })
+                .expect("unable to explode the data")
+                .to_ndarray::<Float32Type>(Default::default())
+                .expect("Error in converting to ndarray")
+                .to_shape((batches, 96, x_cols.len()))
+                .expect("error in shaping the data").to_owned(),
+            target: data 
+                .clone()
+                .select_sequence(y_cols.clone())
+                .explode(
+                    y_cols.clone(), ExplodeOptions {
+                        empty_as_null: false,
+                        keep_nulls: false 
+                    })
+                .expect("unable to explode the data")
+                .to_ndarray::<Float32Type>(Default::default())
+                .expect("Error in converting to ndarray")
+                .to_shape((batches, 96, y_cols.len()))
+                .expect("error in shaping the data").to_owned(),
+        }
+    }
+}
 
 // impl Dataset<NrelDatasetItem> for NrelDataset{
 //     fn get(&self, index: usize) -> Option<NrelDatasetItem> {

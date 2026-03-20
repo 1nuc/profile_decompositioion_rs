@@ -1,4 +1,4 @@
-use ndarray::Array2;
+use ndarray::{Array2, Array3};
 use polars::prelude::*;
 use xgboost::DMatrix;
 
@@ -9,7 +9,7 @@ pub mod xgb;
 
 pub trait EagerActions{
 
-    fn select_sequence(&self, cols: Vec<&str>)-> Self;
+    fn select_sequence(&self, cols: Vec<&str>, batches: usize)-> Array3<f32>;
 
     fn return_x_columns(&self)->Vec<&str>;
 

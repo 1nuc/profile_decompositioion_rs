@@ -17,6 +17,7 @@ fn main() {
             keep_nulls: false 
         }).unwrap().to_ndarray::<Float32Type>(Default::default()).unwrap();
     let array: Array3<f32>=data.to_shape((samples,96, cols.len())).unwrap().to_owned();
+    let arr=array.slice(s![1,..,..]).to_vec();
     println!("{:?}", array.slice(s![0,..,..]));
     // let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
     // let (mut x_train, mut x_test, mut y_train, y_test)=preprocessor.split_x_y();
