@@ -1,4 +1,4 @@
-use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::Batcher}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining}, *};
+use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining}, *};
 use ndarray::{Array2, Array3};
 use polars::prelude::*;
 use crate::{Actions, EagerActions};
@@ -67,6 +67,11 @@ impl <B: Backend> NrelBatcher<B>{
 pub struct NrelBatch<B: Backend>{
     pub sequence: Tensor<B, 3>,
     pub target: Tensor<B, 3>,
+}
+impl <B: Backend> Batcher<B, NrelDatasetItem, NrelBatch<B>> for NrelBatcher<B>{
+    fn batch(&self, items: Vec<NrelDatasetItem>, device: &<B as Backend>::Device) -> NrelBatch<B> {
+       todo!() 
+    }
 }
 
 #[derive(Config, Debug)]
