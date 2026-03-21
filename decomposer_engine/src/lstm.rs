@@ -12,16 +12,22 @@ use ndarray::s;
 //TODO: Make separate methods to split the data to first traint and test then here in this code
 //TODO: split them manually to x and y by calling the functions
 
+const Y_COLS: usize=24;
+const X_COLS: usize=24;
+// const X_COLS=
+// The items srtuct for which is the batcher is building
 pub struct NrelDatasetItem{
     pub sequence_item: Array2<f32>,
     pub target_item: Array2<f32>,
 }
 
+// The main dataset used
 pub struct NrelDataset{
     pub sequence: Array3<f32>,
     pub target: Array3<f32>,
 }
 
+//Initialize the dataset and set up sequence and target
 impl NrelDataset{
     pub fn new(dataset: LazyFrame) -> Self{
         let data=dataset.return_time_sequenced().collect().unwrap();
@@ -39,6 +45,7 @@ impl NrelDataset{
     }
 }
 
+//Specify the get method needed for batch to catch the elements
 impl Dataset<NrelDatasetItem> for NrelDataset{
     fn get(&self, index: usize) -> Option<NrelDatasetItem> {
         Some(NrelDatasetItem{
@@ -55,6 +62,7 @@ impl Dataset<NrelDatasetItem> for NrelDataset{
 
 }
 
+// Prepare the batcher
 pub struct NrelBatcher<B: Backend>{
     pub device: B::Device,
 }
@@ -66,28 +74,30 @@ impl <B: Backend> NrelBatcher<B>{
     }
 }
 
+// The output of elements batching
 pub struct NrelBatch<B: Backend>{
     pub sequence: Tensor<B, 3>,
     pub target: Tensor<B, 3>,
 }
 
+//Batching elements
 #[allow(unused_variables)]
 impl <B: Backend> Batcher<B, NrelDatasetItem, NrelBatch<B>> for NrelBatcher<B>{
     fn batch(&self, items: Vec<NrelDatasetItem>, device: &<B as Backend>::Device) -> NrelBatch<B> {
         let mut sequences=Vec::new();
         let mut targets=Vec::new();
         let batch_len=items.len();
-        let _=items.iter().clone().map(|x|{
+        items.iter().clone().map(|x|{
             let tensor_sequence=Tensor::<B,2>::from_data(
                 TensorData::new(
                     x.sequence_item.clone().into_raw_vec_and_offset().0, 
-                    [96, 24]),
+                    [96, X_COLS]),
             device);
 
             let tensor_target=Tensor::<B,2>::from_data(
                 TensorData::new(
                     x.target_item.clone().into_raw_vec_and_offset().0, 
-                    [96, 24]),
+                    [96, Y_COLS]),
             device);
             sequences.push(tensor_sequence);
             targets.push(tensor_target);
@@ -101,6 +111,7 @@ impl <B: Backend> Batcher<B, NrelDatasetItem, NrelBatch<B>> for NrelBatcher<B>{
     }
 }
 
+//Prepare the configurations of the model
 #[derive(Config, Debug)]
 pub struct NucLstmConfig{
     input_size: usize,
@@ -109,6 +120,7 @@ pub struct NucLstmConfig{
     num_layers: usize,
     dropout: f32,
 }
+//Initializing the model configurations 
 impl NucLstmConfig{
     pub fn init<B: Backend>(&self, device: B::Device) -> NucLstm<B>{
         let lstm=LstmConfig::new(self.input_size, self.hidden_size, true).with_batch_first(true);
@@ -145,6 +157,7 @@ impl <B: Backend> ItemLazy for NrelSequenceOutput<B>{
     }
 }
 
+//Model
 #[derive(Module, Debug)]
 pub struct NucLstm<B :Backend>{
     model: Lstm<B>,
@@ -152,12 +165,14 @@ pub struct NucLstm<B :Backend>{
 }
 
 impl <B: Backend>NucLstm<B> {
+    //the forward function for which the weights neurons are multiplied
     pub fn forward(&self, input: Tensor<B,3>) -> Tensor<B, 3>{
         let (output,_) =self.model.forward(input, None);
         let [batch_size, seq_length, hidden_size]=output.dims();
         let last_output=output.narrow(2, seq_length-1, 2).reshape([batch_size, seq_length,hidden_size]);
         self.output_model.forward(last_output)
     }
+    // Calculating the loss function of the forward step
     pub fn forward_step(&self, items: NrelBatch<B>) ->NrelSequenceOutput<B>{
         let targets: Tensor<B, 3>=items.target;
         let output=self.forward(items.sequence);
@@ -170,6 +185,7 @@ impl <B: Backend>NucLstm<B> {
     }
 }
 
+//Implementing the training step for the model to obtain the gradients (weights after optimization)
 impl <B: AutodiffBackend>TrainStep for NucLstm<B>{
     type Output= NrelSequenceOutput<B>;
     type Input=NrelBatch<B>;
@@ -178,6 +194,7 @@ impl <B: AutodiffBackend>TrainStep for NucLstm<B>{
         TrainOutput::new(self, item.loss.backward(), item)
     }
 }
+// Prepare the Inference step to redo the process after calculating the gradients
 impl <B: Backend> InferenceStep for NucLstm<B>{
     type Input = NrelBatch<B>;
     type Output= NrelSequenceOutput<B>;
