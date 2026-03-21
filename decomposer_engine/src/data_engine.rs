@@ -143,7 +143,8 @@ impl Actions for LazyFrame {
         self.clone()
             .sort(vec![PlSmallStr::from_str("timestamp")], Default::default())
             .group_by_dynamic(col("timestamp"), [col("bldg_id")], options)
-            .agg([col("*").cast(DataType::Float32), len().alias("count")]).with_columns([col("timestamp").dt().timestamp(TimeUnit::Milliseconds)])
+            .agg([col("*").cast(DataType::Float32) ]).with_columns(
+                [col("timestamp").dt().timestamp(TimeUnit::Milliseconds).cast(DataType::Float32), col("bldg_id").cast(DataType::Float32)])
     }
 
     // Encode categorical columns in the data to UInt32 Type
@@ -229,7 +230,7 @@ impl EagerActions for DataFrame{
 
     fn return_x_columns(&self)->Vec<&str>{
         let pattern=Regex::new("^out.electricity.total.energy_consumption..kwh|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$").unwrap();
-        let unwanted_cols=["bldg_id"];
+        let unwanted_cols=["in.sqft"];
         self.get_column_names().iter().map(
             |x| x.as_str()
             ).filter(|x| pattern.is_match(x) & !unwanted_cols.contains(x)).collect::<Vec<&str>>()

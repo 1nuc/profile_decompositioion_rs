@@ -1,0 +1,20 @@
+2026-03-21T20:56:54.234968Z  WARN wgpu_hal::vulkan::instance: Unable to find extension: VK_EXT_physical_device_drm
+2026-03-21T20:56:54.235342Z  WARN wgpu_hal::vulkan::instance: InstanceFlags::VALIDATION requested, but unable to find layer: VK_LAYER_KHRONOS_validation
+2026-03-21T20:56:54.270470Z  WARN wgpu_hal::vulkan::instance: GENERAL [Loader Message (0x0)]
+	terminator_CreateInstance: Received return code -9 from call to vkCreateInstance in ICD /usr/lib64/libvulkan_dzn.so. Skipping this driver.
+2026-03-21T20:56:54.270549Z  WARN wgpu_hal::vulkan::instance: 	objects: (type: INSTANCE, hndl: 0x5646bb306ca0, name: ?)
+2026-03-21T20:56:56.071352Z  INFO cubecl_wgpu::runtime: Using adapter AdapterInfo { name: "NVIDIA GeForce RTX 4050 Laptop GPU (NVK AD107)", vendor: 4318, device: 10401, device_type: DiscreteGpu, driver: "NVK", driver_info: "Mesa 25.3.6", backend: Vulkan }
+2026-03-21T20:57:06.571068Z  INFO cubecl_wgpu::runtime: Created wgpu compute server on device Device { inner: Core(CoreDevice { context: ContextWgpuCore { type: "Native" }, id: Id(0,1), error_sink: Mutex { data: ErrorSink }, features: Features { features_wgpu: FeaturesWGPU(TEXTURE_FORMAT_16BIT_NORM | TEXTURE_ADAPTER_SPECIFIC_FORMAT_FEATURES | PIPELINE_STATISTICS_QUERY | TIMESTAMP_QUERY_INSIDE_ENCODERS | TIMESTAMP_QUERY_INSIDE_PASSES | TEXTURE_BINDING_ARRAY | BUFFER_BINDING_ARRAY | STORAGE_RESOURCE_BINDING_ARRAY | SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING | STORAGE_TEXTURE_ARRAY_NON_UNIFORM_INDEXING | PARTIALLY_BOUND_BINDING_ARRAY | MULTI_DRAW_INDIRECT | MULTI_DRAW_INDIRECT_COUNT | PUSH_CONSTANTS | ADDRESS_MODE_CLAMP_TO_ZERO | ADDRESS_MODE_CLAMP_TO_BORDER | POLYGON_MODE_LINE | POLYGON_MODE_POINT | CONSERVATIVE_RASTERIZATION | VERTEX_WRITABLE_STORAGE | CLEAR_TEXTURE | SPIRV_SHADER_PASSTHROUGH | MULTIVIEW | TEXTURE_ATOMIC | TEXTURE_FORMAT_NV12 | SHADER_F64 | SHADER_I16 | SHADER_PRIMITIVE_INDEX | SHADER_EARLY_DEPTH_TEST | SHADER_INT64 | SUBGROUP | SUBGROUP_VERTEX | SUBGROUP_BARRIER | PIPELINE_CACHE | SHADER_INT64_ATOMIC_MIN_MAX | SHADER_INT64_ATOMIC_ALL_OPS | TEXTURE_INT64_ATOMIC), features_webgpu: FeaturesWebGPU(DEPTH_CLIP_CONTROL | DEPTH32FLOAT_STENCIL8 | TEXTURE_COMPRESSION_BC | TEXTURE_COMPRESSION_BC_SLICED_3D | TIMESTAMP_QUERY | INDIRECT_FIRST_INSTANCE | RG11B10UFLOAT_RENDERABLE | BGRA8UNORM_STORAGE | FLOAT32_FILTERABLE | DUAL_SOURCE_BLENDING | CLIP_DISTANCES) } }) } => AdapterInfo { name: "NVIDIA GeForce RTX 4050 Laptop GPU (NVK AD107)", vendor: 4318, device: 10401, device_type: DiscreteGpu, driver: "NVK", driver_info: "Mesa 25.3.6", backend: Vulkan }
+2026-03-21T20:57:06.590225Z  WARN wgpu_hal::vulkan::instance: GENERAL [../src/nouveau/vulkan/nvkmd/nouveau/nvkmd_nouveau_ctx.c:149 (0x0)]
+	DRM_NOUVEAU_EXEC failed: No such device (VK_ERROR_DEVICE_LOST)
+2026-03-21T20:57:06.590265Z  WARN wgpu_hal::vulkan::instance: 	objects: (type: DEVICE, hndl: 0x5646bb07f2e0, name: ?)
+2026-03-21T20:57:06.591013Z ERROR wgpu::backend::wgpu_core: Handling wgpu errors as fatal by default
+2026-03-21T20:57:06.591053Z ERROR burn_train::learner::application_logger: PANIC => panicked at /home/ahmedthegoat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wgpu-26.0.1/src/backend/wgpu_core.rs:2391:18:
+wgpu error: Validation Error
+
+Caused by:
+  In a CommandEncoder
+    In a pass parameter
+      Encoder is invalid
+
+
