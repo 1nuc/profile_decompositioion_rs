@@ -1,6 +1,6 @@
 use std::default;
 
-use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput}}, *};
+use burn::{backend::{Autodiff, Wgpu, wgpu::{self, WgpuDevice}}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput}}, *};
 use ndarray::{Array2, Array3};
 use polars::prelude::*;
 use crate::{Actions, EagerActions};
@@ -18,6 +18,7 @@ const Y_COLS: usize=24;
 const X_COLS: usize=24;
 // const X_COLS=
 // The items srtuct for which is the batcher is building
+#[derive(Clone, Debug)]
 pub struct NrelDatasetItem{
     pub sequence_item: Array2<f32>,
     pub target_item: Array2<f32>,
@@ -77,6 +78,7 @@ impl <B: Backend> NrelBatcher<B>{
 }
 
 // The output of elements batching
+#[derive(Debug, Clone)]
 pub struct NrelBatch<B: Backend>{
     pub sequence: Tensor<B, 3>,
     pub target: Tensor<B, 3>,
@@ -119,8 +121,19 @@ pub struct NucLstmConfig{
     input_size: usize,
     output_size: usize,
     hidden_size: usize,
-    num_layers: usize,
+    // num_layers: usize,
     dropout: f32,
+}
+//Implementing default for NucLstmConfig
+impl Default for NucLstmConfig{
+    fn default() -> Self {
+        Self{
+            input_size: X_COLS,
+            output_size: Y_COLS,
+            hidden_size: 18,
+            dropout: 0.3, //weight decay to prevent overfitting
+        }
+    }
 }
 //Initializing the model configurations 
 impl NucLstmConfig{
@@ -211,13 +224,31 @@ pub struct NrelConfig{
         pub num_epoch: usize,
         #[config(default=4)]
         pub workers: usize,
+        #[config(default=42)]
+        pub seed: u64,
         pub opt: AdamWConfig,
         #[config(default=32)]
         pub batch_size: usize,
 }
 impl NrelConfig{
-    fn train(&self){
-
+    fn train(&self, train_data: LazyFrame, test_data: LazyFrame){
+        //TODO: split the data into train and validate
+        let train_data=NrelDataset::new(train_data);
+        let test_data=NrelDataset::new(test_data);
+        //TODO: Set up the backend
+        type Mybackend=Autodiff<Wgpu>;
+        let device=WgpuDevice::default();
+        //TODO: prepare the data loader with the batcher
+        let batcher=NrelBatcher::<Mybackend>::new(device.clone());
+        let train_loader=DataLoaderBuilder::new(batcher)
+            .batch_size(self.batch_size)
+            .num_workers(self.workers)
+            .shuffle(self.seed)
+            .build(train_data);
+        //TODO: build the model
+        let model=NucLstmConfig::default().init::<Mybackend>(device);
+        //TODO: save the configurations
+        //TODO: Save the model results
     }
 }
 
