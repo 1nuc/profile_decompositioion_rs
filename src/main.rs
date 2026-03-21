@@ -10,15 +10,8 @@ fn main(){
     let encoded_data=data.clone().encode_categoricals().return_time_sequenced();
     let d=encoded_data.collect().unwrap();
     let binding=d.clone();
-    let cols=binding.return_y_columns();
-    let samples=d.height();
-    let sequenced_data=d.select_sequence(cols.clone(), samples);
-    let arr=sequenced_data.slice(s![3,..,..]).to_owned();
-    let device=WgpuDevice::default();
-    type MyBackend=backend::Wgpu<f32,i32>;
-    // let tensor=Tensor::<MyBackend, 3>::from_data(TensorData::new(arr.clone(),[1,96,cols.len()]), &device);
-    let tensor=Tensor::<MyBackend, 2>::from_data(TensorData::new(arr.into_raw_vec_and_offset().0,[96, cols.len()]), &device);
-    println!("{:?}",tensor);
+    let cols=binding.return_x_columns();
+    println!("{:?}", cols.len());
     // let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
     // let (mut x_train, mut x_test, mut y_train, y_test)=preprocessor.split_x_y();
     // let d_train=x_train.to_matrix(true);
