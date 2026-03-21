@@ -1,6 +1,6 @@
-use std::default;
+use std::{default, fs};
 
-use burn::{backend::{Autodiff, Wgpu, wgpu::{self, WgpuDevice}}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput}}, *};
+use burn::{backend::{Autodiff, Wgpu, wgpu::{self, WgpuDevice}}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, record::CompactRecorder, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput, LossMetric}}, *};
 use ndarray::{Array2, Array3};
 use polars::prelude::*;
 use crate::{Actions, EagerActions};
@@ -232,15 +232,22 @@ pub struct NrelConfig{
         pub batch_size: usize,
 }
 impl NrelConfig{
-    fn train(&self, train_data: LazyFrame, test_data: LazyFrame){
+    fn create_artifact_dir(&self,artifact_dir: &str){
+        fs::remove_dir_all(artifact_dir);
+        fs::create_dir_all(artifact_dir);
+    }
+    fn train(&self, train_data: LazyFrame, test_data: LazyFrame, artifact_dir: &str){
+        self.create_artifact_dir(artifact_dir);
         //TODO: split the data into train and validate
         let train_data=NrelDataset::new(train_data);
         let test_data=NrelDataset::new(test_data);
         //TODO: Set up the backend
         type Mybackend=Autodiff<Wgpu>;
+        type Testbackend=Wgpu;
         let device=WgpuDevice::default();
         //TODO: prepare the data loader with the batcher
         let batcher=NrelBatcher::<Mybackend>::new(device.clone());
+        let test_batcher=NrelBatcher::<Testbackend>::new(device.clone());
         // Train Data
         let train_loader=DataLoaderBuilder::new(batcher.clone())
             .batch_size(self.batch_size)
@@ -248,14 +255,22 @@ impl NrelConfig{
             .shuffle(self.seed)
             .build(train_data);
         //Test Data
-        let test_loader=DataLoaderBuilder::new(batcher.clone())
+        let test_loader=DataLoaderBuilder::new(test_batcher.clone())
             .batch_size(self.batch_size)
             .num_workers(self.workers)
             .shuffle(self.seed)
             .build(test_data);
         //TODO: build the model
         let model=NucLstmConfig::default().init::<Mybackend>(device);
+        let train=SupervisedTraining::new(artifact_dir, train_loader, test_loader)
+            .metric_train_numeric(LossMetric::new())
+            .metric_valid_numeric(LossMetric::new())
+            .with_file_checkpointer(CompactRecorder::new())
+            .num_epochs(self.num_epoch)
+            .summary();
+        let result=train.launch(Learner::new(model, self.opt.init(), 1e-3));
         //TODO: save the configurations
+        self.save(format!("{artifact_dir}/config.json").as_str()).unwrap();
         //TODO: Save the model results
     }
 }
