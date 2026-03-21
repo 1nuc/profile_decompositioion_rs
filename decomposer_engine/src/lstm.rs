@@ -66,6 +66,7 @@ impl Dataset<NrelDatasetItem> for NrelDataset{
 }
 
 // Prepare the batcher
+#[derive(Debug, Clone)]
 pub struct NrelBatcher<B: Backend>{
     pub device: B::Device,
 }
@@ -240,11 +241,18 @@ impl NrelConfig{
         let device=WgpuDevice::default();
         //TODO: prepare the data loader with the batcher
         let batcher=NrelBatcher::<Mybackend>::new(device.clone());
-        let train_loader=DataLoaderBuilder::new(batcher)
+        // Train Data
+        let train_loader=DataLoaderBuilder::new(batcher.clone())
             .batch_size(self.batch_size)
             .num_workers(self.workers)
             .shuffle(self.seed)
             .build(train_data);
+        //Test Data
+        let test_loader=DataLoaderBuilder::new(batcher.clone())
+            .batch_size(self.batch_size)
+            .num_workers(self.workers)
+            .shuffle(self.seed)
+            .build(test_data);
         //TODO: build the model
         let model=NucLstmConfig::default().init::<Mybackend>(device);
         //TODO: save the configurations
