@@ -1,3 +1,5 @@
+use std::default;
+
 use burn::{backend::{Autodiff, Wgpu}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput}}, *};
 use ndarray::{Array2, Array3};
 use polars::prelude::*;
@@ -200,6 +202,22 @@ impl <B: Backend> InferenceStep for NucLstm<B>{
     type Output= NrelSequenceOutput<B>;
     fn step(&self, item: Self::Input) -> Self::Output {
         self.forward_step(item)
+    }
+}
+
+#[derive(Debug, Config)]
+pub struct NrelConfig{
+        #[config(default=50)]
+        pub num_epoch: usize,
+        #[config(default=4)]
+        pub workers: usize,
+        pub opt: AdamWConfig,
+        #[config(default=32)]
+        pub batch_size: usize,
+}
+impl NrelConfig{
+    fn train(&self){
+
     }
 }
 
