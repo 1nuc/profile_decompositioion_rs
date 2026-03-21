@@ -32,10 +32,11 @@ pub struct NrelDataset{
 
 //Initialize the dataset and set up sequence and target
 impl NrelDataset{
-    pub fn new(dataset: DataFrame) -> Self{
-        let x_cols=data.return_x_columns();
+    pub fn new(data: DataFrame) -> Self{
+        let mut x_cols=data.return_x_columns();
         let y_cols=data.return_y_columns();
         let batches=data.height();
+        x_cols.retain(|x| !x.eq(&"timestamp") & !x.eq(&"bldg_id"));
         Self{
             sequence: data 
                 .clone()
@@ -235,7 +236,7 @@ impl NrelConfig{
         fs::remove_dir_all(artifact_dir);
         fs::create_dir_all(artifact_dir);
     }
-    fn train(&self, train_data: DataFrame, test_data: DataFrame, artifact_dir: &str){
+    pub fn train(&self, train_data: DataFrame, test_data: DataFrame, artifact_dir: &str){
         self.create_artifact_dir(artifact_dir);
         //TODO: split the data into train and validate
         let train_data=NrelDataset::new(train_data);
