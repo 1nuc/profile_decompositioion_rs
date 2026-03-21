@@ -1,6 +1,6 @@
 use std::{default, fs};
 
-use burn::{backend::{Autodiff, Wgpu, wgpu::{self, WgpuDevice}}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, record::CompactRecorder, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput, LossMetric}}, *};
+use burn::{backend::{Autodiff, Wgpu, wgpu::{self, WgpuDevice}}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, record::{CompactRecorder, NoStdTrainingRecorder}, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput, LossMetric}}, *};
 use ndarray::{Array2, Array3};
 use polars::prelude::*;
 use crate::{Actions, EagerActions};
@@ -272,6 +272,7 @@ impl NrelConfig{
         //TODO: save the configurations
         self.save(format!("{artifact_dir}/config.json").as_str()).unwrap();
         //TODO: Save the model results
+        result.model.save_file(format!("{artifact_dir}/model"), &NoStdTrainingRecorder::new()).expect("Error in saving the trained model");
     }
 }
 
