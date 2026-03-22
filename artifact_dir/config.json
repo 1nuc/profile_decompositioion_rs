@@ -1,0 +1,14 @@
+{
+  "opt": {
+    "grad_clipping": null,
+    "beta_1": 0.9,
+    "beta_2": 0.999,
+    "epsilon": 0.00001,
+    "weight_decay": 0.0001,
+    "cautious_weight_decay": false
+  },
+  "num_epoch": 4,
+  "workers": 4,
+  "seed": 42,
+  "batch_size": 32
+}
