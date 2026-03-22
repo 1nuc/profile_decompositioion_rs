@@ -133,7 +133,7 @@ impl Default for NucLstmConfig{
         Self{
             input_size: 22,
             output_size: 24,
-            hidden_size: 80,
+            hidden_size: 128,
             dropout: 0.5, //weight decay to prevent overfitting
         }
     }
@@ -142,10 +142,10 @@ impl Default for NucLstmConfig{
 impl NucLstmConfig{
     pub fn init<B: Backend>(&self, device: B::Device) -> NucLstm<B>{
         let lstm=LstmConfig::new(self.input_size, self.hidden_size, true).with_batch_first(true);
-        let linear=LinearConfig::new(self.hidden_size, self.output_size);
+        let lstm_2=LstmConfig::new(self.hidden_size, self.output_size, true);
         NucLstm{
            model: lstm.init(&device),
-           output_model: linear.init(&device)
+           output_model: lstm_2.init(&device)
         }
     }
 }
@@ -179,7 +179,7 @@ impl <B: Backend> ItemLazy for NrelSequenceOutput<B>{
 #[derive(Module, Debug)]
 pub struct NucLstm<B :Backend>{
     model: Lstm<B>,
-    output_model: Linear<B>,
+    output_model: Lstm<B>,
 }
 
 impl <B: Backend>NucLstm<B> {
@@ -188,7 +188,7 @@ impl <B: Backend>NucLstm<B> {
         let (output,_) =self.model.forward(input, None);
         // let [batch_size, seq_length, hidden_size]=output.dims();
         // let last_output=output.narrow(2, seq_length-1, 2).reshape([batch_size, seq_length,hidden_size]);
-        self.output_model.forward(output)
+        self.output_model.forward(output, None).0
     }
     // Calculating the loss function of the forward step
     pub fn forward_step(&self, items: NrelBatch<B>) ->NrelSequenceOutput<B>{
@@ -223,14 +223,14 @@ impl <B: Backend> InferenceStep for NucLstm<B>{
 
 #[derive(Debug, Config)]
 pub struct NrelConfig{
-        #[config(default=4)]
+        #[config(default=15)]
         pub num_epoch: usize,
         #[config(default=4)]
         pub workers: usize,
         #[config(default=42)]
         pub seed: u64,
         pub opt: AdamWConfig,
-        #[config(default=100)]
+        #[config(default=360)]
         pub batch_size: usize,
 }
 impl NrelConfig{
