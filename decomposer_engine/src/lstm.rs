@@ -60,7 +60,7 @@ impl Dataset<NrelDatasetItem> for NrelDataset{
     }
 
     fn len(&self) -> usize {
-        self.sequence.len()
+        self.sequence.shape()[0]
     }
 
 }
