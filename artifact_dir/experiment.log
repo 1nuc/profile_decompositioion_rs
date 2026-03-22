@@ -1,26 +1,152 @@
-2026-03-22T10:24:33.337429Z  WARN wgpu_hal::vulkan::instance: Unable to find extension: VK_EXT_physical_device_drm
-2026-03-22T10:24:33.338478Z  WARN wgpu_hal::vulkan::instance: InstanceFlags::VALIDATION requested, but unable to find layer: VK_LAYER_KHRONOS_validation
-2026-03-22T10:24:33.395141Z  WARN wgpu_hal::vulkan::instance: GENERAL [Loader Message (0x0)]
+2026-03-22T10:36:52.018527Z  WARN wgpu_hal::vulkan::instance: Unable to find extension: VK_EXT_physical_device_drm
+2026-03-22T10:36:52.018861Z  WARN wgpu_hal::vulkan::instance: InstanceFlags::VALIDATION requested, but unable to find layer: VK_LAYER_KHRONOS_validation
+2026-03-22T10:36:52.053299Z  WARN wgpu_hal::vulkan::instance: GENERAL [Loader Message (0x0)]
 	terminator_CreateInstance: Received return code -9 from call to vkCreateInstance in ICD /usr/lib64/libvulkan_dzn.so. Skipping this driver.
-2026-03-22T10:24:33.395276Z  WARN wgpu_hal::vulkan::instance: 	objects: (type: INSTANCE, hndl: 0x562c7f2fc960, name: ?)
-2026-03-22T10:24:33.500300Z  INFO cubecl_wgpu::runtime: Using adapter AdapterInfo { name: "NVIDIA GeForce RTX 4050 Laptop GPU (NVK AD107)", vendor: 4318, device: 10401, device_type: DiscreteGpu, driver: "NVK", driver_info: "Mesa 25.3.6", backend: Vulkan }
-2026-03-22T10:24:33.579252Z  INFO cubecl_wgpu::runtime: Created wgpu compute server on device Device { inner: Core(CoreDevice { context: ContextWgpuCore { type: "Native" }, id: Id(0,1), error_sink: Mutex { data: ErrorSink }, features: Features { features_wgpu: FeaturesWGPU(TEXTURE_FORMAT_16BIT_NORM | TEXTURE_ADAPTER_SPECIFIC_FORMAT_FEATURES | PIPELINE_STATISTICS_QUERY | TIMESTAMP_QUERY_INSIDE_ENCODERS | TIMESTAMP_QUERY_INSIDE_PASSES | TEXTURE_BINDING_ARRAY | BUFFER_BINDING_ARRAY | STORAGE_RESOURCE_BINDING_ARRAY | SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING | STORAGE_TEXTURE_ARRAY_NON_UNIFORM_INDEXING | PARTIALLY_BOUND_BINDING_ARRAY | MULTI_DRAW_INDIRECT | MULTI_DRAW_INDIRECT_COUNT | PUSH_CONSTANTS | ADDRESS_MODE_CLAMP_TO_ZERO | ADDRESS_MODE_CLAMP_TO_BORDER | POLYGON_MODE_LINE | POLYGON_MODE_POINT | CONSERVATIVE_RASTERIZATION | VERTEX_WRITABLE_STORAGE | CLEAR_TEXTURE | SPIRV_SHADER_PASSTHROUGH | MULTIVIEW | TEXTURE_ATOMIC | TEXTURE_FORMAT_NV12 | SHADER_F64 | SHADER_I16 | SHADER_PRIMITIVE_INDEX | SHADER_EARLY_DEPTH_TEST | SHADER_INT64 | SUBGROUP | SUBGROUP_VERTEX | SUBGROUP_BARRIER | PIPELINE_CACHE | SHADER_INT64_ATOMIC_MIN_MAX | SHADER_INT64_ATOMIC_ALL_OPS | TEXTURE_INT64_ATOMIC), features_webgpu: FeaturesWebGPU(DEPTH_CLIP_CONTROL | DEPTH32FLOAT_STENCIL8 | TEXTURE_COMPRESSION_BC | TEXTURE_COMPRESSION_BC_SLICED_3D | TIMESTAMP_QUERY | INDIRECT_FIRST_INSTANCE | RG11B10UFLOAT_RENDERABLE | BGRA8UNORM_STORAGE | FLOAT32_FILTERABLE | DUAL_SOURCE_BLENDING | CLIP_DISTANCES) } }) } => AdapterInfo { name: "NVIDIA GeForce RTX 4050 Laptop GPU (NVK AD107)", vendor: 4318, device: 10401, device_type: DiscreteGpu, driver: "NVK", driver_info: "Mesa 25.3.6", backend: Vulkan }
-2026-03-22T10:24:33.639914Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 1
-2026-03-22T10:24:33.646770Z ERROR burn_train::learner::application_logger: PANIC => panicked at /home/ahmedthegoat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/burn-backend-0.20.1/src/data/tensor.rs:86:9:
-assertion `left == right` failed: Shape [96, 24] is invalid for input of size 2112
-  left: 2304
- right: 2112
-2026-03-22T10:24:33.646802Z ERROR burn_train::learner::application_logger: PANIC => panicked at /home/ahmedthegoat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/burn-backend-0.20.1/src/data/tensor.rs:86:9:
-assertion `left == right` failed: Shape [96, 24] is invalid for input of size 2112
-  left: 2304
- right: 2112
-2026-03-22T10:24:33.646815Z ERROR burn_train::learner::application_logger: PANIC => panicked at /home/ahmedthegoat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/burn-backend-0.20.1/src/data/tensor.rs:86:9:
-assertion `left == right` failed: Shape [96, 24] is invalid for input of size 2112
-  left: 2304
- right: 2112
-2026-03-22T10:24:33.646889Z ERROR burn_train::learner::application_logger: PANIC => panicked at /home/ahmedthegoat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/burn-backend-0.20.1/src/data/tensor.rs:86:9:
-assertion `left == right` failed: Shape [96, 24] is invalid for input of size 2112
-  left: 2304
- right: 2112
-2026-03-22T10:24:33.647159Z ERROR burn_train::learner::application_logger: PANIC => panicked at /home/ahmedthegoat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/burn-core-0.20.1/src/data/dataloader/multithread.rs:245:29:
-called `Result::unwrap()` on an `Err` value: RecvError
+2026-03-22T10:36:52.053394Z  WARN wgpu_hal::vulkan::instance: 	objects: (type: INSTANCE, hndl: 0x56271cd92ac0, name: ?)
+2026-03-22T10:36:52.122915Z  INFO cubecl_wgpu::runtime: Using adapter AdapterInfo { name: "NVIDIA GeForce RTX 4050 Laptop GPU (NVK AD107)", vendor: 4318, device: 10401, device_type: DiscreteGpu, driver: "NVK", driver_info: "Mesa 25.3.6", backend: Vulkan }
+2026-03-22T10:36:52.169719Z  INFO cubecl_wgpu::runtime: Created wgpu compute server on device Device { inner: Core(CoreDevice { context: ContextWgpuCore { type: "Native" }, id: Id(0,1), error_sink: Mutex { data: ErrorSink }, features: Features { features_wgpu: FeaturesWGPU(TEXTURE_FORMAT_16BIT_NORM | TEXTURE_ADAPTER_SPECIFIC_FORMAT_FEATURES | PIPELINE_STATISTICS_QUERY | TIMESTAMP_QUERY_INSIDE_ENCODERS | TIMESTAMP_QUERY_INSIDE_PASSES | TEXTURE_BINDING_ARRAY | BUFFER_BINDING_ARRAY | STORAGE_RESOURCE_BINDING_ARRAY | SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING | STORAGE_TEXTURE_ARRAY_NON_UNIFORM_INDEXING | PARTIALLY_BOUND_BINDING_ARRAY | MULTI_DRAW_INDIRECT | MULTI_DRAW_INDIRECT_COUNT | PUSH_CONSTANTS | ADDRESS_MODE_CLAMP_TO_ZERO | ADDRESS_MODE_CLAMP_TO_BORDER | POLYGON_MODE_LINE | POLYGON_MODE_POINT | CONSERVATIVE_RASTERIZATION | VERTEX_WRITABLE_STORAGE | CLEAR_TEXTURE | SPIRV_SHADER_PASSTHROUGH | MULTIVIEW | TEXTURE_ATOMIC | TEXTURE_FORMAT_NV12 | SHADER_F64 | SHADER_I16 | SHADER_PRIMITIVE_INDEX | SHADER_EARLY_DEPTH_TEST | SHADER_INT64 | SUBGROUP | SUBGROUP_VERTEX | SUBGROUP_BARRIER | PIPELINE_CACHE | SHADER_INT64_ATOMIC_MIN_MAX | SHADER_INT64_ATOMIC_ALL_OPS | TEXTURE_INT64_ATOMIC), features_webgpu: FeaturesWebGPU(DEPTH_CLIP_CONTROL | DEPTH32FLOAT_STENCIL8 | TEXTURE_COMPRESSION_BC | TEXTURE_COMPRESSION_BC_SLICED_3D | TIMESTAMP_QUERY | INDIRECT_FIRST_INSTANCE | RG11B10UFLOAT_RENDERABLE | BGRA8UNORM_STORAGE | FLOAT32_FILTERABLE | DUAL_SOURCE_BLENDING | CLIP_DISTANCES) } }) } => AdapterInfo { name: "NVIDIA GeForce RTX 4050 Laptop GPU (NVK AD107)", vendor: 4318, device: 10401, device_type: DiscreteGpu, driver: "NVK", driver_info: "Mesa 25.3.6", backend: Vulkan }
+2026-03-22T10:36:52.198077Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 1
+2026-03-22T10:36:52.283379Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-03-22T10:36:52.308598Z  INFO cubecl_runtime::tune::tune_cache: Load autotune cache ...
+2026-03-22T10:36:52.308677Z  INFO cubecl_runtime::tune::tune_cache: Loaded 2 autotune cached entries
+2026-03-22T10:36:52.309460Z  INFO cubecl_runtime::tune::tune_cache: Load autotune cache ...
+2026-03-22T10:36:52.309521Z  INFO cubecl_runtime::tune::tune_cache: Loaded 1 autotune cached entries
+2026-03-22T10:36:56.271847Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 128, n: 32, k: 32, lhs_pow2_factor: 1, lhs_stride_factor: 3, rhs_pow2_factor: 3, rhs_stride_factor: 5, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 4, NumOps: 4
+2026-03-22T10:36:56.274631Z  INFO cubecl_runtime::tune::tuner: Tuning MatmulAutotuneKey - Definition: MatmulProblemDefinition { m: 128, n: 32, k: 32, lhs_pow2_factor: 1, lhs_stride_factor: 3, rhs_pow2_factor: 3, rhs_stride_factor: 5, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, Analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General }
+2026-03-22T10:37:03.676071Z  INFO cubecl_runtime::tune::tune_cache: Load autotune cache ...
+2026-03-22T10:37:03.676148Z  INFO cubecl_runtime::tune::tune_cache: Loaded 0 autotune cached entries
+2026-03-22T10:37:03.676170Z  INFO cubecl_runtime::tune::tuner: Tuning SumAutotuneKey { dtype: F32, length: 73728 }
+2026-03-22T10:37:03.676473Z  INFO cubecl_runtime::tune::tune_cache: Load autotune cache ...
+2026-03-22T10:37:03.676537Z  INFO cubecl_runtime::tune::tune_cache: Loaded 0 autotune cached entries
+2026-03-22T10:37:03.676556Z  INFO cubecl_runtime::tune::tuner: Tuning ReduceAutotuneKey - ElemInput: Float(F32), ElemOutput: Float(F32), ElemAcc: Float(F32), AxisIsContiguous: true, VectorSize: 64, VectorCount: 4096
+2026-03-22T10:37:03.807985Z  INFO cubecl_runtime::tune::tuner: Tuning ReduceAutotuneKey - ElemInput: Float(F32), ElemOutput: Float(F32), ElemAcc: Float(F32), AxisIsContiguous: false, VectorSize: 64, VectorCount: 512
+2026-03-22T10:37:03.854020Z  INFO cubecl_runtime::tune::tuner: Tuning ReduceAutotuneKey - ElemInput: Float(F32), ElemOutput: Float(F32), ElemAcc: Float(F32), AxisIsContiguous: true, VectorSize: 256, VectorCount: 1
+2026-03-22T10:37:03.986998Z  INFO cubecl_runtime::tune::tune_cache: Load autotune cache ...
+2026-03-22T10:37:03.987079Z  INFO cubecl_runtime::tune::tune_cache: Loaded 0 autotune cached entries
+2026-03-22T10:37:03.987103Z  INFO cubecl_runtime::tune::tuner: Tuning FusedReduceAutotuneKey - ReduceKey: ReduceAutotuneKey { elem_input: Float(F32), elem_output: Float(F32), elem_acc: Float(F32), axis_is_contiguous: false, vector_size: 64, vector_count: 4096 }, FuseNumReads: 4, FuseNumWrites: 2, FuseNumOps: 4
+2026-03-22T10:37:03.999921Z  INFO cubecl_runtime::tune::tuner: Tuning ReduceAutotuneKey - ElemInput: Float(F32), ElemOutput: Float(F32), ElemAcc: Float(F32), AxisIsContiguous: false, VectorSize: 64, VectorCount: 4096
+2026-03-22T10:37:04.174486Z  INFO cubecl_runtime::tune::tuner: Tuning ReduceAutotuneKey - ElemInput: Float(F32), ElemOutput: Float(F32), ElemAcc: Float(F32), AxisIsContiguous: false, VectorSize: 256, VectorCount: 64
+2026-03-22T10:37:04.226513Z  INFO cubecl_runtime::tune::tuner: Tuning MatmulAutotuneKey - Definition: MatmulProblemDefinition { m: 128, n: 32, k: 32, lhs_pow2_factor: 3, lhs_stride_factor: 5, rhs_pow2_factor: 3, rhs_stride_factor: 5, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: MildlyPermuted { transposed: true, batch_swap: false } }, Analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General }
+2026-03-22T10:37:09.495451Z  INFO cubecl_runtime::tune::tuner: Tuning MatmulAutotuneKey - Definition: MatmulProblemDefinition { m: 32, n: 32, k: 128, lhs_pow2_factor: 1, lhs_stride_factor: 3, rhs_pow2_factor: 3, rhs_stride_factor: 5, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: MildlyPermuted { transposed: true, batch_swap: false }, matrix_layout_rhs: Contiguous }, Analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General }
+2026-03-22T10:37:10.306849Z  INFO cubecl_runtime::tune::tuner: Tuning FusedReduceAutotuneKey - ReduceKey: ReduceAutotuneKey { elem_input: Float(F32), elem_output: Float(F32), elem_acc: Float(F32), axis_is_contiguous: false, vector_size: 64, vector_count: 64 }, FuseNumReads: 16, FuseNumWrites: 8, FuseNumOps: 64
+2026-03-22T10:37:10.322948Z  INFO cubecl_runtime::tune::tuner: Tuning ReduceAutotuneKey - ElemInput: Float(F32), ElemOutput: Float(F32), ElemAcc: Float(F32), AxisIsContiguous: false, VectorSize: 64, VectorCount: 64
+2026-03-22T10:37:10.522742Z  INFO cubecl_runtime::tune::tuner: Tuning MatmulAutotuneKey - Definition: MatmulProblemDefinition { m: 32, n: 32, k: 32, lhs_pow2_factor: 1, lhs_stride_factor: 3, rhs_pow2_factor: 1, rhs_stride_factor: 3, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: MildlyPermuted { transposed: true, batch_swap: false } }, Analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General }
+2026-03-22T10:37:16.219483Z  INFO cubecl_runtime::tune::tuner: Tuning MatmulAutotuneKey - Definition: MatmulProblemDefinition { m: 32, n: 32, k: 32, lhs_pow2_factor: 1, lhs_stride_factor: 3, rhs_pow2_factor: 1, rhs_stride_factor: 3, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: MildlyPermuted { transposed: true, batch_swap: false }, matrix_layout_rhs: Contiguous }, Analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General }
+2026-03-22T10:37:16.970490Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 32, n: 32, k: 32, lhs_pow2_factor: 1, lhs_stride_factor: 3, rhs_pow2_factor: 1, rhs_stride_factor: 3, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: MildlyPermuted { transposed: true, batch_swap: false } }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 1, NumOps: 2
+2026-03-22T10:37:17.345341Z  INFO cubecl_runtime::tune::tuner: Tuning FusedReduceAutotuneKey - ReduceKey: ReduceAutotuneKey { elem_input: Float(F32), elem_output: Float(F32), elem_acc: Float(F32), axis_is_contiguous: false, vector_size: 64, vector_count: 64 }, FuseNumReads: 4, FuseNumWrites: 2, FuseNumOps: 16
+2026-03-22T10:37:18.381211Z  INFO cubecl_runtime::tune::tuner: Tuning FusedReduceAutotuneKey - ReduceKey: ReduceAutotuneKey { elem_input: Float(F32), elem_output: Float(F32), elem_acc: Float(F32), axis_is_contiguous: false, vector_size: 64, vector_count: 64 }, FuseNumReads: 16, FuseNumWrites: 4, FuseNumOps: 64
+2026-03-22T10:37:19.658176Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-03-22T10:37:19.658704Z  INFO cubecl_runtime::tune::tuner: Tuning SumAutotuneKey { dtype: F32, length: 1 }
+2026-03-22T10:37:19.658937Z  INFO cubecl_runtime::tune::tuner: Tuning ReduceAutotuneKey - ElemInput: Float(F32), ElemOutput: Float(F32), ElemAcc: Float(F32), AxisIsContiguous: true, VectorSize: 16, VectorCount: 1
+2026-03-22T10:37:24.044575Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-03-22T10:37:28.041506Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-03-22T10:37:31.883119Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-03-22T10:37:35.567800Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-03-22T10:37:39.149558Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-03-22T10:37:43.018907Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-03-22T10:37:46.787083Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-03-22T10:37:50.378892Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-03-22T10:37:54.002096Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-03-22T10:37:54.009847Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 32, n: 32, k: 32, lhs_pow2_factor: 1, lhs_stride_factor: 3, rhs_pow2_factor: 1, rhs_stride_factor: 3, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 4, NumOps: 16
+2026-03-22T10:37:59.601046Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-03-22T10:38:03.263703Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-03-22T10:38:03.283743Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 32, n: 32, k: 32, lhs_pow2_factor: 1, lhs_stride_factor: 3, rhs_pow2_factor: 1, rhs_stride_factor: 3, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 2, NumOps: 16
+2026-03-22T10:38:05.305535Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 32, n: 32, k: 32, lhs_pow2_factor: 1, lhs_stride_factor: 3, rhs_pow2_factor: 1, rhs_stride_factor: 3, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 8, NumOps: 16
+2026-03-22T10:38:10.729012Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-03-22T10:38:14.638530Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-03-22T10:38:18.210659Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-03-22T10:38:21.880272Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-03-22T10:38:25.563029Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-03-22T10:38:29.226438Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-03-22T10:38:32.864644Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-03-22T10:38:36.394455Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-03-22T10:38:39.966853Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-03-22T10:38:43.622511Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-03-22T10:38:47.155116Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-03-22T10:38:47.161451Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 32, n: 32, k: 32, lhs_pow2_factor: 1, lhs_stride_factor: 3, rhs_pow2_factor: 1, rhs_stride_factor: 3, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 2, NumOps: 4
+2026-03-22T10:38:52.651054Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-03-22T10:38:56.466859Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-03-22T10:39:00.454446Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 27
+2026-03-22T10:39:04.644291Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 28
+2026-03-22T10:39:08.712191Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 29
+2026-03-22T10:39:12.847006Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 30
+2026-03-22T10:39:17.372193Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 31
+2026-03-22T10:39:21.647759Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 32
+2026-03-22T10:39:25.679127Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 33
+2026-03-22T10:39:29.940317Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 34
+2026-03-22T10:39:34.301813Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 35
+2026-03-22T10:39:38.659033Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 36
+2026-03-22T10:39:42.773822Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 37
+2026-03-22T10:39:46.949945Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 38
+2026-03-22T10:39:50.841709Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 39
+2026-03-22T10:39:54.713139Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 40
+2026-03-22T10:39:58.784476Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 41
+2026-03-22T10:40:02.813396Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 42
+2026-03-22T10:40:06.921153Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 43
+2026-03-22T10:40:11.059854Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 44
+2026-03-22T10:40:15.281092Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 45
+2026-03-22T10:40:19.357927Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 46
+2026-03-22T10:40:23.699045Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 47
+2026-03-22T10:40:27.747166Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 48
+2026-03-22T10:40:31.795006Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 49
+2026-03-22T10:40:35.954867Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 50
+2026-03-22T10:40:39.871033Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 51
+2026-03-22T10:40:43.936119Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 52
+2026-03-22T10:40:48.025737Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 53
+2026-03-22T10:40:52.093127Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 54
+2026-03-22T10:40:56.220105Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 55
+2026-03-22T10:41:00.241329Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 56
+2026-03-22T10:41:04.247427Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 57
+2026-03-22T10:41:08.130486Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 58
+2026-03-22T10:41:11.923864Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 59
+2026-03-22T10:41:15.880864Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 60
+2026-03-22T10:41:19.764926Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 61
+2026-03-22T10:41:23.773899Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 62
+2026-03-22T10:41:27.681729Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 63
+2026-03-22T10:41:31.743113Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 64
+2026-03-22T10:41:35.771807Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 65
+2026-03-22T10:41:39.867112Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 66
+2026-03-22T10:41:43.886323Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 67
+2026-03-22T10:41:47.979677Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 68
+2026-03-22T10:41:51.930994Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 69
+2026-03-22T10:41:56.035213Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 70
+2026-03-22T10:42:00.006586Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 71
+2026-03-22T10:42:03.936549Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 72
+2026-03-22T10:42:08.007466Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 73
+2026-03-22T10:42:12.127354Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 74
+2026-03-22T10:42:16.285467Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 75
+2026-03-22T10:42:20.438919Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 76
+2026-03-22T10:42:24.557094Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 77
+2026-03-22T10:42:28.377297Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 78
+2026-03-22T10:42:32.334614Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 79
+2026-03-22T10:42:36.397899Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 80
+2026-03-22T10:42:40.505146Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 81
+2026-03-22T10:42:44.417270Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 82
+2026-03-22T10:42:48.385809Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 83
+2026-03-22T10:42:52.346540Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 84
+2026-03-22T10:42:56.318930Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 85
+2026-03-22T10:43:00.364764Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 86
+2026-03-22T10:43:04.233558Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 87
+2026-03-22T10:43:08.188702Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 88
+2026-03-22T10:43:12.229339Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 89
+2026-03-22T10:43:16.226010Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 90
+2026-03-22T10:43:20.301119Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 91
+2026-03-22T10:43:24.187776Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 92
+2026-03-22T10:43:28.038615Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 93
+2026-03-22T10:43:31.988101Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 94
+2026-03-22T10:43:35.785249Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 95
+2026-03-22T10:43:39.607130Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 96
+2026-03-22T10:43:43.527387Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 97
+2026-03-22T10:43:47.456472Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 98
+2026-03-22T10:43:51.305802Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 99
+2026-03-22T10:43:55.417242Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 100
+2026-03-22T10:43:59.747185Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 101
+2026-03-22T10:44:03.915102Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 102
+2026-03-22T10:44:07.892198Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 103
+2026-03-22T10:44:12.033403Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 104
+2026-03-22T10:44:16.230126Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 105
+2026-03-22T10:44:20.509342Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 106
+2026-03-22T10:44:24.807674Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 107
+2026-03-22T10:44:29.005015Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 108
+2026-03-22T10:44:33.159649Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 109
+2026-03-22T10:44:37.258433Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 110
