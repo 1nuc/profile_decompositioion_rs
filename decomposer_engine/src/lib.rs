@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 use ndarray::{Array2, Array3};
 use polars::prelude::*;
 use xgboost::DMatrix;

@@ -133,8 +133,8 @@ impl Default for NucLstmConfig{
         Self{
             input_size: 22,
             output_size: 24,
-            hidden_size: 18,
-            dropout: 0.3, //weight decay to prevent overfitting
+            hidden_size: 80,
+            dropout: 0.5, //weight decay to prevent overfitting
         }
     }
 }
@@ -223,14 +223,14 @@ impl <B: Backend> InferenceStep for NucLstm<B>{
 
 #[derive(Debug, Config)]
 pub struct NrelConfig{
-        #[config(default=50)]
+        #[config(default=4)]
         pub num_epoch: usize,
         #[config(default=4)]
         pub workers: usize,
         #[config(default=42)]
         pub seed: u64,
         pub opt: AdamWConfig,
-        #[config(default=32)]
+        #[config(default=100)]
         pub batch_size: usize,
 }
 impl NrelConfig{
@@ -246,7 +246,7 @@ impl NrelConfig{
         //TODO: Set up the backend
         type Mybackend=Autodiff<Wgpu>;
         type Testbackend=Wgpu;
-        let device=WgpuDevice::default();
+        let device=WgpuDevice::DiscreteGpu(0);
         //TODO: prepare the data loader with the batcher
         let batcher=NrelBatcher::<Mybackend>::new(device.clone());
         let test_batcher=NrelBatcher::<Testbackend>::new(device.clone());

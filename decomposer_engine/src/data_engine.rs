@@ -158,8 +158,11 @@ impl Actions for LazyFrame {
     }
 
     fn standard_scalar(&mut self) -> Self {
+        let exclude=["bldg_id", "timestamp"];
         self.clone()
-            .with_columns([(col("*") - col("*").mean()) / col("*").std(1)])
+            .with_columns([
+                (all().exclude_cols(exclude).as_expr() - all().exclude_cols(exclude).as_expr().mean()
+                 ) / all().exclude_cols(exclude).as_expr().std(1)])
             .fill_nan(0)
     }
 
