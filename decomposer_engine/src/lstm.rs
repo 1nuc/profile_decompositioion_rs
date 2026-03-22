@@ -16,6 +16,7 @@ use ndarray::s;
 
 const Y_COLS: usize=24;
 const X_COLS: usize=24;
+
 // The items srtuct for which is the batcher is building
 #[derive(Clone, Debug)]
 pub struct NrelDatasetItem{
@@ -108,21 +109,6 @@ impl <B: Backend> Batcher<B, NrelDatasetItem, NrelBatch<B>> for NrelBatcher<B>{
             sequences.push(tensor_sequence);
             targets.push(tensor_target);
         }
-        // items.iter().clone().map(|x|{
-        //     let tensor_sequence=Tensor::<B,2>::from_data(
-        //         TensorData::new(
-        //             x.sequence_item.clone().into_raw_vec_and_offset().0, 
-        //             [96, X_COLS]),
-        //     device);
-        //
-        //     let tensor_target=Tensor::<B,2>::from_data(
-        //         TensorData::new(
-        //             x.target_item.clone().into_raw_vec_and_offset().0, 
-        //             [96, Y_COLS]),
-        //     device);
-        //     sequences.push(tensor_sequence);
-        //     targets.push(tensor_target);
-        // });
         let sequence=Tensor::stack(sequences, 0);
         let target=Tensor::stack(targets, 0);
         NrelBatch{
@@ -200,9 +186,9 @@ impl <B: Backend>NucLstm<B> {
     //the forward function for which the weights neurons are multiplied
     pub fn forward(&self, input: Tensor<B,3>) -> Tensor<B, 3>{
         let (output,_) =self.model.forward(input, None);
-        let [batch_size, seq_length, hidden_size]=output.dims();
-        let last_output=output.narrow(2, seq_length-1, 2).reshape([batch_size, seq_length,hidden_size]);
-        self.output_model.forward(last_output)
+        // let [batch_size, seq_length, hidden_size]=output.dims();
+        // let last_output=output.narrow(2, seq_length-1, 2).reshape([batch_size, seq_length,hidden_size]);
+        self.output_model.forward(output)
     }
     // Calculating the loss function of the forward step
     pub fn forward_step(&self, items: NrelBatch<B>) ->NrelSequenceOutput<B>{
@@ -291,21 +277,3 @@ impl NrelConfig{
         result.model.save_file(format!("{artifact_dir}/model"), &NoStdTrainingRecorder::new()).expect("Error in saving the trained model");
     }
 }
-
-// fn train(){
-//     type Mybackend=Autodiff<Wgpu<f32, i32>>;
-//     let data_source=Nrel::init();
-//     let mut data=data_source.data;
-//     let encoded_data=data.encode_categoricals();
-//     let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
-//     let (mut x_train, mut x_test, mut y_train, y_test)=preprocessor.split_x_y();
-//     let device=Default::default();
-//     let tensor_train=Tensor::<Mybackend,2>::from_data(x_train.to_ndarry().as_slice().unwrap(), &device);
-//     let tensor_test=Tensor::<Mybackend,2>::from_data(x_test.to_ndarry().as_slice().unwrap(), &device);
-//     let model=NucLstmConfig::new(preprocessor.x_labels_size, preprocessor.y_labels_size, 20, 2, 0.0).init::<Mybackend>(device.clone());
-//     let batcher=Mybatcher::<Mybackend>::new(device.clone());
-//     let train_batcher=DataLoaderBuilder::new(batcher).batch_size(32).num_workers(4).build(tensor_train);
-//     let test_batcher=DataLoaderBuilder::new(batcher).batch_size(32).num_workers(4).build(tensor_test);
-//     let config=SupervisedTraining::new("artifact_dir/", train_batcher, test_batcher).num_epochs(50).summary();
-//     let result=config.launch(Learner::new(model, AdamWConfig::new().init(), 1e-3));
-// }
