@@ -16,7 +16,6 @@ use ndarray::s;
 
 const Y_COLS: usize=24;
 const X_COLS: usize=24;
-// const X_COLS=
 // The items srtuct for which is the batcher is building
 #[derive(Clone, Debug)]
 pub struct NrelDatasetItem{
@@ -92,21 +91,38 @@ impl <B: Backend> Batcher<B, NrelDatasetItem, NrelBatch<B>> for NrelBatcher<B>{
         let mut sequences=Vec::new();
         let mut targets=Vec::new();
         let batch_len=items.len();
-        items.iter().clone().map(|x|{
+        for item in items{
+            let (seq_cols, seq_rows)=item.sequence_item.clone().dim();
+            let (tar_cols, tar_rows)=item.target_item.clone().dim();
             let tensor_sequence=Tensor::<B,2>::from_data(
                 TensorData::new(
-                    x.sequence_item.clone().into_raw_vec_and_offset().0, 
-                    [96, X_COLS]),
+                    item.sequence_item.clone().into_raw_vec_and_offset().0, 
+                    [seq_cols, seq_rows]),
             device);
 
             let tensor_target=Tensor::<B,2>::from_data(
                 TensorData::new(
-                    x.target_item.clone().into_raw_vec_and_offset().0, 
-                    [96, Y_COLS]),
+                    item.target_item.clone().into_raw_vec_and_offset().0, 
+                    [tar_cols, tar_rows]),
             device);
             sequences.push(tensor_sequence);
             targets.push(tensor_target);
-        });
+        }
+        // items.iter().clone().map(|x|{
+        //     let tensor_sequence=Tensor::<B,2>::from_data(
+        //         TensorData::new(
+        //             x.sequence_item.clone().into_raw_vec_and_offset().0, 
+        //             [96, X_COLS]),
+        //     device);
+        //
+        //     let tensor_target=Tensor::<B,2>::from_data(
+        //         TensorData::new(
+        //             x.target_item.clone().into_raw_vec_and_offset().0, 
+        //             [96, Y_COLS]),
+        //     device);
+        //     sequences.push(tensor_sequence);
+        //     targets.push(tensor_target);
+        // });
         let sequence=Tensor::stack(sequences, 0);
         let target=Tensor::stack(targets, 0);
         NrelBatch{
@@ -129,8 +145,8 @@ pub struct NucLstmConfig{
 impl Default for NucLstmConfig{
     fn default() -> Self {
         Self{
-            input_size: X_COLS,
-            output_size: Y_COLS,
+            input_size: 22,
+            output_size: 24,
             hidden_size: 18,
             dropout: 0.3, //weight decay to prevent overfitting
         }
