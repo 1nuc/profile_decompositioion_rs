@@ -1,6 +1,6 @@
 use std::{default, fs};
 
-use burn::{backend::{Autodiff, Wgpu, wgpu::{self, WgpuDevice}}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, record::{CompactRecorder, NoStdTrainingRecorder}, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput, LossMetric}}, *};
+use burn::{backend::{Autodiff, Wgpu, wgpu::{self, WgpuDevice}}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{LayerNorm, LayerNormConfig, Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, record::{CompactRecorder, NoStdTrainingRecorder}, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput, LossMetric}}, *};
 use ndarray::{Array2, Array3};
 use polars::prelude::*;
 use crate::{Actions, EagerActions};
@@ -141,11 +141,13 @@ impl Default for NucLstmConfig{
 //Initializing the model configurations 
 impl NucLstmConfig{
     pub fn init<B: Backend>(&self, device: B::Device) -> NucLstm<B>{
-        let lstm=LstmConfig::new(self.input_size, self.hidden_size, true).with_batch_first(true);
-        let lstm_2=LstmConfig::new(self.hidden_size, self.output_size, true);
+        let model=LstmConfig::new(self.input_size, self.hidden_size, true).with_batch_first(true).init(&device);
+        let layer_norm=LayerNormConfig::new(self.hidden_size).init(&device);
+        let output_model=LinearConfig::new(self.hidden_size, self.output_size).init(&device);
         NucLstm{
-           model: lstm.init(&device),
-           output_model: lstm_2.init(&device)
+           model,
+           layer_norm,
+           output_model,
         }
     }
 }
@@ -179,7 +181,8 @@ impl <B: Backend> ItemLazy for NrelSequenceOutput<B>{
 #[derive(Module, Debug)]
 pub struct NucLstm<B :Backend>{
     model: Lstm<B>,
-    output_model: Lstm<B>,
+    layer_norm: LayerNorm<B>,
+    output_model: Linear<B>,
 }
 
 impl <B: Backend>NucLstm<B> {
@@ -188,7 +191,7 @@ impl <B: Backend>NucLstm<B> {
         let (output,_) =self.model.forward(input, None);
         // let [batch_size, seq_length, hidden_size]=output.dims();
         // let last_output=output.narrow(2, seq_length-1, 2).reshape([batch_size, seq_length,hidden_size]);
-        self.output_model.forward(output, None).0
+        self.output_model.forward(output)
     }
     // Calculating the loss function of the forward step
     pub fn forward_step(&self, items: NrelBatch<B>) ->NrelSequenceOutput<B>{
