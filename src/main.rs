@@ -1,8 +1,8 @@
-use decomposer_engine::{Actions, EagerActions, data_engine::*, lstm::{self, *}, preprocessor_engine::Preprocessor, xgb::Xgb}; 
+use decomposer_engine::{Actions, EagerActions, data_engine::*, dl::{models::lstm::{self, NucLstmConfig}, training::NrelConfig}, preprocessor_engine::Preprocessor, xgb::Xgb}; 
 use ndarray::{Array3, s};
 use polars::prelude::*;
 use tap::Conv;
-use burn::{Tensor, backend::{self, wgpu::WgpuDevice}, optim::AdamWConfig, prelude::Backend, tensor::{Int, TensorData}, train};
+use burn::{Tensor, backend::{self, Autodiff, Wgpu, wgpu::WgpuDevice}, optim::AdamWConfig, prelude::Backend, tensor::{Int, TensorData}, train};
 
 fn main(){
     let data_source=Nrel::init();
@@ -14,8 +14,11 @@ fn main(){
     let train_size=encoded_data.clone().height() as f32 * 0.7;
     let train_data=encoded_data.clone().head(Some(train_size as usize));
     let test_data=encoded_data.clone().tail(Some(validation_size as usize));
-    let model_config=lstm::NrelConfig::new(AdamWConfig::new().with_weight_decay(1e-4));
-    model_config.train(train_data, test_data, "artifact_dir");
+    type Mybackend= Autodiff<Wgpu>;
+    let device=WgpuDevice::DiscreteGpu(0);
+    let model=NucLstmConfig::default();
+    let model_config=NrelConfig::new(model,AdamWConfig::new().with_weight_decay(1e-4));
+    model_config.train::<Mybackend>(train_data, test_data, "artifact_dir", device);
     // let train_data=data_fraction.tail(length)
     // let preprocessor=Preprocessor::new(encoded_data.clone(), 42, 0.3);
     // let (mut x_train, mut x_test, mut y_train, y_test)=preprocessor.split_x_y();
