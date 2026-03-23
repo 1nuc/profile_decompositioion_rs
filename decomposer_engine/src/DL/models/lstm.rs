@@ -1,6 +1,6 @@
 use std::{default, fs};
 
-use burn::{backend::{Autodiff, Wgpu, wgpu::{self, WgpuDevice}}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{LayerNorm, LayerNormConfig, Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, record::{CompactRecorder, NoStdTrainingRecorder}, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput, LossMetric}}, *};
+use burn::{backend::{Autodiff, LibTorch, Wgpu, libtorch::LibTorchDevice, wgpu::{self, WgpuDevice}}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{LayerNorm, LayerNormConfig, Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, record::{CompactRecorder, NoStdTrainingRecorder}, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput, LossMetric}}, *};
 use ndarray::{Array2, Array3};
 use polars::prelude::*;
 use crate::{Actions, EagerActions};
@@ -248,9 +248,9 @@ impl NrelConfig{
         let train_data=NrelDataset::new(train_data);
         let test_data=NrelDataset::new(test_data);
         //TODO: Set up the backend
-        type Mybackend=Autodiff<Wgpu>;
-        type Testbackend=Wgpu;
-        let device=WgpuDevice::DiscreteGpu(0);
+        type Mybackend=Autodiff<LibTorch>;
+        type Testbackend=LibTorch;
+        let device=LibTorchDevice::Cuda(0);
         //TODO: prepare the data loader with the batcher
         let batcher=NrelBatcher::<Mybackend>::new(device.clone());
         let test_batcher=NrelBatcher::<Testbackend>::new(device.clone());
