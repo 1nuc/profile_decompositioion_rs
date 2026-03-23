@@ -1,114 +1,10 @@
 use std::{default, fs};
 
 use burn::{backend::{Autodiff, LibTorch, Wgpu, libtorch::LibTorchDevice, wgpu::{self, WgpuDevice}}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{LayerNorm, LayerNormConfig, Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, record::{CompactRecorder, NoStdTrainingRecorder}, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput, LossMetric}}, *};
-use ndarray::{Array2, Array3};
 use polars::prelude::*;
-use crate::{Actions, EagerActions};
-use ndarray::s;
 
-const Y_COLS: usize=24;
-const X_COLS: usize=24;
+use crate::dl::dataset::NrelBatch;
 
-// The items srtuct for which is the batcher is building
-#[derive(Clone, Debug)]
-pub struct NrelDatasetItem{
-    pub sequence_item: Array2<f32>,
-    pub target_item: Array2<f32>,
-}
-
-// The main dataset used
-pub struct NrelDataset{
-    pub sequence: Array3<f32>,
-    pub target: Array3<f32>,
-}
-
-//Initialize the dataset and set up sequence and target
-impl NrelDataset{
-    pub fn new(data: DataFrame) -> Self{
-        let mut x_cols=data.return_x_columns();
-        let y_cols=data.return_y_columns();
-        let batches=data.height();
-        x_cols.retain(|x| !x.eq(&"timestamp") & !x.eq(&"bldg_id"));
-        Self{
-            sequence: data 
-                .clone()
-                .select_sequence(x_cols.clone(), batches),
-            target: data 
-                .clone()
-                .select_sequence(y_cols.clone(), batches),
-        }
-    }
-}
-
-//Specify the get method needed for batch to catch the elements
-impl Dataset<NrelDatasetItem> for NrelDataset{
-    fn get(&self, index: usize) -> Option<NrelDatasetItem> {
-        Some(NrelDatasetItem{
-           sequence_item: self.sequence
-               .slice(s![index,..,..]).to_owned(),
-           target_item: self.target
-               .slice(s![index,..,..]).to_owned(),
-        })
-    }
-
-    fn len(&self) -> usize {
-        self.sequence.shape()[0]
-    }
-
-}
-
-// Prepare the batcher
-#[derive(Debug, Clone)]
-pub struct NrelBatcher<B: Backend>{
-    pub device: B::Device,
-}
-impl <B: Backend> NrelBatcher<B>{
-    pub fn new(device: B::Device)-> Self{
-        Self{
-            device
-        }
-    }
-}
-
-// The output of elements batching
-#[derive(Debug, Clone)]
-pub struct NrelBatch<B: Backend>{
-    pub sequence: Tensor<B, 3>,
-    pub target: Tensor<B, 3>,
-}
-
-//Batching elements
-#[allow(unused_variables)]
-impl <B: Backend> Batcher<B, NrelDatasetItem, NrelBatch<B>> for NrelBatcher<B>{
-    fn batch(&self, items: Vec<NrelDatasetItem>, device: &<B as Backend>::Device) -> NrelBatch<B> {
-        let mut sequences=Vec::new();
-        let mut targets=Vec::new();
-        let batch_len=items.len();
-        for item in items{
-            let (seq_cols, seq_rows)=item.sequence_item.clone().dim();
-            let (tar_cols, tar_rows)=item.target_item.clone().dim();
-            let tensor_sequence=Tensor::<B,2>::from_data(
-                TensorData::new(
-                    item.sequence_item.clone().into_raw_vec_and_offset().0, 
-                    [seq_cols, seq_rows]),
-            device);
-
-            let tensor_target=Tensor::<B,2>::from_data(
-                TensorData::new(
-                    item.target_item.clone().into_raw_vec_and_offset().0, 
-                    [tar_cols, tar_rows]),
-            device);
-            sequences.push(tensor_sequence);
-            targets.push(tensor_target);
-        }
-        let sequence=Tensor::stack(sequences, 0);
-        let target=Tensor::stack(targets, 0);
-        NrelBatch{
-            sequence,
-            target,
-        }
-    }
-}
 
 //Prepare the configurations of the model
 #[derive(Config, Debug)]
@@ -162,9 +58,9 @@ impl <B: Backend> ItemLazy for NrelSequenceOutput<B>{
     type ItemSync = NrelSequenceOutput<B>; 
     fn sync(self) -> Self::ItemSync{
         Self{
-            loss: self.loss.clone(),
-            output: self.output.clone(),
-            targets: self.targets.clone(),
+            loss: self.loss,
+            output: self.output,
+            targets: self.targets,
         }
     }
 }
@@ -214,62 +110,5 @@ impl <B: Backend> InferenceStep for NucLstm<B>{
     type Output= NrelSequenceOutput<B>;
     fn step(&self, item: Self::Input) -> Self::Output {
         self.forward_step(item)
-    }
-}
-
-#[derive(Debug, Config)]
-pub struct NrelConfig{
-        #[config(default=15)]
-        pub num_epoch: usize,
-        #[config(default=4)]
-        pub workers: usize,
-        #[config(default=42)]
-        pub seed: u64,
-        pub opt: AdamWConfig,
-        #[config(default=360)]
-        pub batch_size: usize,
-}
-impl NrelConfig{
-    fn create_artifact_dir(&self,artifact_dir: &str){
-        fs::remove_dir_all(artifact_dir);
-        fs::create_dir_all(artifact_dir);
-    }
-    pub fn train(&self, train_data: DataFrame, test_data: DataFrame, artifact_dir: &str){
-        self.create_artifact_dir(artifact_dir);
-        //TODO: split the data into train and validate
-        let train_data=NrelDataset::new(train_data);
-        let test_data=NrelDataset::new(test_data);
-        //TODO: Set up the backend
-        type Mybackend=Autodiff<LibTorch>;
-        type Testbackend=LibTorch;
-        let device=LibTorchDevice::Cuda(0);
-        //TODO: prepare the data loader with the batcher
-        let batcher=NrelBatcher::<Mybackend>::new(device.clone());
-        let test_batcher=NrelBatcher::<Testbackend>::new(device.clone());
-        // Train Data
-        let train_loader=DataLoaderBuilder::new(batcher.clone())
-            .batch_size(self.batch_size)
-            .num_workers(self.workers)
-            .shuffle(self.seed)
-            .build(train_data);
-        //Test Data
-        let test_loader=DataLoaderBuilder::new(test_batcher.clone())
-            .batch_size(self.batch_size)
-            .num_workers(self.workers)
-            .shuffle(self.seed)
-            .build(test_data);
-        //TODO: build the model
-        let model=NucLstmConfig::default().init::<Mybackend>(device);
-        let train=SupervisedTraining::new(artifact_dir, train_loader, test_loader)
-            .metric_train_numeric(LossMetric::new())
-            .metric_valid_numeric(LossMetric::new())
-            .with_file_checkpointer(CompactRecorder::new())
-            .num_epochs(self.num_epoch)
-            .summary();
-        let result=train.launch(Learner::new(model, self.opt.init(), 1e-3));
-        //TODO: save the configurations
-        self.save(format!("{artifact_dir}/config.json").as_str()).unwrap();
-        //TODO: Save the model results
-        result.model.save_file(format!("{artifact_dir}/model"), &NoStdTrainingRecorder::new()).expect("Error in saving the trained model");
     }
 }
