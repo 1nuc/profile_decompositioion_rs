@@ -5,6 +5,15 @@ use std::{fmt::{Debug, Display}, fs::*};
 use crate::dl::dataset::{NrelBatch, NrelBatcher, NrelDataset};
 
 
+pub trait Nreltype:
+    TrainStep<Input = NrelBatch<Autodiff<LibTorch>>> + InferenceStep + ItemLazy + Debug + Display + Send + AutodiffModule<Autodiff<LibTorch>> + 'static
+    where
+    <Self as AutodiffModule<Autodiff<LibTorch>>>::InnerModule: InferenceStep< Input = NrelBatch<LibTorch>> + Module<LibTorch>,
+    <Self as TrainStep>::Output: ItemLazy,
+    <<Self as TrainStep>::Output as ItemLazy>::ItemSync: Adaptor<LossInput<Autodiff<LibTorch>>>,
+    <<Self as AutodiffModule<Autodiff<LibTorch>>>::InnerModule as InferenceStep>::Output: ItemLazy,
+    <<<Self as AutodiffModule<Autodiff<LibTorch>>>::InnerModule as InferenceStep>::Output as ItemLazy>::ItemSync: Adaptor<LossInput<LibTorch>>
+{}
 
 #[derive(Debug, Config)]
 pub struct NrelConfig{
