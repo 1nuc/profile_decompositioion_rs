@@ -6,14 +6,6 @@ use polars::prelude::*;
 use crate::{Actions, EagerActions};
 use ndarray::s;
 
-//TODO: Create Nrel Dataset struct and perform the get and len operation (implement Dataset trait)
-//TODO: Create the item struct that will be the output of the get method and the input for the batch
-//TODO: Create the batcher struct which will be the x and y 
-//TODO: the batcher will be a vector of the item struct 
-//TODO: Use config values for the preprocessor to separate x and y in this code
-//TODO: Make separate methods to split the data to first traint and test then here in this code
-//TODO: split them manually to x and y by calling the functions
-
 const Y_COLS: usize=24;
 const X_COLS: usize=24;
 
