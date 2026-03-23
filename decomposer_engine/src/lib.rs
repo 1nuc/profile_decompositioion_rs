@@ -5,7 +5,7 @@ use polars::prelude::*;
 use xgboost::DMatrix;
 
 pub mod data_engine;
-pub mod lstm;
+pub mod dl/lstm;
 pub mod preprocessor_engine;
 pub mod xgb;
 
