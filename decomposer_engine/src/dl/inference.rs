@@ -20,7 +20,6 @@ impl Inference{
 
         //load the test data and the batcher and initialize the data items
         let test_data=NrelDataset::new(test_data);
-        println!("{:?}", test_data.len());
         let batcher: NrelBatcher<B>=NrelBatcher::new(device.clone());
 
         let batched_data: Vec<NrelDatasetItem>=test_data.iter().collect();
@@ -34,13 +33,13 @@ impl Inference{
         let targets=batch.target;
         
         let loss=MseLoss::new();
-        let mse_loss=loss.forward(predicted.clone(), targets.clone(), burn::nn::loss::Reduction::Mean);
+        let mse_loss_3d=loss.forward(predicted.clone(), targets.clone(), burn::nn::loss::Reduction::Mean);
         // squeeze both predicted and targets to 1d tensor
         let predicted=predicted.flatten::<2>(1,2).into_data().to_vec::<f32>().unwrap();
         let targets=targets.flatten::<2>(1,2).into_data().to_vec::<f32>().unwrap();
         // display the difference between targets and predicted values
-        let r2_score=Self::r2_score(predicted, targets);
-        println!("mse: {:?}", mse_loss.to_data().to_vec::<f32>());
+        let r2_score=Self::r2_score(predicted.clone(), targets.clone());
+        println!("mse: {:?}", mse_loss_3d.to_data().to_vec::<f32>());
         println!("r2: {:?}", r2_score);
     }
 

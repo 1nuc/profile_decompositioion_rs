@@ -258,7 +258,7 @@ impl EagerActions for DataFrame{
 
     fn train_val_test_spli(&self)->(DataFrame,DataFrame,DataFrame) {
         let data_fraction=self.clone().sample_frac(
-            &Series::new("fraction".into(),[0.7]), false, true, Some(42)).unwrap();
+            &Series::new("fraction".into(),[0.7]), false, false, Some(42)).unwrap();
         //define the size for the training and both test and validation
         let test_val_size=data_fraction.clone().height() as f32 * 0.3;
         let train_size=data_fraction.clone().height() as f32 * 0.7;

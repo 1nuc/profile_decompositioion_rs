@@ -1,6 +1,6 @@
 use burn::{
     config::Config, module::Module, nn::{
-        LayerNorm, LayerNormConfig, Linear, LinearConfig, Relu, 
+        Linear, LinearConfig, Relu, 
         Lstm, LstmConfig, loss::MseLoss
     }, prelude::Backend, tensor::{
         backend::AutodiffBackend
@@ -35,11 +35,11 @@ impl Default for NucLstmConfig{
 impl NucLstmConfig{
     pub fn init<B: Backend>(&self, device: B::Device) -> NucLstm<B>{
         let model=LstmConfig::new(self.input_size, self.hidden_size, true).with_batch_first(true).init(&device);
-        // let layer_norm=LayerNormConfig::new(self.hidden_size).init(&device);
+        let inner_model=LstmConfig::new(self.hidden_size, self.hidden_size, true).with_batch_first(true).init(&device);
         let output_model=LinearConfig::new(self.hidden_size, self.output_size).init(&device);
         NucLstm{
            model,
-           // layer_norm,
+           inner_model,
            output_model,
         }
     }
@@ -74,16 +74,16 @@ impl <B: Backend> ItemLazy for NrelSequenceOutput<B>{
 #[derive(Module, Debug)]
 pub struct NucLstm<B :Backend>{
     model: Lstm<B>,
-    // layer_norm: LayerNorm<B>,
+    inner_model: Lstm<B>,
     output_model: Linear<B>,
 }
 
 impl <B: Backend>NucLstm<B> {
     //the forward function for which the weights neurons are multiplied
     pub fn forward(&self, input: Tensor<B,3>) -> Tensor<B, 3>{
-        let (lstm_output,_) =self.model.forward(input, None);
-        // let layer_output=self.layer_norm.forward(lstm_output);//layer norm layer to normalize the lstm batches
-        Relu::new().forward(self.output_model.forward(lstm_output))
+        let lstm_output =self.model.forward(input, None).0;
+        let inner_output=self.inner_model.forward(lstm_output, None).0;//layer norm layer to normalize the lstm batches
+        Relu::new().forward(self.output_model.forward(inner_output))
         
     }
     // Calculating the loss function of the forward step
