@@ -28,16 +28,17 @@ impl Inference{
         let batch=batcher.batch(batched_data, &device);
 
         // get the predicted and target values
-        let mut predicted= model.forward(batch.sequence);
-        let mut targets=batch.target;
+        let predicted= model.forward(batch.sequence);
+        let targets=batch.target;
         
         // squeeze both predicted and targets to 1d tensor
-        predicted=predicted.squeeze_dims::<1>(&[0,1]).into_data();
-        targets=targets.squeeze_dims::<1>(&[0,1]).into_data();
+        let predicted=predicted.squeeze_dims::<1>(&[0,1]).into_data();
+        let targets=targets.squeeze_dims::<1>(&[0,1]).into_data();
         // display the difference between targets and predicted values
-        // let result=df![
-        //     "predicted"=>predicted. 
-        //     "Actual"=> targets.
-        // ];
+        let result=df!(
+            "predicted"=> predicted.to_vec::<f32>().unwrap(),
+            "actual"=> targets.to_vec::<f32>().unwrap(),
+        );
+        println!("{:?}", result);
     }
 }
