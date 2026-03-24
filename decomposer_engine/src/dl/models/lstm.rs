@@ -83,8 +83,6 @@ impl <B: Backend>NucLstm<B> {
     pub fn forward(&self, input: Tensor<B,3>) -> Tensor<B, 3>{
         let (output,_) =self.model.forward(input, None);
         let output=self.layer_norm.forward(output);//layer norm layer to normalize the lstm batches
-        // let [batch_size, seq_length, hidden_size]=output.dims();
-        // let last_output=output.narrow(2, seq_length-1, 2).reshape([batch_size, seq_length,hidden_size]);
         self.output_model.forward(output)
     }
     // Calculating the loss function of the forward step
