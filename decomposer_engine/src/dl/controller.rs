@@ -10,7 +10,7 @@
 use burn::{backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, module::AutodiffModule, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend};
 use polars::frame::DataFrame;
 
-use crate::{EagerActions, dl::{models::lstm::NucLstmConfig, training::NrelConfig}};
+use crate::{EagerActions, dl::{inference::Inference, models::lstm::NucLstmConfig, training::NrelConfig}};
 
 
 pub struct Controller{
@@ -33,18 +33,17 @@ impl Controller{
     pub fn lstm_simulation(&self){
         type Mybackend= Autodiff<Wgpu>;
         let device=WgpuDevice::DiscreteGpu(0);
-        self.train_lstm::<Mybackend>(device);
+        self.train_lstm::<Mybackend>(device.clone());
+        self.infer_lstm::<Mybackend>(device);
     }
 
     pub fn train_lstm<B: AutodiffBackend>(&self,device: B::Device){
         let model=NucLstmConfig::default();
         let model_config=NrelConfig::new(model,AdamWConfig::new().with_weight_decay(1e-4));
-        model_config.train::<B>(self.train_data.clone(), self.val_data.clone(), "artifact_dir", device);
+        model_config.train::<B>(self.train_data.clone(), self.val_data.clone(), "lstm_artifact", device);
     }
 
-    pub fn train_lstm<B: AutodiffBackend>(&self,device: B::Device){
-        let model=NucLstmConfig::default();
-        let model_config=NrelConfig::new(model,AdamWConfig::new().with_weight_decay(1e-4));
-        model_config.train::<B>(self.train_data.clone(), self.val_data.clone(), "artifact_dir", device);
+    pub fn infer_lstm<B: AutodiffBackend>(&self,device: B::Device){
+        Inference::inference::<B>("lstm_artifact", self.test_data.clone(), device);
     }
 }
