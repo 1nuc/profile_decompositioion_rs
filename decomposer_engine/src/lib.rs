@@ -16,6 +16,8 @@ pub trait EagerActions{
     fn return_x_columns(&self)->Vec<&str>;
 
     fn return_y_columns(&self)->Vec<&str>;
+
+    fn train_val_test_spli(&self)->(DataFrame,DataFrame,DataFrame);
 }
 pub trait Actions {
     fn rename_cols(&self) -> Self;
