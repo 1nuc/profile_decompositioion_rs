@@ -13,6 +13,7 @@ pub struct NrelDatasetItem{
 }
 
 // The main dataset used
+#[derive(Debug, Clone)]
 pub struct NrelDataset{
     pub sequence: Array3<f32>,
     pub target: Array3<f32>,
@@ -39,6 +40,9 @@ impl NrelDataset{
 //Specify the get method needed for batch to catch the elements
 impl Dataset<NrelDatasetItem> for NrelDataset{
     fn get(&self, index: usize) -> Option<NrelDatasetItem> {
+        if index >= self.len(){
+            return None;
+        }
         Some(NrelDatasetItem{
            sequence_item: self.sequence
                .slice(s![index,..,..]).to_owned(),

@@ -1,4 +1,4 @@
-use burn::{config::Config, data::{dataloader::batcher::Batcher, dataset::Dataset}, module::Module, nn::BatchNormConfig, prelude::Backend, record::{CompactRecorder, Recorder}};
+use burn::{config::Config, data::{dataloader::batcher::Batcher, dataset::Dataset}, module::Module, nn::{BatchNormConfig, loss::MseLoss}, prelude::Backend, record::{CompactRecorder, Recorder}};
 use polars::{df, frame::DataFrame};
 
 use crate::dl::{dataset::{NrelBatcher, NrelDataset, NrelDatasetItem}, models::lstm::NucLstmRecord, training::NrelConfig};
@@ -20,6 +20,7 @@ impl Inference{
 
         //load the test data and the batcher and initialize the data items
         let test_data=NrelDataset::new(test_data);
+        println!("{:?}", test_data.len());
         let batcher: NrelBatcher<B>=NrelBatcher::new(device.clone());
 
         let batched_data: Vec<NrelDatasetItem>=test_data.iter().collect();
@@ -32,16 +33,28 @@ impl Inference{
         let predicted= model.forward(batch.sequence);
         let targets=batch.target;
         
-        println!("{:?}", predicted);
-        println!("{:?}", targets);
+        let loss=MseLoss::new();
+        let mse_loss=loss.forward(predicted.clone(), targets.clone(), burn::nn::loss::Reduction::Mean);
         // squeeze both predicted and targets to 1d tensor
-        // let predicted=predicted.squeeze_dims::<1>(&[0,1]).into_data();
-        // let targets=targets.squeeze_dims::<1>(&[0,1]).into_data();
-        // // display the difference between targets and predicted values
-        // let result=df!(
-        //     "predicted"=> predicted.to_vec::<f32>().unwrap(),
-        //     "actual"=> targets.to_vec::<f32>().unwrap(),
-        // );
-        // println!("{:?}", result);
+        let predicted=predicted.flatten::<2>(1,2).into_data().to_vec::<f32>().unwrap();
+        let targets=targets.flatten::<2>(1,2).into_data().to_vec::<f32>().unwrap();
+        // display the difference between targets and predicted values
+        let r2_score=Self::r2_score(predicted, targets);
+        println!("mse: {:?}", mse_loss.to_data().to_vec::<f32>());
+        println!("r2: {:?}", r2_score);
     }
+
+    pub fn r2_score(preds: Vec<f32>, y_true: Vec<f32>) -> f32 {
+        //1- Total sum of residuals / total sum of squares
+        let mean = y_true.iter().sum::<f32>() / y_true.len() as f32;
+        let total_sum_residuals = y_true
+            .iter()
+            .zip(preds.iter())
+            .map(|(x, y)| (x - y).powi(2))
+            .sum::<f32>();
+        let total_sum_squares = y_true.iter().map(|x| (x - mean).powi(2)).sum::<f32>();
+
+        1_f32 - (total_sum_residuals / total_sum_squares)
+    }
+
 }
