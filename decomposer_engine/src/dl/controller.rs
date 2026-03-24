@@ -7,8 +7,10 @@
 //3. method for training and predicting
 //4. catch the method for the metrics
 
-use burn::{module::AutodiffModule, prelude::Backend};
+use burn::{backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, module::AutodiffModule, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend};
 use polars::frame::DataFrame;
+
+use crate::{EagerActions, dl::{models::lstm::NucLstmConfig, training::NrelConfig}};
 
 
 pub struct Controller{
@@ -17,8 +19,26 @@ pub struct Controller{
     pub val_data: DataFrame,
 }
 
-impl Default for Controller{
-    fn default() -> Self {
-        todo!()
+impl Controller{
+
+    pub fn new(data: DataFrame) -> Self{
+        let (train_data, val_data, test_data)=data.train_val_test_spli();
+        Self{
+            train_data,
+            test_data,
+            val_data,
+        }
+    }
+
+    pub fn simulation(&self){
+        type Mybackend= Autodiff<Wgpu>;
+        let device=WgpuDevice::DiscreteGpu(0);
+        self.train::<Mybackend>(device);
+    }
+
+    pub fn train<B: AutodiffBackend>(&self,device: B::Device){
+        let model=NucLstmConfig::default();
+        let model_config=NrelConfig::new(model,AdamWConfig::new().with_weight_decay(1e-4));
+        model_config.train::<B>(self.train_data.clone(), self.val_data.clone(), "artifact_dir", device);
     }
 }
