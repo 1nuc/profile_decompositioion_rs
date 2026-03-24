@@ -3,7 +3,8 @@ use polars::{df, frame::DataFrame};
 
 use crate::dl::{dataset::{NrelBatcher, NrelDataset, NrelDatasetItem}, models::lstm::NucLstmRecord, training::NrelConfig};
 
-struct Inference{}
+pub struct Inference{}
+
 impl Inference{
     pub fn inference<B: Backend>(artifact_dir: &str, validation_data: DataFrame, device: B::Device){
         //Load the configurations of the model
