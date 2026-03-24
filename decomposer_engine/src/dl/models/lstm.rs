@@ -1,7 +1,12 @@
-use std::{default, fs};
-
-use burn::{backend::{Autodiff, LibTorch, Wgpu, libtorch::LibTorchDevice, wgpu::{self, WgpuDevice}}, config::Config, data::{dataloader::{DataLoaderBuilder, batcher::{self, Batcher}}, dataset::Dataset}, module::Module, nn::{LayerNorm, LayerNormConfig, Linear, LinearConfig, Lstm, LstmConfig, loss::MseLoss}, optim::AdamWConfig, prelude::Backend, record::{CompactRecorder, NoStdTrainingRecorder}, tensor::{TensorData, backend::AutodiffBackend}, train::{InferenceStep, ItemLazy, Learner, RegressionOutput, SupervisedTraining, TrainOutput, TrainStep, metric::{Adaptor, LossInput, LossMetric}}, *};
-use polars::prelude::*;
+use burn::{
+    config::Config, module::Module, nn::{
+        LayerNorm, LayerNormConfig, Linear, LinearConfig, 
+        Lstm, LstmConfig, loss::MseLoss
+    }, prelude::Backend, tensor::{
+        backend::AutodiffBackend
+    }, train::{
+        InferenceStep, ItemLazy,TrainOutput, TrainStep, metric::{
+            Adaptor, LossInput}}, *};
 
 use crate::dl::dataset::NrelBatch;
 
