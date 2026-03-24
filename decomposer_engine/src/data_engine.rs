@@ -272,7 +272,7 @@ impl EagerActions for DataFrame{
         let val_data=val_test_data.clone().head(Some(size as usize));
 
         let test_data=val_test_data.clone().tail(Some(size as usize));
-        (train_data, val_data, test_data)
+        (train_data, test_data, val_data)
     }
 }
 
