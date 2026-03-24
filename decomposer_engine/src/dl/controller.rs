@@ -30,13 +30,19 @@ impl Controller{
         }
     }
 
-    pub fn simulation(&self){
+    pub fn lstm_simulation(&self){
         type Mybackend= Autodiff<Wgpu>;
         let device=WgpuDevice::DiscreteGpu(0);
-        self.train::<Mybackend>(device);
+        self.train_lstm::<Mybackend>(device);
     }
 
-    pub fn train<B: AutodiffBackend>(&self,device: B::Device){
+    pub fn train_lstm<B: AutodiffBackend>(&self,device: B::Device){
+        let model=NucLstmConfig::default();
+        let model_config=NrelConfig::new(model,AdamWConfig::new().with_weight_decay(1e-4));
+        model_config.train::<B>(self.train_data.clone(), self.val_data.clone(), "artifact_dir", device);
+    }
+
+    pub fn train_lstm<B: AutodiffBackend>(&self,device: B::Device){
         let model=NucLstmConfig::default();
         let model_config=NrelConfig::new(model,AdamWConfig::new().with_weight_decay(1e-4));
         model_config.train::<B>(self.train_data.clone(), self.val_data.clone(), "artifact_dir", device);
