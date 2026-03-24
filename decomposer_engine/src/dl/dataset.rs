@@ -81,8 +81,8 @@ impl <B: Backend> Batcher<B, NrelDatasetItem, NrelBatch<B>> for NrelBatcher<B>{
         let mut targets=Vec::new();
         let batch_len=items.len();
         for item in items{
-            let (seq_cols, seq_rows)=item.sequence_item.clone().dim();
-            let (tar_cols, tar_rows)=item.target_item.clone().dim();
+            let (seq_cols, seq_rows)=item.sequence_item.dim();
+            let (tar_cols, tar_rows)=item.target_item.dim();
             let tensor_sequence=Tensor::<B,2>::from_data(
                 TensorData::new(
                     item.sequence_item.clone().into_raw_vec_and_offset().0, 
