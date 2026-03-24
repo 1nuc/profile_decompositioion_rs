@@ -1,14 +1,14 @@
-use burn::{backend::{Autodiff, LibTorch, libtorch::LibTorchDevice}, config::Config, data::dataloader::DataLoaderBuilder, module::{AutodiffModule, Module}, optim::AdamWConfig, record::{CompactRecorder, NoStdInferenceRecorder}, tensor::backend::AutodiffBackend, train::{InferenceStep, ItemLazy, Learner, SupervisedTraining, TrainStep, metric::{Adaptor, LossInput, LossMetric}}};
-use polars::{frame::DataFrame, prelude::ChunkCompareIneq};
-use std::{fmt::{Debug, Display}, fs::*};
+use burn::{config::Config, data::dataloader::DataLoaderBuilder, module::{Module}, optim::AdamWConfig, record::{CompactRecorder}, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining,metric::{LossMetric}}};
+use polars::{frame::DataFrame};
+use std::{fmt::{Debug}, fs::*};
 
-use crate::dl::{dataset::{NrelBatch, NrelBatcher, NrelDataset}, models::lstm::NucLstmConfig};
+use crate::dl::{dataset::{NrelBatcher, NrelDataset}, models::lstm::NucLstmConfig};
 
 
 #[derive(Debug, Config)]
 pub struct NrelConfig{
         pub model: NucLstmConfig,
-        #[config(default=15)]
+        #[config(default=30)]
         pub num_epoch: usize,
         #[config(default=4)]
         pub workers: usize,

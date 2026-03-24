@@ -157,11 +157,11 @@ impl Actions for LazyFrame {
         )
     }
 
-    fn standard_scalar(&mut self) -> Self {
-        let exclude=["bldg_id", "timestamp"];
+    fn standard_scalar(&mut self, cols: Vec<&str>) -> Self {
+        let exclude=[["bldg_id", "timestamp"].as_slice(), cols.as_slice()].concat();
         self.clone()
             .with_columns([
-                (all().exclude_cols(exclude).as_expr() - all().exclude_cols(exclude).as_expr().mean()
+                (all().exclude_cols(exclude.clone()).as_expr() - all().exclude_cols(exclude.clone()).as_expr().mean()
                  ) / all().exclude_cols(exclude).as_expr().std(1)])
             .fill_nan(0)
     }
@@ -195,13 +195,14 @@ impl Actions for LazyFrame {
         array_d.into_raw_vec_and_offset().0
     }
     fn to_matrix(&mut self, with_scalar: bool) -> DMatrix {
-        let data = if with_scalar {
-            self.standard_scalar().to_1d_vec()
-        } else {
-            self.to_1d_vec()
-        };
-        let num_rows = self.clone().collect().unwrap().height();
-        DMatrix::from_dense(&data, num_rows).expect("Unable to create DM matrix")
+        todo!()
+        // let data = if with_scalar {
+        //     self.standard_scalar().to_1d_vec()
+        // } else {
+        //     self.to_1d_vec()
+        // };
+        // let num_rows = self.clone().collect().unwrap().height();
+        // DMatrix::from_dense(&data, num_rows).expect("Unable to create DM matrix")
     }
 }
 

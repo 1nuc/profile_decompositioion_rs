@@ -6,7 +6,7 @@ use crate::dl::{dataset::{NrelBatcher, NrelDataset, NrelDatasetItem}, models::ls
 pub struct Inference{}
 
 impl Inference{
-    pub fn inference<B: Backend>(artifact_dir: &str, validation_data: DataFrame, device: B::Device){
+    pub fn inference<B: Backend>(artifact_dir: &str, test_data: DataFrame, device: B::Device){
         //Load the configurations of the model
         let config=NrelConfig::load(
             format!("{artifact_dir}/config.json")).expect("unable to find the file");
@@ -15,14 +15,14 @@ impl Inference{
         let record: NucLstmRecord<B>= CompactRecorder::new().load(
             format!("{artifact_dir}/model").into(), &device).expect("training model should exist first");
 
-        // load and initialize the model for validation 
+        // load and initialize the model for test 
         let model=config.model.init::<B>(device.clone()).load_record(record);
 
-        //load the validation data and the batcher and initialize the data items
-        let validation_data=NrelDataset::new(validation_data);
+        //load the test data and the batcher and initialize the data items
+        let test_data=NrelDataset::new(test_data);
         let batcher: NrelBatcher<B>=NrelBatcher::new(device.clone());
 
-        let batched_data: Vec<NrelDatasetItem>=validation_data.iter().collect();
+        let batched_data: Vec<NrelDatasetItem>=test_data.iter().collect();
         
         // convert the vec data into batches and start taking the inference
 
