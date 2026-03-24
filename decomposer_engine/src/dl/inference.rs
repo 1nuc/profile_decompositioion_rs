@@ -32,14 +32,16 @@ impl Inference{
         let predicted= model.forward(batch.sequence);
         let targets=batch.target;
         
+        println!("{:?}", predicted);
+        println!("{:?}", targets);
         // squeeze both predicted and targets to 1d tensor
-        let predicted=predicted.squeeze_dims::<1>(&[0,1]).into_data();
-        let targets=targets.squeeze_dims::<1>(&[0,1]).into_data();
-        // display the difference between targets and predicted values
-        let result=df!(
-            "predicted"=> predicted.to_vec::<f32>().unwrap(),
-            "actual"=> targets.to_vec::<f32>().unwrap(),
-        );
-        println!("{:?}", result);
+        // let predicted=predicted.squeeze_dims::<1>(&[0,1]).into_data();
+        // let targets=targets.squeeze_dims::<1>(&[0,1]).into_data();
+        // // display the difference between targets and predicted values
+        // let result=df!(
+        //     "predicted"=> predicted.to_vec::<f32>().unwrap(),
+        //     "actual"=> targets.to_vec::<f32>().unwrap(),
+        // );
+        // println!("{:?}", result);
     }
 }
