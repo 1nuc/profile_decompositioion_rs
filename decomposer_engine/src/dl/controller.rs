@@ -6,3 +6,19 @@
 //2. define the default implementation for the controller, the data backend, and many more
 //3. method for training and predicting
 //4. catch the method for the metrics
+
+use burn::{module::AutodiffModule, prelude::Backend};
+use polars::frame::DataFrame;
+
+
+pub struct Controller{
+    pub train_data: DataFrame,
+    pub test_data: DataFrame,
+    pub val_data: DataFrame,
+}
+
+impl Default for Controller{
+    fn default() -> Self {
+        todo!()
+    }
+}

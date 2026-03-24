@@ -254,6 +254,26 @@ impl EagerActions for DataFrame{
             ).filter(|x| pattern.is_match(x) & !unwanted_cols.contains(x)).collect::<Vec<&str>>()
 
     }
+
+    fn train_val_test_spli(&self)->(DataFrame,DataFrame,DataFrame) {
+        let data_fraction=self.clone().sample_frac(
+            &Series::new("fraction".into(),[0.7]), false, true, Some(42)).unwrap();
+        //define the size for the training and both test and validation
+        let test_val_size=data_fraction.clone().height() as f32 * 0.3;
+        let train_size=data_fraction.clone().height() as f32 * 0.7;
+        //define the training value
+        let train_data=data_fraction.clone().head(Some(train_size as usize));
+        let val_test_data=data_fraction.clone().tail(Some(test_val_size as usize));
+
+        //split again the val test data into test and validation data
+        
+        let size=val_test_data.clone().height() as f32 * 0.5;
+
+        let val_data=val_test_data.clone().head(Some(size as usize));
+
+        let test_data=val_test_data.clone().tail(Some(size as usize));
+        (train_data, val_data, test_data)
+    }
 }
 
 #[cfg(test)]
