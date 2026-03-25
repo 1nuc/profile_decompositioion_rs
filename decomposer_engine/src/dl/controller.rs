@@ -7,10 +7,10 @@
 //3. method for training and predicting
 //4. catch the method for the metrics
 
-use burn::{backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, module::AutodiffModule, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend};
+use burn::{backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, optim::AdamWConfig, tensor::backend::AutodiffBackend};
 use polars::frame::DataFrame;
 
-use crate::{EagerActions, dl::{inference::Inference, models::lstm::NucLstmConfig, training::NrelConfig}};
+use crate::{EagerActions, dl::{inference::Inference, models::{lstm::NucLstmConfig, stacked_lstm::StackedLstmConfig}, training::NrelConfig}};
 
 
 pub struct Controller{
@@ -38,7 +38,7 @@ impl Controller{
     }
 
     pub fn train_lstm<B: AutodiffBackend>(&self,device: B::Device){
-        let model=NucLstmConfig::default();
+        let model=StackedLstmConfig::default();
         let model_config=NrelConfig::new(model,AdamWConfig::new().with_weight_decay(1e-4));
         model_config.train::<B>(self.train_data.clone(), self.val_data.clone(), "lstm_artifact", device);
     }
