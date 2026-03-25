@@ -1,10 +1,7 @@
 use burn::{
     config::Config, module::Module, nn::{
-        Linear, LinearConfig, Relu, 
-        Lstm, LstmConfig, loss::MseLoss
-    }, prelude::Backend, tensor::{
-        backend::AutodiffBackend
-    }, train::{
+        BiLstm, BiLstmConfig, Linear, LinearConfig, Relu, loss::MseLoss
+    }, prelude::Backend, tensor::backend::AutodiffBackend, train::{
         InferenceStep, ItemLazy,TrainOutput, TrainStep, metric::{
             Adaptor, LossInput}}, *};
 
@@ -13,7 +10,7 @@ use crate::dl::dataset::NrelBatch;
 
 //Prepare the configurations of the model
 #[derive(Config, Debug)]
-pub struct StackedLstmConfig{
+pub struct StackedBiLstmConfig{
     input_size: usize,
     output_size: usize,
     hidden_size: usize,
@@ -21,7 +18,7 @@ pub struct StackedLstmConfig{
     dropout: f32,
 }
 //Implementing default for NucLstmConfig
-impl Default for StackedLstmConfig{
+impl Default for StackedBiLstmConfig{
     fn default() -> Self {
         Self{
             input_size: 22,
@@ -32,12 +29,12 @@ impl Default for StackedLstmConfig{
     }
 }
 //Initializing the model configurations 
-impl StackedLstmConfig{
-    pub fn init<B: Backend>(&self, device: B::Device) -> Stackedlstm<B>{
-        let model=LstmConfig::new(self.input_size, self.hidden_size, true).with_batch_first(true).init(&device);
-        let inner_model=LstmConfig::new(self.hidden_size, self.hidden_size, true).with_batch_first(true).init(&device);
+impl StackedBiLstmConfig{
+    pub fn init<B: Backend>(&self, device: B::Device) -> StackedBilstm<B>{
+        let model=BiLstmConfig::new(self.input_size, self.hidden_size, true).with_batch_first(true).init(&device);
+        let inner_model=BiLstmConfig::new(self.hidden_size, self.hidden_size, true).with_batch_first(true).init(&device);
         let output_model=LinearConfig::new(self.hidden_size, self.output_size).init(&device);
-        Stackedlstm{
+        StackedBilstm{
            model,
            inner_model,
            output_model,
@@ -72,13 +69,13 @@ impl <B: Backend> ItemLazy for NrelSequenceOutput<B>{
 
 //Model
 #[derive(Module, Debug)]
-pub struct Stackedlstm<B :Backend>{
-    model: Lstm<B>,
-    inner_model: Lstm<B>,
+pub struct StackedBilstm<B :Backend>{
+    model: BiLstm<B>,
+    inner_model: BiLstm<B>,
     output_model: Linear<B>,
 }
 
-impl <B: Backend>Stackedlstm<B> {
+impl <B: Backend>StackedBilstm<B> {
     //the forward function for which the weights neurons are multiplied
     pub fn forward(&self, input: Tensor<B,3>) -> Tensor<B, 3>{
         let (lstm_output, lstm_state) =self.model.forward(input, None);
@@ -100,7 +97,7 @@ impl <B: Backend>Stackedlstm<B> {
 }
 
 //Implementing the training step for the model to obtain the gradients (weights after optimization)
-impl <B: AutodiffBackend>TrainStep for Stackedlstm<B>{
+impl <B: AutodiffBackend>TrainStep for StackedBilstm<B>{
     type Output= NrelSequenceOutput<B>;
     type Input=NrelBatch<B>;
     fn step(&self, item: Self::Input) -> TrainOutput<Self::Output> {
@@ -109,7 +106,7 @@ impl <B: AutodiffBackend>TrainStep for Stackedlstm<B>{
     }
 }
 // Prepare the Inference step to redo the process after calculating the gradients
-impl <B: Backend> InferenceStep for Stackedlstm<B>{
+impl <B: Backend> InferenceStep for StackedBilstm<B>{
     type Input = NrelBatch<B>;
     type Output= NrelSequenceOutput<B>;
     fn step(&self, item: Self::Input) -> Self::Output {
