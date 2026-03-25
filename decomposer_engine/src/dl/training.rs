@@ -7,9 +7,9 @@ use crate::dl::{dataset::{NrelBatcher, NrelDataset}, models::{lstm::NucLstmConfi
 
 #[derive(Debug, Config)]
 pub struct NrelConfig{
-        // pub model: NucLstmConfig,
-        pub model: StackedLstmConfig,
-        #[config(default=30)]
+        pub model: NucLstmConfig,
+        // pub model: StackedLstmConfig,
+        #[config(default=650)]
         pub num_epoch: usize,
         #[config(default=4)]
         pub workers: usize,

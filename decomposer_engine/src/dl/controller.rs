@@ -36,7 +36,7 @@ impl Controller{
     }
 
     pub fn train_lstm<B: AutodiffBackend>(&self,device: B::Device){
-        let model=StackedLstmConfig::default();
+        let model=NucLstmConfig::default();
         let model_config=NrelConfig::new(model,AdamWConfig::new().with_weight_decay(1e-4));
         model_config.train::<B>(self.train_data.clone(), self.val_data.clone(), "lstm_artifact", device);
     }
