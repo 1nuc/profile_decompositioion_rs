@@ -1,6 +1,6 @@
 use burn::{
     config::Config, module::Module, nn::{
-         BiLstm, BiLstmConfig, Linear, LinearConfig, Lstm, LstmConfig, Relu, loss::MseLoss
+         BiLstm, BiLstmConfig, Linear, LinearConfig, Relu, loss::MseLoss
     }, prelude::Backend, tensor::backend::AutodiffBackend, train::{
         InferenceStep, ItemLazy,TrainOutput, TrainStep, metric::{
             Adaptor, LossInput}}, *};
