@@ -7,11 +7,9 @@
 //3. method for training and predicting
 //4. catch the method for the metrics
 
-use burn::{backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, optim::AdamWConfig, tensor::backend::AutodiffBackend};
+use burn::{Tensor, backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, module::{Module}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend};
 use polars::frame::DataFrame;
-
 use crate::{EagerActions, dl::{inference::Inference, models::{lstm::NucLstmConfig, stacked_lstm::StackedLstmConfig}, training::NrelConfig}};
-
 
 pub struct Controller{
     pub train_data: DataFrame,

@@ -1,4 +1,4 @@
-use burn::{config::Config, data::dataloader::DataLoaderBuilder, module::Module, optim::AdamWConfig, record::CompactRecorder, tensor::backend::AutodiffBackend, train::{InferenceStep, Learner, SupervisedTraining, TrainStep, metric::LossMetric}};
+use burn::{config::Config, data::dataloader::DataLoaderBuilder, module::{Module}, optim::AdamWConfig, record::{CompactRecorder}, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining,metric::{LossMetric}}};
 use polars::{frame::DataFrame};
 use std::{fmt::{Debug}, fs::*};
 
@@ -6,11 +6,9 @@ use crate::dl::{dataset::{NrelBatcher, NrelDataset}, models::{lstm::NucLstmConfi
 
 
 #[derive(Debug, Config)]
-pub struct NrelConfig<T>
-where T: TrainStep + InferenceStep + Config
-{
+pub struct NrelConfig{
         // pub model: NucLstmConfig,
-        pub model: T,
+        pub model: StackedLstmConfig,
         #[config(default=30)]
         pub num_epoch: usize,
         #[config(default=4)]

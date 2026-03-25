@@ -8,7 +8,7 @@ use burn::{
         InferenceStep, ItemLazy,TrainOutput, TrainStep, metric::{
             Adaptor, LossInput}}, *};
 
-use crate::dl::dataset::NrelBatch;
+use crate::{data_engine::Nrel, dl::{controller::NrelModel, dataset::NrelBatch}};
 
 
 //Prepare the configurations of the model
@@ -17,7 +17,6 @@ pub struct NucLstmConfig{
     input_size: usize,
     output_size: usize,
     hidden_size: usize,
-    // num_layers: usize,
     dropout: f32,
 }
 //Implementing default for NucLstmConfig
@@ -35,11 +34,9 @@ impl Default for NucLstmConfig{
 impl NucLstmConfig{
     pub fn init<B: Backend>(&self, device: B::Device) -> NucLstm<B>{
         let model=LstmConfig::new(self.input_size, self.hidden_size, true).with_batch_first(true).init(&device);
-        // let layer_norm=LayerNormConfig::new(self.hidden_size).init(&device);
         let output_model=LinearConfig::new(self.hidden_size, self.output_size).init(&device);
         NucLstm{
            model,
-           // layer_norm,
            output_model,
         }
     }
@@ -74,7 +71,6 @@ impl <B: Backend> ItemLazy for NrelSequenceOutput<B>{
 #[derive(Module, Debug)]
 pub struct NucLstm<B :Backend>{
     model: Lstm<B>,
-    // layer_norm: LayerNorm<B>,
     output_model: Linear<B>,
 }
 
@@ -82,7 +78,6 @@ impl <B: Backend>NucLstm<B> {
     //the forward function for which the weights neurons are multiplied
     pub fn forward(&self, input: Tensor<B,3>) -> Tensor<B, 3>{
         let (lstm_output,_) =self.model.forward(input, None);
-        // let layer_output=self.layer_norm.forward(lstm_output);//layer norm layer to normalize the lstm batches
         Relu::new().forward(self.output_model.forward(lstm_output))
         
     }
@@ -99,6 +94,12 @@ impl <B: Backend>NucLstm<B> {
     }
 }
 
+impl <B: Backend> NrelModel<B> for NucLstmConfig{
+    type Model = NucLstm<B>;
+    fn init(&self, device: <B as Backend>::Device) -> Self::Model {
+        self.init(device)
+    }
+}
 //Implementing the training step for the model to obtain the gradients (weights after optimization)
 impl <B: AutodiffBackend>TrainStep for NucLstm<B>{
     type Output= NrelSequenceOutput<B>;

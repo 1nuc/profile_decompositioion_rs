@@ -10,6 +10,7 @@ polars = { version = "0.53.0", features = ["lazy", "parquet", "is_in", "ndarray"
 rand = "0.10.0"
 rayon = "1.11.0"
 regex = "1.12.3"
+serde = "1.0.228"
 tap = "1.0.1"
 xgboost = { version= "0.1.4"}
 [patch.crates-io]
