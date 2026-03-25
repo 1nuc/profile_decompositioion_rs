@@ -31,7 +31,7 @@ impl Default for NucBiLstmConfig{
 impl NucBiLstmConfig{
     pub fn init<B: Backend>(&self, device: B::Device) -> NucBiLstm<B>{
         let model=BiLstmConfig::new(self.input_size, self.hidden_size, true).with_batch_first(true).init(&device);
-        let output_model=LinearConfig::new(self.hidden_size, self.output_size).init(&device);
+        let output_model=LinearConfig::new(self.hidden_size * 2, self.output_size).init(&device);
         NucBiLstm{
            model,
            output_model,

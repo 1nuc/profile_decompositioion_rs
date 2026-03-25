@@ -8,8 +8,8 @@ use crate::dl::{dataset::{NrelBatcher, NrelDataset}, models::{bi_lstm::NucBiLstm
 #[derive(Debug, Config)]
 pub struct NrelConfig{
         // pub model: NucLstmConfig,
-        pub model: NucBiLstmConfig,
-        // pub model: StackedLstmConfig,
+        // pub model: NucBiLstmConfig,
+        pub model: StackedLstmConfig,
         #[config(default=30)]
         pub num_epoch: usize,
         #[config(default=4)]

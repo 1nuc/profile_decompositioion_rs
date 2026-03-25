@@ -81,8 +81,8 @@ pub struct Stackedlstm<B :Backend>{
 impl <B: Backend>Stackedlstm<B> {
     //the forward function for which the weights neurons are multiplied
     pub fn forward(&self, input: Tensor<B,3>) -> Tensor<B, 3>{
-        let lstm_output =self.model.forward(input, None).0;
-        let inner_output=self.inner_model.forward(lstm_output, None).0;//layer norm layer to normalize the lstm batches
+        let (lstm_output, lstm_state) =self.model.forward(input, None);
+        let inner_output=self.inner_model.forward(lstm_output, Some(lstm_state)).0;//layer norm layer to normalize the lstm batches
         Relu::new().forward(self.output_model.forward(inner_output))
         
     }
