@@ -2,14 +2,15 @@ use burn::{config::Config, data::dataloader::DataLoaderBuilder, module::{Module}
 use polars::{frame::DataFrame};
 use std::{fmt::{Debug}, fs::*};
 
-use crate::dl::{dataset::{NrelBatcher, NrelDataset}, models::{bi_lstm::NucBiLstmConfig, lstm::NucLstmConfig, stacked_lstm::StackedLstmConfig}};
+use crate::dl::{dataset::{NrelBatcher, NrelDataset}, models::{bi_lstm::NucBiLstmConfig, lstm::NucLstmConfig, stacked_bi_lstm::StackedBiLstmConfig, stacked_lstm::StackedLstmConfig}};
 
 
 #[derive(Debug, Config)]
 pub struct NrelConfig{
         // pub model: NucLstmConfig,
         // pub model: NucBiLstmConfig,
-        pub model: StackedLstmConfig,
+        // pub model: StackedLstmConfig,
+        pub model: StackedBiLstmConfig,
         #[config(default=30)]
         pub num_epoch: usize,
         #[config(default=4)]

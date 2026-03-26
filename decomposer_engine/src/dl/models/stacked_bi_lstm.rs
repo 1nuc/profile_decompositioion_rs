@@ -32,8 +32,8 @@ impl Default for StackedBiLstmConfig{
 impl StackedBiLstmConfig{
     pub fn init<B: Backend>(&self, device: B::Device) -> StackedBilstm<B>{
         let model=BiLstmConfig::new(self.input_size, self.hidden_size, true).with_batch_first(true).init(&device);
-        let inner_model=BiLstmConfig::new(self.hidden_size, self.hidden_size, true).with_batch_first(true).init(&device);
-        let output_model=LinearConfig::new(self.hidden_size, self.output_size).init(&device);
+        let inner_model=BiLstmConfig::new(self.hidden_size *2, self.hidden_size, true).with_batch_first(true).init(&device);
+        let output_model=LinearConfig::new(self.hidden_size *2, self.output_size).init(&device);
         StackedBilstm{
            model,
            inner_model,

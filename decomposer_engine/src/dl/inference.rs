@@ -1,7 +1,7 @@
 use burn::{config::Config, data::{dataloader::batcher::Batcher, dataset::Dataset}, module::Module, nn::{BatchNormConfig, loss::MseLoss}, prelude::Backend, record::{CompactRecorder, Recorder}};
 use polars::{df, frame::DataFrame};
 
-use crate::dl::{dataset::{NrelBatcher, NrelDataset, NrelDatasetItem}, models::{bi_lstm::NucBiLstmRecord, lstm::NucLstmRecord, stacked_lstm::StackedlstmRecord}, training::NrelConfig};
+use crate::dl::{dataset::{NrelBatcher, NrelDataset, NrelDatasetItem}, models::{bi_lstm::NucBiLstmRecord, lstm::NucLstmRecord, stacked_bi_lstm::StackedBilstmRecord, stacked_lstm::StackedlstmRecord}, training::NrelConfig};
 
 pub struct Inference{}
 
@@ -12,7 +12,7 @@ impl Inference{
             format!("{artifact_dir}/config.json")).expect("unable to find the file");
 
         // using compact recorder, load the last saved state of the model
-        let record: StackedlstmRecord<B>= CompactRecorder::new().load(
+        let record: StackedBilstmRecord<B>= CompactRecorder::new().load(
             format!("{artifact_dir}/model").into(), &device).expect("training model should exist first");
 
         // load and initialize the model for test 
