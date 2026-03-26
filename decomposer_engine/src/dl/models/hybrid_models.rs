@@ -1,7 +1,7 @@
 use burn::{
     config::Config, module::Module, nn::{
         BiLstm, BiLstmConfig, Linear, LinearConfig, Relu, conv::{Conv1d, Conv1dConfig}, loss::MseLoss
-    }, prelude::Backend, tensor::backend::AutodiffBackend, train::{
+    }, prelude::Backend, tensor::{TensorCreationOptions, backend::AutodiffBackend}, train::{
         InferenceStep, ItemLazy,TrainOutput, TrainStep, metric::{
             Adaptor, LossInput}}, *};
 
@@ -31,13 +31,18 @@ impl Default for Seq2SeqConfig{
 //Initializing the model configurations 
 impl Seq2SeqConfig{
     pub fn init<B: Backend>(&self, device: B::Device) -> Seq2Seq<B>{
-        let encoder_1=Conv1dConfig::new(self.input_size, self.hidden_size, 7).init(&device);
-        // let encoder_2=Conv1dConfig::new(self.input_size, self.hidden_size, 5);
-        // let encoder_3=Conv1dConfig::new(self.input_size, self.hidden_size, 7);
-        let decoder=BiLstmConfig::new(self.input_size, self.hidden_size, true).with_batch_first(true).init(&device);
+        let encoder_1=Conv1dConfig::new(self.input_size, self.hidden_size, 3)
+            .with_padding(nn::PaddingConfig1d::Same).init(&device);
+        let encoder_2=Conv1dConfig::new(self.input_size, self.hidden_size, 5)
+            .with_padding(nn::PaddingConfig1d::Same).init(&device);
+        let encoder_3=Conv1dConfig::new(self.input_size, self.hidden_size, 7)
+            .with_padding(nn::PaddingConfig1d::Same).init(&device);
+        let decoder=BiLstmConfig::new(self.hidden_size * 3, self.hidden_size, true).with_batch_first(true).init(&device);
         let output_model=LinearConfig::new(self.hidden_size *2, self.output_size).init(&device);
         Seq2Seq{
            encoder_1,
+           encoder_2,
+           encoder_3,
            decoder,
            output_model,
         }
@@ -73,8 +78,8 @@ impl <B: Backend> ItemLazy for NrelSequenceOutput<B>{
 #[derive(Module, Debug)]
 pub struct Seq2Seq<B :Backend>{
     encoder_1: Conv1d<B>,
-    // encoder_2: Conv1d<B>,
-    // encoder_3: Conv1d<B>,
+    encoder_2: Conv1d<B>,
+    encoder_3: Conv1d<B>,
     decoder: BiLstm<B>,
     output_model: Linear<B>,
 }
@@ -82,8 +87,14 @@ pub struct Seq2Seq<B :Backend>{
 impl <B: Backend>Seq2Seq<B> {
     //the forward function for which the weights neurons are multiplied
     pub fn forward(&self, input: Tensor<B,3>) -> Tensor<B, 3>{
-        let encoder_output=self.encoder_1.forward(input);
-        let (lstm_output, _) =self.decoder.forward(encoder_output, None);
+        let data=input.permute([0,2,1]);
+        let encoder_output_1=self.encoder_1.forward(data.clone());
+        let encoder_output_2=self.encoder_1.forward(data.clone());
+        let encoder_output_3=self.encoder_1.forward(data);
+
+        let cnn_output=Tensor::cat(vec![encoder_output_1, encoder_output_2, encoder_output_3], 1);
+        let output=cnn_output.permute([0,2,1]);
+        let (lstm_output, _) =self.decoder.forward(output, None);
         Relu::new().forward(self.output_model.forward(lstm_output))
         
     }
