@@ -10,9 +10,9 @@ pub struct NrelConfig{
         // pub model: NucLstmConfig,
         // pub model: NucBiLstmConfig,
         // pub model: StackedLstmConfig,
-        // pub model: StackedBiLstmConfig,
-        pub model: Seq2SeqConfig,
-        #[config(default=150)]
+        pub model: StackedBiLstmConfig,
+        // pub model: Seq2SeqConfig,
+        #[config(default=30)]
         pub num_epoch: usize,
         #[config(default=4)]
         pub workers: usize,

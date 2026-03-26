@@ -88,11 +88,16 @@ impl <B: Backend>Seq2Seq<B> {
     //the forward function for which the weights neurons are multiplied
     pub fn forward(&self, input: Tensor<B,3>) -> Tensor<B, 3>{
         let data=input.permute([0,2,1]);
+        // get the output from the first encoder
         let encoder_output_1=self.encoder_1.forward(data.clone());
+        //get the output from the second encoder
         let encoder_output_2=self.encoder_1.forward(data.clone());
+        // get the output from the third encoder
         let encoder_output_3=self.encoder_1.forward(data);
 
+        //concatinate all the results to the column dimension so it will be 128 * 3
         let cnn_output=Tensor::cat(vec![encoder_output_1, encoder_output_2, encoder_output_3], 1);
+        //set the order back to what it was
         let output=cnn_output.permute([0,2,1]);
         let (lstm_output, _) =self.decoder.forward(output, None);
         Relu::new().forward(self.output_model.forward(lstm_output))
