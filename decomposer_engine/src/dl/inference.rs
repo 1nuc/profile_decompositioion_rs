@@ -12,7 +12,7 @@ impl Inference{
             format!("{artifact_dir}/config.json")).expect("unable to find the file");
 
         // using compact recorder, load the last saved state of the model
-        let record: StackedBilstmRecord<B>= CompactRecorder::new().load(
+        let record: Seq2SeqRecord<B>= CompactRecorder::new().load(
             format!("{artifact_dir}/model").into(), &device).expect("training model should exist first");
 
         // load and initialize the model for test 

@@ -1,4 +1,5 @@
 use crate::Actions;
+use crate::preprocessor_engine::Preprocessor;
 use polars::prelude::*;
 
 use polars::prelude::{LazyFrame, PlSmallStr};
@@ -128,6 +129,15 @@ impl Xgb {
             self.modelling();
         });
         self
+    }
+    pub fn runner(d: LazyFrame){
+        let preprocessor=Preprocessor::new(d.clone(), 42, 0.3);
+        let (mut x_train, mut x_test, mut y_train, y_test)=preprocessor.split_x_y();
+        let d_train=x_train.to_matrix(true);
+        let d_test=x_test.to_matrix(true);
+        let mut xgb=Xgb::new(d_train, d_test);
+        let mean=xgb.train(y_train, y_test).evaluate();
+        println!("r2 is: {:?}", mean);
     }
 
     pub fn evaluate(&self) -> f32 {

@@ -81,7 +81,6 @@ impl <B: Backend>StackedBilstm<B> {
         let (lstm_output, lstm_state) =self.model.forward(input, None);
         let inner_output=self.inner_model.forward(lstm_output, Some(lstm_state)).0;//layer norm layer to normalize the lstm batches
         Relu::new().forward(self.output_model.forward(inner_output))
-        
     }
     // Calculating the loss function of the forward step
     pub fn forward_step(&self, items: NrelBatch<B>) ->NrelSequenceOutput<B>{
