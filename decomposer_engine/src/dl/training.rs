@@ -12,7 +12,7 @@ pub struct NrelConfig{
         // pub model: StackedLstmConfig,
         // pub model: StackedBiLstmConfig,
         pub model: Seq2SeqConfig,
-        #[config(default=30)]
+        #[config(default=150)]
         pub num_epoch: usize,
         #[config(default=4)]
         pub workers: usize,
