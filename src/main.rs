@@ -4,6 +4,7 @@ fn main(){
     let data_source=Nrel::init();
     let data=data_source.data;
     let mut encoded_data=data.clone().encode_categoricals();
+    // --- Xgboost Model
     xgb::Xgb::runner(encoded_data);
 
     // ---- Deep learning Models

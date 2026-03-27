@@ -19,6 +19,7 @@ pub struct Xgb {
     pub booster: Vec<Booster>,
     pub preds: Vec<Vec<f32>>,
     pub r2_score: Vec<f32>,
+    pub mae: Vec<f32>,
 }
 
 impl Xgb {
@@ -29,6 +30,7 @@ impl Xgb {
             booster: vec![Booster::new(&Self::set_booster_param()).unwrap()],
             preds: Vec::new(),
             r2_score: Vec::new(),
+            mae: Vec::new(),
         }
     }
     pub fn set_y_train(&mut self, d: Vec<f32>) -> &mut Self {
@@ -86,6 +88,7 @@ impl Xgb {
         let param = self.set_training_param();
         let boost = Booster::train(&param).unwrap();
         let preds = boost.predict(&self.d_test).unwrap();
+        self.mae.push(*boost.evaluate(&self.d_test).unwrap().get("mae").unwrap());
         self.preds.push(preds.clone());
         self.metric(preds);
         self.booster.push(boost);
@@ -132,11 +135,13 @@ impl Xgb {
         let d_train=x_train.lazy().to_matrix(Some(preprocessor.x_labels));
         let d_test=x_test.lazy().to_matrix(None);
         let mut xgb=Xgb::new(d_train, d_test);
-        let mean=xgb.train(y_train, y_test, preprocessor.y_labels).evaluate();
-        println!("r2 is: {:?}", mean);
+        let (r2, mae)=xgb.train(y_train, y_test, preprocessor.y_labels).evaluate();
+        println!("r2 is: {:?}, mae is : {:?}", r2, mae);
     }
 
-    pub fn evaluate(&self) -> f32 {
-        self.r2_score.iter().sum::<f32>() / self.r2_score.len() as f32
+    pub fn evaluate(&self) -> (f32, f32) {
+        let r2=self.r2_score.iter().sum::<f32>() / self.r2_score.len() as f32;
+        let mae=self.mae.iter().sum::<f32>() / self.r2_score.len() as f32;
+        (r2, mae)
     }
 }
