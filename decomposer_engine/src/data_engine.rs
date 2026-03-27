@@ -197,7 +197,9 @@ impl Actions for LazyFrame {
 
     fn to_matrix(&mut self, cols: Option<Vec<String>>) -> DMatrix {
         let data = if cols.is_some(){
-            self.standard_scalar(cols.unwrap()).to_1d_vec()
+            let cols_cloned=cols.clone().unwrap();
+            let _cols=cols_cloned.iter().map(|x| x.as_str()).collect::<Vec<&str>>();
+            self.standard_scalar(_cols).to_1d_vec()
         } else {
             self.to_1d_vec()
         };

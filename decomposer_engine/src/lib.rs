@@ -37,7 +37,7 @@ pub trait Actions {
 
     fn encode_categoricals(&mut self) -> Self;
 
-    fn standard_scalar(&mut self, cols: Vec<String>) -> Self;
+    fn standard_scalar(&mut self, cols: Vec<&str>) -> Self;
 
     fn min_max_scalar(&mut self) -> Self;
 
@@ -47,7 +47,7 @@ pub trait Actions {
 
     fn to_1d_vec(&self) -> Vec<f32>;
 
-    fn to_matrix(&mut self, cols: Option<Vec<&str>>) -> DMatrix;
+    fn to_matrix(&mut self, cols: Option<Vec<String>>) -> DMatrix;
 
     fn return_time_sequenced(&self) -> Self;
 }

@@ -113,10 +113,7 @@ impl Xgb {
     }
 
     pub fn train(&mut self, y_train: DataFrame, y_test: DataFrame, cols: Vec<String>) -> &Self {
-        // loop through the columns
-        // if the index is 0 train the first column
-        // if the index is not zero containue updating the model
-        cols.iter().map(|x| {
+        cols.iter().for_each(|x| {
             let y_train = y_train
                 .clone()
                 .select([x.clone()]).expect("unable to process the column");
