@@ -2,7 +2,7 @@ use ndarray::Data;
 use polars::prelude::*;
 use rand::{SeedableRng, rngs::SmallRng, seq::SliceRandom};
 
-pub struct Preprocessor<'a>{
+pub struct Preprocessor{
     pub x: DataFrame,
     pub y: DataFrame,
     pub n: usize,
@@ -10,14 +10,14 @@ pub struct Preprocessor<'a>{
     pub y_n: usize,
     pub test_size: f32,
     pub rnd_state: u64,
-    pub labels: Vec<&'a str>,
-    pub x_labels: Vec<&'a str>,
-    pub y_labels: Vec<&'a str>,
+    pub labels: Vec<String>,
+    pub x_labels: Vec<String>,
+    pub y_labels: Vec<String>,
     pub x_labels_size: usize,
     pub y_labels_size: usize,
 }
 
-impl <'a> Preprocessor<'a>{
+impl Preprocessor{
     pub fn new(d: LazyFrame, rnd_state_: u64, test_size_: f32) -> Self {
         let (x_, y_) = Self::extract_x_nd_y(d.clone());
         let d_ = d.clone().collect().unwrap();
@@ -66,8 +66,8 @@ impl <'a> Preprocessor<'a>{
         (x, y)
     }
 
-    fn extract_labels(d: DataFrame) -> Vec<&'a str> {
-        d.get_column_names().iter().map(|x| x.to_owned().as_str()).collect::<Vec<&str>>()
+    fn extract_labels<'a>(d: DataFrame) -> Vec<String> {
+        d.get_column_names().iter().map(|x| x.to_owned().as_str().to_string()).collect::<Vec<String>>()
     }
 
     pub fn split_x_y(&self) -> (DataFrame, DataFrame, DataFrame, DataFrame) {
