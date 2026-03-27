@@ -112,7 +112,7 @@ impl Xgb {
         1_f32 - (total_sum_residuals / total_sum_squares)
     }
 
-    pub fn train(&mut self, y_train: DataFrame, y_test: DataFrame, cols: Vec<&str>) -> &Self {
+    pub fn train(&mut self, y_train: DataFrame, y_test: DataFrame, cols: Vec<String>) -> &Self {
         // loop through the columns
         // if the index is 0 train the first column
         // if the index is not zero containue updating the model

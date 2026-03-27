@@ -37,7 +37,7 @@ pub trait Actions {
 
     fn encode_categoricals(&mut self) -> Self;
 
-    fn standard_scalar(&mut self, cols: Vec<&str>) -> Self;
+    fn standard_scalar(&mut self, cols: Vec<String>) -> Self;
 
     fn min_max_scalar(&mut self) -> Self;
 

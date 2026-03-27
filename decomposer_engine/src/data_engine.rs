@@ -195,7 +195,7 @@ impl Actions for LazyFrame {
         array_d.into_raw_vec_and_offset().0
     }
 
-    fn to_matrix(&mut self, cols: Option<Vec<&str>>) -> DMatrix {
+    fn to_matrix(&mut self, cols: Option<Vec<String>>) -> DMatrix {
         let data = if cols.is_some(){
             self.standard_scalar(cols.unwrap()).to_1d_vec()
         } else {
