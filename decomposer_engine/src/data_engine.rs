@@ -1,5 +1,5 @@
 use crate::{Actions, EagerActions, ExpressionActions};
-use ndarray::{Array2, Array3, Data};
+use ndarray::{Array2, Array3};
 use polars::prelude::*;
 use xgboost::DMatrix;
 use regex::Regex;
@@ -194,15 +194,15 @@ impl Actions for LazyFrame {
         let array_d = Self::to_ndarry(self);
         array_d.into_raw_vec_and_offset().0
     }
-    fn to_matrix(&mut self, with_scalar: bool) -> DMatrix {
-        todo!()
-        // let data = if with_scalar {
-        //     self.standard_scalar().to_1d_vec()
-        // } else {
-        //     self.to_1d_vec()
-        // };
-        // let num_rows = self.clone().collect().unwrap().height();
-        // DMatrix::from_dense(&data, num_rows).expect("Unable to create DM matrix")
+
+    fn to_matrix(&mut self, cols: Option<Vec<&str>>) -> DMatrix {
+        let data = if cols.is_some(){
+            self.standard_scalar(cols.unwrap()).to_1d_vec()
+        } else {
+            self.to_1d_vec()
+        };
+        let num_rows = self.clone().collect().unwrap().height();
+        DMatrix::from_dense(&data, num_rows).expect("Unable to create DM matrix")
     }
 }
 

@@ -2,8 +2,8 @@ use polars::prelude::*;
 use rand::{SeedableRng, rngs::SmallRng, seq::SliceRandom};
 
 pub struct Preprocessor {
-    pub x: LazyFrame,
-    pub y: LazyFrame,
+    pub x: DataFrame,
+    pub y: DataFrame,
     pub n: usize,
     pub x_n: usize,
     pub y_n: usize,
@@ -17,7 +17,7 @@ pub struct Preprocessor {
 }
 
 impl Preprocessor {
-    pub fn new(d: LazyFrame, rnd_state_: u64, test_size_: f32) -> Self {
+    pub fn new(d: DataFrame, rnd_state_: u64, test_size_: f32) -> Self {
         let (x_, y_) = Self::extract_x_nd_y(d.clone());
         let d_ = d.clone().collect().unwrap();
         let x_d = x_.clone().collect().unwrap();
@@ -38,7 +38,7 @@ impl Preprocessor {
         }
     }
 
-    fn extract_x_nd_y(d: LazyFrame) -> (LazyFrame, LazyFrame) {
+    fn extract_x_nd_y(d: DataFrame) -> (LazyFrame, LazyFrame) {
         let x=d.clone().select([
             col(
                 PlSmallStr::from("^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$")

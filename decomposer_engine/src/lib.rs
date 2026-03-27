@@ -19,6 +19,7 @@ pub trait EagerActions{
 
     fn train_val_test_spli(&self)->(DataFrame,DataFrame,DataFrame);
 }
+
 pub trait Actions {
     fn rename_cols(&self) -> Self;
 
@@ -44,7 +45,7 @@ pub trait Actions {
 
     fn to_1d_vec(&self) -> Vec<f32>;
 
-    fn to_matrix(&mut self, with_scalar: bool) -> DMatrix;
+    fn to_matrix(&mut self, cols: Option<Vec<&str>>) -> DMatrix;
 
     fn return_time_sequenced(&self) -> Self;
 }
