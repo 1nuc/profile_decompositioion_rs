@@ -256,6 +256,11 @@ impl EagerActions for DataFrame{
 
     }
 
+    fn to_1d_vec(&self) -> Vec<f32> {
+        let array_d =self.to_ndarray::<Float32Type>(Default::default()).unwrap();
+        array_d.into_raw_vec_and_offset().0
+    }
+
     fn train_val_test_spli(&self)->(DataFrame,DataFrame,DataFrame) {
         let data_fraction=self.clone().sample_frac(
             &Series::new("fraction".into(),[0.7]), false, false, Some(42)).unwrap();

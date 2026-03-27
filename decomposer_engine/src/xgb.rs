@@ -1,8 +1,8 @@
-use crate::Actions;
+use crate::{Actions, EagerActions};
 use crate::preprocessor_engine::Preprocessor;
 use polars::prelude::*;
 
-use polars::prelude::{LazyFrame, PlSmallStr};
+use polars::prelude::{LazyFrame};
 
 use xgboost::{
     parameters::{
@@ -112,31 +112,30 @@ impl Xgb {
         1_f32 - (total_sum_residuals / total_sum_squares)
     }
 
-    pub fn train(&mut self, y_train: LazyFrame, y_test: LazyFrame) -> &Self {
+    pub fn train(&mut self, y_train: DataFrame, y_test: DataFrame, cols: Vec<&str>) -> &Self {
         // loop through the columns
         // if the index is 0 train the first column
         // if the index is not zero containue updating the model
-        let cols = y_train.return_cols();
-        cols.iter().for_each(|x| {
+        cols.iter().map(|x| {
             let y_train = y_train
                 .clone()
-                .select([col(PlSmallStr::from_string(x.clone()))]);
+                .select([x.clone()]).expect("unable to process the column");
             let y_test = y_test
                 .clone()
-                .select([col(PlSmallStr::from_string(x.clone()))]);
+                .select([x]).expect("unable the process the column");
             self.set_y_train(y_train.to_1d_vec())
                 .set_y_test(y_test.to_1d_vec());
             self.modelling();
         });
         self
     }
-    pub fn runner(&self,d: LazyFrame){
+    pub fn runner(d: LazyFrame){
         let preprocessor=Preprocessor::new(d.clone(), 42, 0.3);
-        let (mut x_train, mut x_test, mut y_train, y_test)=preprocessor.split_x_y();
-        let d_train=x_train.to_matrix(Some(preprocessor.x_labels));
-        let d_test=x_test.to_matrix(None);
+        let (x_train, x_test, y_train, y_test)=preprocessor.split_x_y();
+        let d_train=x_train.lazy().to_matrix(Some(preprocessor.x_labels));
+        let d_test=x_test.lazy().to_matrix(None);
         let mut xgb=Xgb::new(d_train, d_test);
-        let mean=xgb.train(y_train, y_test).evaluate();
+        let mean=xgb.train(y_train, y_test, preprocessor.y_labels).evaluate();
         println!("r2 is: {:?}", mean);
     }
 
