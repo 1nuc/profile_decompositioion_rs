@@ -54,8 +54,9 @@ pub fn run(){
     let dir=read_dir("../../datasets/").unwrap();
     let files=dir.map(|x| x.unwrap().path()
         ).collect::<Vec<PathBuf>>();
-    let artifact_dir=Path::new("../lstm_artifact/");
+    let artifact_dir=Path::new("lstm_artifact/");
     if artifact_dir.exists(){
+        remove_dir_all("input").expect("can't find the input dir");
         remove_dir_all(artifact_dir).expect("can't find the artifact dir");
     }
     chunks_iteration(files);
