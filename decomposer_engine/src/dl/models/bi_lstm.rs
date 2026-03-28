@@ -1,7 +1,7 @@
 use burn::{
     config::Config,
     module::Module,
-    nn::{Linear, LinearConfig, Lstm, LstmConfig, Relu, loss::MseLoss},
+    nn::{BiLstm, BiLstmConfig, Linear, LinearConfig, Relu, loss::MseLoss},
     prelude::Backend,
     tensor::backend::AutodiffBackend,
     train::{
@@ -15,14 +15,14 @@ use crate::dl::dataset::NrelBatch;
 
 //Prepare the configurations of the model
 #[derive(Config, Debug)]
-pub struct NucLstmConfig {
+pub struct NucBiLstmConfig {
     input_size: usize,
     output_size: usize,
     hidden_size: usize,
     dropout: f32,
 }
 //Implementing default for NucLstmConfig
-impl Default for NucLstmConfig {
+impl Default for NucBiLstmConfig {
     fn default() -> Self {
         Self {
             input_size: 22,
@@ -33,13 +33,13 @@ impl Default for NucLstmConfig {
     }
 }
 //Initializing the model configurations
-impl NucLstmConfig {
-    pub fn init<B: Backend>(&self, device: B::Device) -> NucLstm<B> {
-        let model = LstmConfig::new(self.input_size, self.hidden_size, true)
+impl NucBiLstmConfig {
+    pub fn init<B: Backend>(&self, device: B::Device) -> NucBiLstm<B> {
+        let model = BiLstmConfig::new(self.input_size, self.hidden_size, true)
             .with_batch_first(true)
             .init(&device);
-        let output_model = LinearConfig::new(self.hidden_size, self.output_size).init(&device);
-        NucLstm {
+        let output_model = LinearConfig::new(self.hidden_size * 2, self.output_size).init(&device);
+        NucBiLstm {
             model,
             output_model,
         }
@@ -72,12 +72,12 @@ impl<B: Backend> ItemLazy for NrelSequenceOutput<B> {
 
 //Model
 #[derive(Module, Debug)]
-pub struct NucLstm<B: Backend> {
-    model: Lstm<B>,
+pub struct NucBiLstm<B: Backend> {
+    model: BiLstm<B>,
     output_model: Linear<B>,
 }
 
-impl<B: Backend> NucLstm<B> {
+impl<B: Backend> NucBiLstm<B> {
     //the forward function for which the weights neurons are multiplied
     pub fn forward(&self, input: Tensor<B, 3>) -> Tensor<B, 3> {
         let (lstm_output, _) = self.model.forward(input, None);
@@ -99,7 +99,7 @@ impl<B: Backend> NucLstm<B> {
 }
 
 //Implementing the training step for the model to obtain the gradients (weights after optimization)
-impl<B: AutodiffBackend> TrainStep for NucLstm<B> {
+impl<B: AutodiffBackend> TrainStep for NucBiLstm<B> {
     type Output = NrelSequenceOutput<B>;
     type Input = NrelBatch<B>;
     fn step(&self, item: Self::Input) -> TrainOutput<Self::Output> {
@@ -109,7 +109,7 @@ impl<B: AutodiffBackend> TrainStep for NucLstm<B> {
     }
 }
 // Prepare the Inference step to redo the process after calculating the gradients
-impl<B: Backend> InferenceStep for NucLstm<B> {
+impl<B: Backend> InferenceStep for NucBiLstm<B> {
     // The inference step of the model
     type Input = NrelBatch<B>;
     type Output = NrelSequenceOutput<B>;

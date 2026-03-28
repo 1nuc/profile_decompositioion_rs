@@ -7,11 +7,11 @@
 //3. method for training and predicting
 //4. catch the method for the metrics
 
-use burn::{backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, module::AutodiffModule, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend};
+use std::{fs::{File,copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}};
+
+use burn::{backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, optim::AdamWConfig, tensor::backend::AutodiffBackend};
 use polars::frame::DataFrame;
-
-use crate::{EagerActions, dl::{inference::Inference, models::lstm::NucLstmConfig, training::NrelConfig}};
-
+use crate::{Actions, EagerActions, data_engine::Nrel, dl::{inference::Inference, models::{bi_lstm::NucBiLstmConfig, hybrid_models::Seq2SeqConfig, lstm::NucLstmConfig, stacked_bi_lstm::StackedBiLstmConfig, stacked_lstm::StackedLstmConfig}, training::NrelConfig}};
 
 pub struct Controller{
     pub train_data: DataFrame,
@@ -38,12 +38,59 @@ impl Controller{
     }
 
     pub fn train_lstm<B: AutodiffBackend>(&self,device: B::Device){
-        let model=NucLstmConfig::default();
-        let model_config=NrelConfig::new(model,AdamWConfig::new().with_weight_decay(1e-4));
+        let model=Seq2SeqConfig::default();
+        let model_config=NrelConfig::new(model,AdamWConfig::new().with_weight_decay(1e-3));
         model_config.train::<B>(self.train_data.clone(), self.val_data.clone(), "lstm_artifact", device);
     }
 
     pub fn infer_lstm<B: AutodiffBackend>(&self,device: B::Device){
         Inference::inference::<B>("lstm_artifact", self.test_data.clone(), device);
     }
+
+}
+
+pub fn run(){
+
+    let dir=read_dir("../../datasets/").unwrap();
+    let files=dir.map(|x| x.unwrap().path()
+        ).collect::<Vec<PathBuf>>();
+    let artifact_dir=Path::new("lstm_artifact/");
+    if artifact_dir.exists(){
+        remove_dir_all("input").expect("can't find the input dir");
+        remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+    }
+    chunks_iteration(files);
+}
+
+pub fn chunks_iteration(files: Vec<PathBuf>){
+
+    // Join the file names first
+    // then copy the content of the files there
+    files.chunks(40).for_each(|x|{
+
+        let input_path=Path::new("input");
+        if !input_path.exists(){
+            let input_lib=create_dir(input_path).unwrap();
+        }
+        x.iter().for_each(|x|{
+            let path=Path::new(x.file_name().unwrap().to_str().unwrap());
+            let file_path=input_path.join(path);
+            File::create_new(&file_path).expect("unable to create a file");
+            copy(x, file_path).expect("error in copying the data");
+        });
+        // ---- Deep learning Models
+        process_chunks();
+        remove_dir_all("input").expect("can't find the input dir");
+    });
+}
+
+pub fn process_chunks(){
+    let data_source=Nrel::init();
+    let data=data_source.data;
+    let mut encoded_data=data.clone().encode_categoricals();
+    let s=encoded_data.clone().collect().unwrap();
+    let y_columns=s.return_y_columns();
+    let modelling_data=encoded_data.standard_scalar(y_columns.clone()).return_time_sequenced().collect().unwrap();
+    let control=Controller::new(modelling_data);
+    control.lstm_simulation();
 }

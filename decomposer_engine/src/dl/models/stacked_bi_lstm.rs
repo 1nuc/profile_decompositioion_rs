@@ -1,7 +1,7 @@
 use burn::{
     config::Config,
     module::Module,
-    nn::{Linear, LinearConfig, Lstm, LstmConfig, Relu, loss::MseLoss},
+    nn::{BiLstm, BiLstmConfig, Linear, LinearConfig, Relu, loss::MseLoss},
     prelude::Backend,
     tensor::backend::AutodiffBackend,
     train::{
@@ -15,14 +15,15 @@ use crate::dl::dataset::NrelBatch;
 
 //Prepare the configurations of the model
 #[derive(Config, Debug)]
-pub struct NucLstmConfig {
+pub struct StackedBiLstmConfig {
     input_size: usize,
     output_size: usize,
     hidden_size: usize,
+    // num_layers: usize,
     dropout: f32,
 }
 //Implementing default for NucLstmConfig
-impl Default for NucLstmConfig {
+impl Default for StackedBiLstmConfig {
     fn default() -> Self {
         Self {
             input_size: 22,
@@ -33,14 +34,18 @@ impl Default for NucLstmConfig {
     }
 }
 //Initializing the model configurations
-impl NucLstmConfig {
-    pub fn init<B: Backend>(&self, device: B::Device) -> NucLstm<B> {
-        let model = LstmConfig::new(self.input_size, self.hidden_size, true)
+impl StackedBiLstmConfig {
+    pub fn init<B: Backend>(&self, device: B::Device) -> StackedBilstm<B> {
+        let model = BiLstmConfig::new(self.input_size, self.hidden_size, true)
             .with_batch_first(true)
             .init(&device);
-        let output_model = LinearConfig::new(self.hidden_size, self.output_size).init(&device);
-        NucLstm {
+        let inner_model = BiLstmConfig::new(self.hidden_size * 2, self.hidden_size, true)
+            .with_batch_first(true)
+            .init(&device);
+        let output_model = LinearConfig::new(self.hidden_size * 2, self.output_size).init(&device);
+        StackedBilstm {
             model,
+            inner_model,
             output_model,
         }
     }
@@ -72,16 +77,18 @@ impl<B: Backend> ItemLazy for NrelSequenceOutput<B> {
 
 //Model
 #[derive(Module, Debug)]
-pub struct NucLstm<B: Backend> {
-    model: Lstm<B>,
+pub struct StackedBilstm<B: Backend> {
+    model: BiLstm<B>,
+    inner_model: BiLstm<B>,
     output_model: Linear<B>,
 }
 
-impl<B: Backend> NucLstm<B> {
+impl<B: Backend> StackedBilstm<B> {
     //the forward function for which the weights neurons are multiplied
     pub fn forward(&self, input: Tensor<B, 3>) -> Tensor<B, 3> {
-        let (lstm_output, _) = self.model.forward(input, None);
-        Relu::new().forward(self.output_model.forward(lstm_output))
+        let (lstm_output, lstm_state) = self.model.forward(input, None);
+        let inner_output = self.inner_model.forward(lstm_output, Some(lstm_state)).0; //layer norm layer to normalize the lstm batches
+        Relu::new().forward(self.output_model.forward(inner_output))
     }
     // Calculating the loss function of the forward step
     pub fn forward_step(&self, items: NrelBatch<B>) -> NrelSequenceOutput<B> {
@@ -89,7 +96,6 @@ impl<B: Backend> NucLstm<B> {
         let output = self.forward(items.sequence);
         let loss =
             MseLoss::new().forward(output.clone(), targets.clone(), nn::loss::Reduction::Mean);
-        //returning the output and target with their losses
         NrelSequenceOutput {
             loss,
             output,
@@ -99,18 +105,16 @@ impl<B: Backend> NucLstm<B> {
 }
 
 //Implementing the training step for the model to obtain the gradients (weights after optimization)
-impl<B: AutodiffBackend> TrainStep for NucLstm<B> {
+impl<B: AutodiffBackend> TrainStep for StackedBilstm<B> {
     type Output = NrelSequenceOutput<B>;
     type Input = NrelBatch<B>;
     fn step(&self, item: Self::Input) -> TrainOutput<Self::Output> {
-        // Here where the model actually trains and starts calculating the gradients
         let item = self.forward_step(item);
         TrainOutput::new(self, item.loss.backward(), item)
     }
 }
 // Prepare the Inference step to redo the process after calculating the gradients
-impl<B: Backend> InferenceStep for NucLstm<B> {
-    // The inference step of the model
+impl<B: Backend> InferenceStep for StackedBilstm<B> {
     type Input = NrelBatch<B>;
     type Output = NrelSequenceOutput<B>;
     fn step(&self, item: Self::Input) -> Self::Output {
