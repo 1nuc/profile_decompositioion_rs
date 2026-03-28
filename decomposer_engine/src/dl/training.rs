@@ -1,12 +1,5 @@
 use burn::{
-    config::Config,
-    data::dataloader::{DataLoader, DataLoaderBuilder},
-    module::Module,
-    optim::AdamWConfig,
-    record::CompactRecorder,
-    record::Recorder,
-    tensor::backend::AutodiffBackend,
-    train::{Learner, SupervisedTraining, metric::LossMetric},
+    config::Config, data::dataloader::{DataLoader, DataLoaderBuilder}, module::Module, optim::AdamWConfig, prelude::Backend, record::{CompactRecorder, Recorder}, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}
 };
 use polars::frame::DataFrame;
 use std::{fmt::Debug, fs::*, path::Path, sync::Arc};
@@ -41,6 +34,8 @@ pub struct NrelConfig {
     pub batch_size: usize,
 }
 impl NrelConfig {
+
+
     #[allow(unused_must_use)]
     fn create_artifact_dir<B: AutodiffBackend>(
         &self,
