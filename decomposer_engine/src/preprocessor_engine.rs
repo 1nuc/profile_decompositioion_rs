@@ -2,7 +2,7 @@ use ndarray::Data;
 use polars::prelude::*;
 use rand::{SeedableRng, rngs::SmallRng, seq::SliceRandom};
 
-pub struct Preprocessor{
+pub struct Preprocessor {
     pub x: DataFrame,
     pub y: DataFrame,
     pub n: usize,
@@ -17,7 +17,7 @@ pub struct Preprocessor{
     pub y_labels_size: usize,
 }
 
-impl Preprocessor{
+impl Preprocessor {
     pub fn new(d: LazyFrame, rnd_state_: u64, test_size_: f32) -> Self {
         let (x_, y_) = Self::extract_x_nd_y(d.clone());
         let d_ = d.clone().collect().unwrap();
@@ -62,12 +62,17 @@ impl Preprocessor{
                     PlSmallStr::from_str("out.electricity.ev_charging.energy_consumption..kwh"),
                 ]),
                 strict: true,
-            }).collect().unwrap();
+            })
+            .collect()
+            .unwrap();
         (x, y)
     }
 
     fn extract_labels<'a>(d: DataFrame) -> Vec<String> {
-        d.get_column_names().iter().map(|x| x.to_owned().as_str().to_string()).collect::<Vec<String>>()
+        d.get_column_names()
+            .iter()
+            .map(|x| x.to_owned().as_str().to_string())
+            .collect::<Vec<String>>()
     }
 
     pub fn split_x_y(&self) -> (DataFrame, DataFrame, DataFrame, DataFrame) {
@@ -91,12 +96,8 @@ impl Preprocessor{
         let test_arr = &arr[x_n as usize..];
         let t = ChunkedArray::from_slice("new".into(), test_arr);
         let r = ChunkedArray::from_slice("new".into(), train_arr);
-        let test_t = d
-            .take(&t)
-            .expect("error fetching the testing data");
-        let train_t = d
-            .take(&r)
-            .expect("error fetching the training data");
+        let test_t = d.take(&t).expect("error fetching the testing data");
+        let train_t = d.take(&r).expect("error fetching the training data");
         (train_t, test_t)
     }
 

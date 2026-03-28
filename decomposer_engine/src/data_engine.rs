@@ -1,8 +1,8 @@
 use crate::{Actions, EagerActions, ExpressionActions};
 use ndarray::{Array2, Array3};
 use polars::prelude::*;
-use xgboost::DMatrix;
 use regex::Regex;
+use xgboost::DMatrix;
 
 pub struct Nrel {
     pub data: LazyFrame,
@@ -143,8 +143,14 @@ impl Actions for LazyFrame {
         self.clone()
             .sort(vec![PlSmallStr::from_str("timestamp")], Default::default())
             .group_by_dynamic(col("timestamp"), [col("bldg_id")], options)
-            .agg([col("*").cast(DataType::Float32) ]).with_columns(
-                [col("timestamp").dt().timestamp(TimeUnit::Milliseconds).cast(DataType::Float32), col("bldg_id").cast(DataType::Float32)])
+            .agg([col("*").cast(DataType::Float32)])
+            .with_columns([
+                col("timestamp")
+                    .dt()
+                    .timestamp(TimeUnit::Milliseconds)
+                    .cast(DataType::Float32),
+                col("bldg_id").cast(DataType::Float32),
+            ])
     }
 
     // Encode categorical columns in the data to UInt32 Type
@@ -158,11 +164,11 @@ impl Actions for LazyFrame {
     }
 
     fn standard_scalar(&mut self, cols: Vec<&str>) -> Self {
-        let exclude=[["bldg_id", "timestamp"].as_slice(), cols.as_slice()].concat();
+        let exclude = [["bldg_id", "timestamp"].as_slice(), cols.as_slice()].concat();
         self.clone()
-            .with_columns([
-                (all().exclude_cols(exclude.clone()).as_expr() - all().exclude_cols(exclude.clone()).as_expr().mean()
-                 ) / all().exclude_cols(exclude).as_expr().std(1)])
+            .with_columns([(all().exclude_cols(exclude.clone()).as_expr()
+                - all().exclude_cols(exclude.clone()).as_expr().mean())
+                / all().exclude_cols(exclude).as_expr().std(1)])
             .fill_nan(0)
     }
 
@@ -196,9 +202,12 @@ impl Actions for LazyFrame {
     }
 
     fn to_matrix(&mut self, cols: Option<Vec<String>>) -> DMatrix {
-        let data = if cols.is_some(){
-            let cols_cloned=cols.clone().unwrap();
-            let _cols=cols_cloned.iter().map(|x| x.as_str()).collect::<Vec<&str>>();
+        let data = if cols.is_some() {
+            let cols_cloned = cols.clone().unwrap();
+            let _cols = cols_cloned
+                .iter()
+                .map(|x| x.as_str())
+                .collect::<Vec<&str>>();
             self.standard_scalar(_cols).to_1d_vec()
         } else {
             self.to_1d_vec()
@@ -217,69 +226,81 @@ impl ExpressionActions for Expr {
             .cast(DataType::Categorical(Categories::global(), mapping.into()))
     }
 }
-impl EagerActions for DataFrame{
-    
-    fn select_sequence(&self, cols: Vec<&str>, batches: usize)-> Array3<f32>{
+impl EagerActions for DataFrame {
+    fn select_sequence(&self, cols: Vec<&str>, batches: usize) -> Array3<f32> {
         self.select(cols.clone())
             .expect("Columns do not exist")
             .explode(
-                cols.clone(), ExplodeOptions {
+                cols.clone(),
+                ExplodeOptions {
                     empty_as_null: false,
-                    keep_nulls: false 
-                })
+                    keep_nulls: false,
+                },
+            )
             .expect("unable to explode the data")
             .to_ndarray::<Float32Type>(Default::default())
             .expect("Error in converting to ndarray")
             .to_shape((batches, 96, cols.len()))
-            .expect("error in shaping the data").to_owned()
+            .expect("error in shaping the data")
+            .to_owned()
     }
 
-    fn return_x_columns(&self)->Vec<&str>{
+    fn return_x_columns(&self) -> Vec<&str> {
         let pattern=Regex::new("^out.electricity.total.energy_consumption..kwh|^bldg*|^day*|^hour*|^week*|^month*|^time*|^quarter|^IsWeekend|^in.*|^Short|^climate_zone$").unwrap();
-        let unwanted_cols=["in.sqft"];
-        self.get_column_names().iter().map(
-            |x| x.as_str()
-            ).filter(|x| pattern.is_match(x) & !unwanted_cols.contains(x)).collect::<Vec<&str>>()
+        let unwanted_cols = ["in.sqft"];
+        self.get_column_names()
+            .iter()
+            .map(|x| x.as_str())
+            .filter(|x| pattern.is_match(x) & !unwanted_cols.contains(x))
+            .collect::<Vec<&str>>()
     }
 
-    fn return_y_columns(&self)->Vec<&str> {
-        let pattern=Regex::new("^out.electricity.*..kwh$").unwrap();
-        let unwanted_cols=[
-                "out.electricity.total.energy_consumption..kwh",
-                "out.electricity.net.energy_consumption..kwh",
-                "out.electricity.pv.energy_consumption..kwh",
-                "out.electricity.pool_heater.energy_consumption..kwh",
-                "out.electricity.hot_water_solar_th.energy_consumption..kwh",
-                "out.electricity.ev_charging.energy_consumption..kwh",
+    fn return_y_columns(&self) -> Vec<&str> {
+        let pattern = Regex::new("^out.electricity.*..kwh$").unwrap();
+        let unwanted_cols = [
+            "out.electricity.total.energy_consumption..kwh",
+            "out.electricity.net.energy_consumption..kwh",
+            "out.electricity.pv.energy_consumption..kwh",
+            "out.electricity.pool_heater.energy_consumption..kwh",
+            "out.electricity.hot_water_solar_th.energy_consumption..kwh",
+            "out.electricity.ev_charging.energy_consumption..kwh",
         ];
-        self.get_column_names().iter().map(
-            |x| x.as_str()
-            ).filter(|x| pattern.is_match(x) & !unwanted_cols.contains(x)).collect::<Vec<&str>>()
-
+        self.get_column_names()
+            .iter()
+            .map(|x| x.as_str())
+            .filter(|x| pattern.is_match(x) & !unwanted_cols.contains(x))
+            .collect::<Vec<&str>>()
     }
 
     fn to_1d_vec(&self) -> Vec<f32> {
-        let array_d =self.to_ndarray::<Float32Type>(Default::default()).unwrap();
+        let array_d = self.to_ndarray::<Float32Type>(Default::default()).unwrap();
         array_d.into_raw_vec_and_offset().0
     }
 
-    fn train_val_test_spli(&self)->(DataFrame,DataFrame,DataFrame) {
-        let data_fraction=self.clone().sample_frac(
-            &Series::new("fraction".into(),[0.7]), false, false, Some(42)).unwrap();
+    fn train_val_test_spli(&self) -> (DataFrame, DataFrame, DataFrame) {
+        let data_fraction = self
+            .clone()
+            .sample_frac(
+                &Series::new("fraction".into(), [0.7]),
+                false,
+                false,
+                Some(42),
+            )
+            .unwrap();
         //define the size for the training and both test and validation
-        let test_val_size=data_fraction.clone().height() as f32 * 0.3;
-        let train_size=data_fraction.clone().height() as f32 * 0.7;
+        let test_val_size = data_fraction.clone().height() as f32 * 0.3;
+        let train_size = data_fraction.clone().height() as f32 * 0.7;
         //define the training value
-        let train_data=data_fraction.clone().head(Some(train_size as usize));
-        let val_test_data=data_fraction.clone().tail(Some(test_val_size as usize));
+        let train_data = data_fraction.clone().head(Some(train_size as usize));
+        let val_test_data = data_fraction.clone().tail(Some(test_val_size as usize));
 
         //split again the val test data into test and validation data
-        
-        let size=val_test_data.clone().height() as f32 * 0.5;
 
-        let val_data=val_test_data.clone().head(Some(size as usize));
+        let size = val_test_data.clone().height() as f32 * 0.5;
 
-        let test_data=val_test_data.clone().tail(Some(size as usize));
+        let val_data = val_test_data.clone().head(Some(size as usize));
+
+        let test_data = val_test_data.clone().tail(Some(size as usize));
         (train_data, test_data, val_data)
     }
 }

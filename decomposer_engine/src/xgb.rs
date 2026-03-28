@@ -1,8 +1,8 @@
-use crate::{Actions, EagerActions};
 use crate::preprocessor_engine::Preprocessor;
+use crate::{Actions, EagerActions};
 use polars::prelude::*;
 
-use polars::prelude::{LazyFrame};
+use polars::prelude::LazyFrame;
 
 use xgboost::{
     parameters::{
@@ -88,7 +88,8 @@ impl Xgb {
         let param = self.set_training_param();
         let boost = Booster::train(&param).unwrap();
         let preds = boost.predict(&self.d_test).unwrap();
-        self.mae.push(*boost.evaluate(&self.d_test).unwrap().get("mae").unwrap());
+        self.mae
+            .push(*boost.evaluate(&self.d_test).unwrap().get("mae").unwrap());
         self.preds.push(preds.clone());
         self.metric(preds);
         self.booster.push(boost);
@@ -119,29 +120,31 @@ impl Xgb {
         cols.iter().for_each(|x| {
             let y_train = y_train
                 .clone()
-                .select([x.clone()]).expect("unable to process the column");
+                .select([x.clone()])
+                .expect("unable to process the column");
             let y_test = y_test
                 .clone()
-                .select([x]).expect("unable the process the column");
+                .select([x])
+                .expect("unable the process the column");
             self.set_y_train(y_train.to_1d_vec())
                 .set_y_test(y_test.to_1d_vec());
             self.modelling();
         });
         self
     }
-    pub fn runner(d: LazyFrame){
-        let preprocessor=Preprocessor::new(d.clone(), 42, 0.3);
-        let (x_train, x_test, y_train, y_test)=preprocessor.split_x_y();
-        let d_train=x_train.lazy().to_matrix(Some(preprocessor.x_labels));
-        let d_test=x_test.lazy().to_matrix(None);
-        let mut xgb=Xgb::new(d_train, d_test);
-        let (r2, mae)=xgb.train(y_train, y_test, preprocessor.y_labels).evaluate();
+    pub fn runner(d: LazyFrame) {
+        let preprocessor = Preprocessor::new(d.clone(), 42, 0.3);
+        let (x_train, x_test, y_train, y_test) = preprocessor.split_x_y();
+        let d_train = x_train.lazy().to_matrix(Some(preprocessor.x_labels));
+        let d_test = x_test.lazy().to_matrix(None);
+        let mut xgb = Xgb::new(d_train, d_test);
+        let (r2, mae) = xgb.train(y_train, y_test, preprocessor.y_labels).evaluate();
         println!("r2 is: {:?}, mae is : {:?}", r2, mae);
     }
 
     pub fn evaluate(&self) -> (f32, f32) {
-        let r2=self.r2_score.iter().sum::<f32>() / self.r2_score.len() as f32;
-        let mae=self.mae.iter().sum::<f32>() / self.r2_score.len() as f32;
+        let r2 = self.r2_score.iter().sum::<f32>() / self.r2_score.len() as f32;
+        let mae = self.mae.iter().sum::<f32>() / self.r2_score.len() as f32;
         (r2, mae)
     }
 }

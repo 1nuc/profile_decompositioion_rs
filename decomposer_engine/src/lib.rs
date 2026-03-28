@@ -9,15 +9,14 @@ pub mod dl;
 pub mod preprocessor_engine;
 pub mod xgb;
 
-pub trait EagerActions{
+pub trait EagerActions {
+    fn select_sequence(&self, cols: Vec<&str>, batches: usize) -> Array3<f32>;
 
-    fn select_sequence(&self, cols: Vec<&str>, batches: usize)-> Array3<f32>;
+    fn return_x_columns(&self) -> Vec<&str>;
 
-    fn return_x_columns(&self)->Vec<&str>;
+    fn return_y_columns(&self) -> Vec<&str>;
 
-    fn return_y_columns(&self)->Vec<&str>;
-
-    fn train_val_test_spli(&self)->(DataFrame,DataFrame,DataFrame);
+    fn train_val_test_spli(&self) -> (DataFrame, DataFrame, DataFrame);
 
     fn to_1d_vec(&self) -> Vec<f32>;
 }
