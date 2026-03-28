@@ -1,6 +1,6 @@
 use burn::{config::Config, data::dataloader::DataLoaderBuilder, module::{Module}, optim::AdamWConfig, record::{CompactRecorder}, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining,metric::{LossMetric}}};
 use polars::{frame::DataFrame};
-use std::{fmt::{Debug}, fs::*};
+use std::{fmt::Debug, fs::*, path::Path};
 
 use crate::dl::{dataset::{NrelBatcher, NrelDataset}, models::{bi_lstm::NucBiLstmConfig, hybrid_models::Seq2SeqConfig, lstm::NucLstmConfig, stacked_bi_lstm::StackedBiLstmConfig, stacked_lstm::StackedLstmConfig}};
 
@@ -26,8 +26,13 @@ impl NrelConfig{
 
     #[allow(unused_must_use)]
     fn create_artifact_dir(&self,artifact_dir: &str){
-        remove_dir_all(artifact_dir);
-        create_dir_all(artifact_dir);
+        let artifact_path=Path::new(artifact_dir);
+        if artifact_path.exists(){
+            inference_learning();
+        }
+        else{
+            create_dir_all(artifact_dir);
+        }
     }
     pub fn train<B: AutodiffBackend>(&self, train_data: DataFrame, test_data: DataFrame, artifact_dir: &str, device: B::Device)
     {

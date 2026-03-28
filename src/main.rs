@@ -1,4 +1,4 @@
-use std::{ffi::OsString, fs::{read_dir}};
+use std::{fs::{self, copy, create_dir, read_dir}, intrinsics::breakpoint, path::{Path, PathBuf}};
 
 use decomposer_engine::{Actions, EagerActions, data_engine::*, dl::controller::Controller, xgb};
 
@@ -8,9 +8,24 @@ fn main(){
     // let mut encoded_data=data.clone().encode_categoricals();
     let dir=read_dir("../../datasets").unwrap();
     
-    let file_names=dir.map(|x| x.unwrap().file_name()
-        ).map(|x| x.to_str().unwrap().to_owned()).collect::<Vec<String>>();
-    println!("{:?}", file_names.len());
+    let mut files=dir.map(|x| x.unwrap().path()
+        ).collect::<Vec<PathBuf>>();
+
+
+    let input_path=Path::new("input");
+    if !input_path.exists(){
+        let input_lib=create_dir(input_path).unwrap();
+    }
+    // Join the file names first
+    // then copy the content of the files there
+
+    files.chunks(40).for_each(|x|{
+        x.iter().for_each(|x|{
+            let file_path=input_path.join(x);
+            copy(x, file_path).expect("error in copying the data");
+        });
+        breakpoint();
+    });
     // --- Xgboost Model
     // xgb::Xgb::runner(encoded_data);
 
