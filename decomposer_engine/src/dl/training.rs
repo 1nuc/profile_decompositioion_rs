@@ -1,5 +1,12 @@
 use burn::{
-    config::Config, data::dataloader::{DataLoader, DataLoaderBuilder}, module::Module, optim::AdamWConfig, prelude::Backend, record::{CompactRecorder, Recorder}, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}
+    config::Config,
+    data::dataloader::{DataLoader, DataLoaderBuilder},
+    module::Module,
+    optim::AdamWConfig,
+    prelude::Backend,
+    record::{CompactRecorder, Recorder},
+    tensor::backend::AutodiffBackend,
+    train::{Learner, SupervisedTraining, metric::LossMetric},
 };
 use polars::frame::DataFrame;
 use std::{fmt::Debug, fs::*, path::Path, sync::Arc};
@@ -34,8 +41,6 @@ pub struct NrelConfig {
     pub batch_size: usize,
 }
 impl NrelConfig {
-
-
     #[allow(unused_must_use)]
     fn create_artifact_dir<B: AutodiffBackend>(
         &self,
@@ -66,7 +71,8 @@ impl NrelConfig {
             device.clone(),
         );
         let model = self.model.init::<B>(device.clone());
-        let (train_loader, test_loader) = self.prepare_training::<B>(train_data, test_data, &device);
+        let (train_loader, test_loader) =
+            self.prepare_training::<B>(train_data, test_data, &device);
         // Initiate the training
         let train = SupervisedTraining::new(artifact_dir, train_loader, test_loader)
             .metric_train_numeric(LossMetric::new())
@@ -103,7 +109,8 @@ impl NrelConfig {
 
         // load and initialize the model for test
         let model = config.model.init::<B>(device.clone()).load_record(record);
-        let (train_loader, test_loader) = self.prepare_training::<B>(train_data, test_data, &device);
+        let (train_loader, test_loader) =
+            self.prepare_training::<B>(train_data, test_data, &device);
 
         //TODO: build the model
         let train = SupervisedTraining::new(artifact_dir, train_loader, test_loader)
