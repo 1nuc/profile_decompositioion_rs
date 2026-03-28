@@ -1,7 +1,8 @@
-use crate::Actions;
+use crate::preprocessor_engine::Preprocessor;
+use crate::{Actions, EagerActions};
 use polars::prelude::*;
 
-use polars::prelude::{LazyFrame, PlSmallStr};
+use polars::prelude::LazyFrame;
 
 use xgboost::{
     parameters::{
@@ -18,6 +19,7 @@ pub struct Xgb {
     pub booster: Vec<Booster>,
     pub preds: Vec<Vec<f32>>,
     pub r2_score: Vec<f32>,
+    pub mae: Vec<f32>,
 }
 
 impl Xgb {
@@ -28,6 +30,7 @@ impl Xgb {
             booster: vec![Booster::new(&Self::set_booster_param()).unwrap()],
             preds: Vec::new(),
             r2_score: Vec::new(),
+            mae: Vec::new(),
         }
     }
     pub fn set_y_train(&mut self, d: Vec<f32>) -> &mut Self {
@@ -85,6 +88,8 @@ impl Xgb {
         let param = self.set_training_param();
         let boost = Booster::train(&param).unwrap();
         let preds = boost.predict(&self.d_test).unwrap();
+        self.mae
+            .push(*boost.evaluate(&self.d_test).unwrap().get("mae").unwrap());
         self.preds.push(preds.clone());
         self.metric(preds);
         self.booster.push(boost);
@@ -111,26 +116,35 @@ impl Xgb {
         1_f32 - (total_sum_residuals / total_sum_squares)
     }
 
-    pub fn train(&mut self, y_train: LazyFrame, y_test: LazyFrame) -> &Self {
-        // loop through the columns
-        // if the index is 0 train the first column
-        // if the index is not zero containue updating the model
-        let cols = y_train.return_cols();
+    pub fn train(&mut self, y_train: DataFrame, y_test: DataFrame, cols: Vec<String>) -> &Self {
         cols.iter().for_each(|x| {
             let y_train = y_train
                 .clone()
-                .select([col(PlSmallStr::from_string(x.clone()))]);
+                .select([x.clone()])
+                .expect("unable to process the column");
             let y_test = y_test
                 .clone()
-                .select([col(PlSmallStr::from_string(x.clone()))]);
+                .select([x])
+                .expect("unable the process the column");
             self.set_y_train(y_train.to_1d_vec())
                 .set_y_test(y_test.to_1d_vec());
             self.modelling();
         });
         self
     }
+    pub fn runner(d: LazyFrame) {
+        let preprocessor = Preprocessor::new(d.clone(), 42, 0.3);
+        let (x_train, x_test, y_train, y_test) = preprocessor.split_x_y();
+        let d_train = x_train.lazy().to_matrix(Some(preprocessor.x_labels));
+        let d_test = x_test.lazy().to_matrix(None);
+        let mut xgb = Xgb::new(d_train, d_test);
+        let (r2, mae) = xgb.train(y_train, y_test, preprocessor.y_labels).evaluate();
+        println!("r2 is: {:?}, mae is : {:?}", r2, mae);
+    }
 
-    pub fn evaluate(&self) -> f32 {
-        self.r2_score.iter().sum::<f32>() / self.r2_score.len() as f32
+    pub fn evaluate(&self) -> (f32, f32) {
+        let r2 = self.r2_score.iter().sum::<f32>() / self.r2_score.len() as f32;
+        let mae = self.mae.iter().sum::<f32>() / self.r2_score.len() as f32;
+        (r2, mae)
     }
 }
