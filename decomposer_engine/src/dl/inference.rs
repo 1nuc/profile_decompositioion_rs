@@ -1,12 +1,9 @@
+use std::{fs::File, io::BufWriter, path::Path};
+
 use burn::{
-    config::Config,
-    data::{dataloader::batcher::Batcher, dataset::Dataset},
-    module::Module,
-    nn::{BatchNormConfig, loss::MseLoss},
-    prelude::Backend,
-    record::{CompactRecorder, Recorder},
+    Tensor, config::Config, data::{dataloader::batcher::Batcher, dataset::Dataset}, module::Module, nn::{BatchNormConfig, loss::MseLoss}, prelude::Backend, record::{CompactRecorder, Recorder}
 };
-use polars::{df, frame::DataFrame, prelude::{Column, NamedFrom}, series::{self, Series}};
+use polars::{frame::DataFrame, prelude::*};
 
 use crate::{EagerActions, dl::{
     dataset::{NrelBatcher, NrelDataset, NrelDatasetItem},
@@ -48,7 +45,11 @@ impl Inference {
         // get the predicted and target values
         let predicted = model.forward(batch.sequence);
         let targets = batch.target;
-
+        let length=test_data_cloned.height();
+        let mut df=Self::process_data::<B>(predicted.clone(),length, cols);
+        let file= File::create_new(Path::new("data.json")).unwrap();
+        let writer=BufWriter::new(file);
+        JsonWriter::new(writer).with_json_format(JsonFormat::Json).finish(&mut df);
         let loss = MseLoss::new();
         let mse_loss_3d = loss.forward(
             predicted.clone(),
@@ -56,13 +57,6 @@ impl Inference {
             burn::nn::loss::Reduction::Mean,
         );
         // print some statisitc
-        let columns=predicted.clone().iter_dim(2).zip(cols).map(|(tensor, col)|{
-            let values=tensor.flatten::<2>(1, 2).into_data().to_vec::<f32>().unwrap();
-            Column::new(col.into(), values)
-        }).collect::<Vec<Column>>();
-
-       let dataframe=DataFrame::new(test_data_cloned.height() * 96, columns);
-       println!("{:?}", dataframe);
        // squeeze both predicted and targets to 1d tensor
         let predicted = predicted
             .flatten::<2>(1, 2)
@@ -78,6 +72,15 @@ impl Inference {
         let r2_score = Self::r2_score(predicted.clone(), targets.clone());
         println!("mse: {:?}", mse_loss_3d.to_data().to_vec::<f32>());
         println!("r2: {:?}", r2_score);
+    }
+
+    pub fn process_data<B: Backend>(tensor_data: Tensor<B, 3>, length: usize, cols: Vec<&str>)-> DataFrame{
+
+        let columns=tensor_data.clone().iter_dim(2).zip(cols).map(|(tensor, col)|{
+            let values=tensor.flatten::<2>(1, 2).into_data().to_vec::<f32>().unwrap();
+            Column::new(col.into(), values)
+        }).collect::<Vec<Column>>();
+       DataFrame::new(length * 96, columns).unwrap()
     }
 
     pub fn r2_score(preds: Vec<f32>, y_true: Vec<f32>) -> f32 {
