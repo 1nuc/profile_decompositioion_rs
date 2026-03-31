@@ -14,6 +14,7 @@ use crate::{EagerActions, dl::{
     training::NrelConfig,
 }};
 
+//TODO: a function to forward the data based on the number or the id of the building
 pub struct Inference {}
 
 impl Inference {
