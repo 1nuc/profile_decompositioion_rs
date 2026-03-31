@@ -35,6 +35,7 @@ impl NrelDataset {
             target: data.clone().select_sequence(y_cols.clone(), batches),
         }
     }
+
 }
 
 //Specify the get method needed for batch to catch the elements

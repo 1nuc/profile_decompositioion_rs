@@ -6,16 +6,16 @@ use burn::{
     prelude::Backend,
     record::{CompactRecorder, Recorder},
 };
-use polars::{df, frame::DataFrame};
+use polars::{df, frame::DataFrame, prelude::{Column, NamedFrom}, series::{self, Series}};
 
-use crate::dl::{
+use crate::{EagerActions, dl::{
     dataset::{NrelBatcher, NrelDataset, NrelDatasetItem},
     models::{
         bi_lstm::NucBiLstmRecord, hybrid_models::Seq2SeqRecord, lstm::NucLstmRecord,
         stacked_bi_lstm::StackedBilstmRecord, stacked_lstm::StackedlstmRecord,
     },
     training::NrelConfig,
-};
+}};
 
 pub struct Inference {}
 
@@ -34,6 +34,8 @@ impl Inference {
         let model = config.model.init::<B>(device.clone()).load_record(record);
 
         //load the test data and the batcher and initialize the data items
+        let test_data_cloned=test_data.clone();
+        let cols= test_data_cloned.return_y_columns();
         let test_data = NrelDataset::new(test_data);
         let batcher: NrelBatcher<B> = NrelBatcher::new(device.clone());
 
@@ -53,7 +55,15 @@ impl Inference {
             targets.clone(),
             burn::nn::loss::Reduction::Mean,
         );
-        // squeeze both predicted and targets to 1d tensor
+        // print some statisitc
+        let columns=predicted.clone().iter_dim(2).zip(cols).map(|(tensor, col)|{
+            let values=tensor.flatten::<2>(1, 2).into_data().to_vec::<f32>().unwrap();
+            Column::new(col.into(), values)
+        }).collect::<Vec<Column>>();
+
+       let dataframe=DataFrame::new(test_data_cloned.height() * 96, columns);
+       println!("{:?}", dataframe);
+       // squeeze both predicted and targets to 1d tensor
         let predicted = predicted
             .flatten::<2>(1, 2)
             .into_data()

@@ -1,7 +1,8 @@
 use decomposer_engine::{Actions, EagerActions, data_engine::*, dl::controller::{self, Controller}, xgb};
 
 fn main(){
-    controller::run();
+    // controller::run_train();
+    controller::process_chunks();
     // let data_source=Nrel::init();
     // let data=data_source.data;
     // let mut encoded_data=data.clone().encode_categoricals();
