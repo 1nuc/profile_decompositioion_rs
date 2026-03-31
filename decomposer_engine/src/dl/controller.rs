@@ -61,17 +61,22 @@ impl Controller{
         (b.to_vec(), a.to_vec())
     }
 
-    pub fn run_training(&self){
-
-        let dir=read_dir("../../datasets/").unwrap();
-        let files=dir.map(|x| x.unwrap().path()
-            ).collect::<Vec<PathBuf>>();
+    pub fn run_inference(&self){
         let artifact_dir=Path::new("lstm_artifact/");
         if artifact_dir.exists(){
             remove_dir_all("input").expect("can't find the input dir");
             remove_dir_all(artifact_dir).expect("can't find the artifact dir");
         }
-        self.chunks_iteration(files);
+        self.chunks_iteration(self.test_files.clone());
+    }
+
+    pub fn run_training(&self){
+        let artifact_dir=Path::new("lstm_artifact/");
+        if artifact_dir.exists(){
+            remove_dir_all("input").expect("can't find the input dir");
+            remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+        }
+        self.chunks_iteration(self.train_files.clone());
     }
 
     pub fn chunks_iteration(&self,files: Vec<PathBuf>){
