@@ -33,7 +33,7 @@ impl Controller{
     pub fn lstm_simulation(&self){
         type Mybackend= Autodiff<Wgpu>;
         let device=WgpuDevice::DiscreteGpu(0);
-        self.train_lstm::<Mybackend>(device.clone());
+        // self.train_lstm::<Mybackend>(device.clone());
         self.infer_lstm::<Mybackend>(device);
     }
 
@@ -49,7 +49,7 @@ impl Controller{
 
 }
 
-pub fn run(){
+pub fn run_training(){
 
     let dir=read_dir("../../datasets/").unwrap();
     let files=dir.map(|x| x.unwrap().path()
