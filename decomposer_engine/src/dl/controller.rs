@@ -43,21 +43,13 @@ impl Controller{
         }
     }
 
-    pub fn lstm_simulation(&self){
-        type Mybackend= Autodiff<Wgpu>;
-        let device=WgpuDevice::DiscreteGpu(0);
-        // self.train_lstm::<Mybackend>(device.clone());
-        self.infer_lstm::<Mybackend>(device);
-    }
-
-    pub fn train_lstm<B: AutodiffBackend>(&self,device: B::Device){
-        let model=Seq2SeqConfig::default();
-        let model_config=NrelConfig::new(model,AdamWConfig::new().with_weight_decay(1e-3));
-        model_config.train::<B>(self.train_data.clone(), self.val_data.clone(), "lstm_artifact", device);
-    }
-
-    pub fn infer_lstm<B: AutodiffBackend>(&self,device: B::Device){
-        Inference::inference::<B>("lstm_artifact", self.test_data.clone(), device);
+    pub fn data_preparation() -> DataFrame{
+        let data_source=Nrel::init();
+        let data=data_source.data;
+        let mut encoded_data=data.clone().encode_categoricals();
+        let s=encoded_data.clone().collect().unwrap();
+        let y_columns=s.return_y_columns();
+        encoded_data.standard_scalar(y_columns.clone()).return_time_sequenced().collect().unwrap()
     }
 
     pub fn organize_files() -> (Vec<PathBuf>, Vec<PathBuf>){
@@ -66,7 +58,7 @@ impl Controller{
             ).collect::<Vec<PathBuf>>();
         let split_inx= (files.len() as f32 * 0.1).round() as usize;
         let (a, b)=files.split_at(split_inx);
-        (b.to_vec(), b.to_vec())
+        (b.to_vec(), a.to_vec())
     }
 
     pub fn run_training(&self){
@@ -104,14 +96,23 @@ impl Controller{
         });
     }
 
-    pub fn data_preparation() -> DataFrame{
-        let data_source=Nrel::init();
-        let data=data_source.data;
-        let mut encoded_data=data.clone().encode_categoricals();
-        let s=encoded_data.clone().collect().unwrap();
-        let y_columns=s.return_y_columns();
-        encoded_data.standard_scalar(y_columns.clone()).return_time_sequenced().collect().unwrap()
+    pub fn lstm_simulation(&self){
+        type Mybackend= Autodiff<Wgpu>;
+        let device=WgpuDevice::DiscreteGpu(0);
+        // self.train_lstm::<Mybackend>(device.clone());
+        self.infer_lstm::<Mybackend>(device);
     }
+
+    pub fn train_lstm<B: AutodiffBackend>(&self,device: B::Device){
+        let model=Seq2SeqConfig::default();
+        let model_config=NrelConfig::new(model,AdamWConfig::new().with_weight_decay(1e-3));
+        model_config.train::<B>(self.train_data.clone(), self.val_data.clone(), "lstm_artifact", device);
+    }
+
+    pub fn infer_lstm<B: AutodiffBackend>(&self,device: B::Device){
+        Inference::inference::<B>("lstm_artifact", self.test_data.clone(), device);
+    }
+
 }
 
 
