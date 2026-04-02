@@ -80,6 +80,7 @@ impl Controller{
         self.chunks_iteration(self.train_files.clone());
     }
 
+    // This is the main function to send the data for the dashboard 
     pub fn infer_one_building(&self, building: &str){
 
         let input_path=Path::new("input");
