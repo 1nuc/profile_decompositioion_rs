@@ -17,7 +17,8 @@ use crate::{Actions, EagerActions, data_engine::Nrel, dl::{inference::Inference,
 
 pub struct Controller{
     pub train_data: DataFrame,
-    pub test_data: DataFrame,
+    pub val_data: DataFrame,
+    pub production_data: DataFrame,
     pub train_files: Vec<PathBuf>,
     pub test_files: Vec<PathBuf>,
 }
@@ -34,7 +35,8 @@ impl Controller{
         let (train_files, test_files)=Self::organize_files();
         Self{
             train_data: DataFrame::default(), 
-            test_data: DataFrame::default(),
+            val_data: DataFrame::default(),
+            production_data: DataFrame::default(),
             train_files,
             test_files
         }
@@ -47,7 +49,7 @@ impl Controller{
         let s=encoded_data.clone().collect().unwrap();
         let y_columns=s.return_y_columns();
         let data =encoded_data.standard_scalar(y_columns.clone()).return_time_sequenced().collect().unwrap();
-        (self.train_data, self.test_data)=data.train_test_split();
+        (self.train_data, self.val_data, self.production_data)=data.train_test_split();
     }
 
     pub fn organize_files() -> (Vec<PathBuf>, Vec<PathBuf>){
@@ -81,7 +83,6 @@ impl Controller{
 
     // This is the main function to send the data for the dashboard 
     pub fn infer_one_building(&mut self, building: &str){
-        // this funciton forwards the prediction of one building to the dashboard
 
         let input_path=Path::new("production_set");
         if !input_path.exists(){
@@ -152,11 +153,11 @@ impl Controller{
     pub fn train_lstm<B: AutodiffBackend>(&self,device: B::Device){
         let model=Seq2SeqConfig::default();
         let model_config=NrelConfig::new(model,AdamWConfig::new().with_weight_decay(1e-3));
-        model_config.train::<B>(self.train_data.clone(), self.test_data.clone(), "lstm_artifact", device);
+        model_config.train::<B>(self.train_data.clone(), self.val_data.clone(), "lstm_artifact", device);
     }
 
-    pub fn infer_lstm<B: AutodiffBackend>(&self,device: B::Device, data: DataFrame){
-        Inference::inference::<B>("lstm_artifact", data, device);
+    pub fn infer_lstm<B: AutodiffBackend>(&self,device: B::Device){
+        Inference::inference::<B>("lstm_artifact", self.production_data.clone(), device);
     }
 
 }
