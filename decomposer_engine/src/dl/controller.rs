@@ -96,7 +96,9 @@ impl Controller{
 
         let path=Path::new(&bldg_file);
         let file_path=input_path.join(path);
-        File::create_new(&file_path).expect("unable to create a file");
+        if !file_path.exists(){
+            File::create_new(&file_path).expect("unable to create a file");
+        }
         copy(&dataset_path, file_path.clone()).expect("error in copying the data");
         // TODO: Import the data set for the inference
         self.data_preparation(file_path.to_str().unwrap().into());
