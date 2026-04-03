@@ -1,6 +1,6 @@
 use std::{fs::read_dir, path::PathBuf};
 
-use axum::{Router, http::Response, response::IntoResponse, routing::get, serve};
+use axum::{Json, Router, http::Response, response::IntoResponse, routing::get, serve};
 use decomposer_engine::{Actions, EagerActions, data_engine::*, dl::controller::{self, Controller}, xgb};
 
 #[tokio::main]
@@ -10,7 +10,7 @@ async fn main(){
         .route("/ids", get(send_bldg));
     let listner=tokio::net::TcpListener::bind("localhost:8000").await.unwrap();
     serve(listner, app).await.unwrap();
-    // controller::run_train();
+    // controller::run_training();
     // controller::process_chunks();
     // let data_source=Nrel::init();
     // let data=data_source.data;
@@ -27,9 +27,10 @@ async fn main(){
 
 }
 
-async fn send_bldg()-> impl IntoResponse{
-    let msg="take the buildings".to_string();
-    Response::new(msg)
+// Return the available buildings in the data
+async fn send_bldg()-> Json<Vec<String>>{
+    let buildings=Controller::default().return_nrel_buildings();
+    Json(buildings)
 }
 
 async fn send_data()-> impl IntoResponse{

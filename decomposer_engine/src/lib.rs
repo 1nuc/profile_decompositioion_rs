@@ -16,7 +16,7 @@ pub trait EagerActions {
 
     fn return_y_columns(&self) -> Vec<&str>;
 
-    fn train_val_test_spli(&self) -> (DataFrame, DataFrame, DataFrame);
+    fn train_test_split(&self) -> (DataFrame, DataFrame);
 
     fn to_1d_vec(&self) -> Vec<f32>;
 }
