@@ -2102,6 +2102,7 @@ checksum = "7eed2c4702fa172d1ce21078faa7c5203e69f5394d48cc436d25928394a867a2"
 name = "decomposer"
 version = "0.1.0"
 dependencies = [
+ "axum",
  "burn",
  "decomposer_engine",
  "glob",
@@ -2109,6 +2110,7 @@ dependencies = [
  "polars",
  "rand 0.10.0",
  "tap",
+ "tokio",
 ]
 
 [[package]]
@@ -6808,6 +6810,7 @@ dependencies = [
  "bytes",
  "libc",
  "mio",
+ "parking_lot",
  "pin-project-lite",
  "signal-hook-registry",
  "socket2",

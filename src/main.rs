@@ -1,15 +1,13 @@
 use std::{fs::read_dir, path::PathBuf};
 
+use axum::{Router, http::Response, response::IntoResponse, routing::get, serve};
 use decomposer_engine::{Actions, EagerActions, data_engine::*, dl::controller::{self, Controller}, xgb};
 
-fn main(){
-    let dir=read_dir("../../datasets/").unwrap();
-    let mut files=dir.map(|x| x.unwrap().path()
-        ).collect::<Vec<PathBuf>>();
-    let name="123";
-    let building=format!("{name}-28.parquet").as_str();
-    let file=files.pop();
-    println!("{:?}", file.unwrap().file_name());
+#[tokio::main]
+async fn main(){
+    let app=Router::new().route("/", get(send_data));
+    let listner=tokio::net::TcpListener::bind("localhost:8000").await.unwrap();
+    serve(listner, app).await.unwrap();
     // controller::run_train();
     // controller::process_chunks();
     // let data_source=Nrel::init();
@@ -27,3 +25,7 @@ fn main(){
 
 }
 
+async fn send_data()-> impl IntoResponse{
+    let msg="Decomposer says hi".to_string();
+    Response::new(msg)
+}
