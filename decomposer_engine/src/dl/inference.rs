@@ -90,7 +90,11 @@ impl Inference {
            .unwrap()
            .hstack_mut(&[timestamp_col])
            .expect("error stacking the timestamp column")
-           .select([col("*").implode()]).expect("error imploding the columns")
+           .clone()
+           .lazy()
+           .select([col("*").implode()])
+           .collect()
+           .unwrap()
     }
      pub fn write_to_json(mut df: DataFrame) -> PolarsResult<()> {
         let file= File::create_new(Path::new("data.json")).unwrap();
