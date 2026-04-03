@@ -5,7 +5,9 @@ use decomposer_engine::{Actions, EagerActions, data_engine::*, dl::controller::{
 
 #[tokio::main]
 async fn main(){
-    let app=Router::new().route("/", get(send_data));
+    let app=Router::new()
+        .route("/", get(send_data))
+        .route("/ids", get(send_bldg));
     let listner=tokio::net::TcpListener::bind("localhost:8000").await.unwrap();
     serve(listner, app).await.unwrap();
     // controller::run_train();
@@ -23,6 +25,11 @@ async fn main(){
     // --- Xgboost Model
     // xgb::Xgb::runner(encoded_data);
 
+}
+
+async fn send_bldg()-> impl IntoResponse{
+    let msg="take the buildings".to_string();
+    Response::new(msg)
 }
 
 async fn send_data()-> impl IntoResponse{
