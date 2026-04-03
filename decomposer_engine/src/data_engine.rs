@@ -14,11 +14,11 @@ impl Nrel {
         LazyFrame::scan_parquet(path, Default::default()).expect("Error reading the file")
     }
 
-    pub fn init(input: String) -> Self {
+    pub fn init(path:PlRefPath) -> Self {
         let meta_data_ = Self::scan_files("../../metadata/MetaData.parquet".into())
             .process_meta_data_variants()
             .unique(None, Default::default());
-        let data_ = Self::scan_files(format!("{input}/*.parquet").as_str().into())
+        let data_ = Self::scan_files(path)
             .join(
                 meta_data_.clone(),
                 [col("bldg_id")],
