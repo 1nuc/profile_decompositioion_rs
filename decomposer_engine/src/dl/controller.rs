@@ -125,7 +125,7 @@ impl Controller{
                 copy(x, file_path).expect("error in copying the data");
             });
             // ---- Deep learning Models
-            self.data_preparation(format!("input/*.parquet").as_str().into());
+            self.data_preparation(("input/*.parquet").into());
             self.lstm_simulation();
             remove_dir_all("input").expect("can't find the input dir");
         });
