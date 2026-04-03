@@ -19,7 +19,7 @@ pub struct Inference {}
 
 impl Inference {
     #[allow(unused_must_use)]
-    pub fn inference<B: Backend>(artifact_dir: &str, test_data: DataFrame, device: B::Device, timestamp: Column) {
+    pub fn inference<B: Backend>(artifact_dir: &str, test_data: DataFrame, device: B::Device, timestamp: Column) -> DataFrame{
         //Load the configurations of the model
         let config = NrelConfig::load(format!("../{artifact_dir}/config.json"))
             .expect("unable to find the file");
@@ -47,13 +47,11 @@ impl Inference {
 
         // get the predicted and target values
         let predicted = model.forward(batch.sequence);
-        println!("{:?}", predicted.dims());
         let targets = batch.target;
 
         let length=test_data_cloned.height();
         let  df=Self::process_data::<B>(predicted.clone(),length, cols, timestamp.clone());
-        println!("{:?}", df);
-        Self::write_to_json(df);
+        Self::write_to_json(df.clone());
 
         let loss = MseLoss::new();
         let mse_loss_3d = loss.forward(
@@ -77,6 +75,7 @@ impl Inference {
         let r2_score = Self::r2_score(predicted.clone(), targets.clone());
         println!("mse: {:?}", mse_loss_3d.to_data().to_vec::<f32>());
         println!("r2: {:?}", r2_score);
+        df
     }
 
     pub fn process_data<B: Backend>(tensor_data: Tensor<B, 3>, length: usize, cols: Vec<&str>, timestamp_col: Column)-> DataFrame{

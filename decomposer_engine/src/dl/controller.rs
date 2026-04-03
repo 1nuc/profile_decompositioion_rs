@@ -11,6 +11,7 @@
 use std::{fs::{File,copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}};
 
 use burn::{backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, optim::AdamWConfig, tensor::backend::AutodiffBackend};
+use ndarray::Data;
 use polars::{frame::DataFrame, prelude::{Column, PlRefPath}};
 use crate::{Actions, EagerActions, data_engine::Nrel, dl::{inference::Inference, models::{bi_lstm::NucBiLstmConfig, hybrid_models::Seq2SeqConfig, lstm::NucLstmConfig, stacked_bi_lstm::StackedBiLstmConfig, stacked_lstm::StackedLstmConfig}, training::NrelConfig}};
 
@@ -84,7 +85,7 @@ impl Controller{
     }
 
     // This is the main function to send the data for the dashboard 
-    pub fn infer_one_building(&mut self, building: &str){
+    pub fn infer_one_building(&mut self, building: &str) -> DataFrame{
 
         let input_path=Path::new("production_set");
         if !input_path.exists(){
@@ -107,7 +108,7 @@ impl Controller{
         // ---- Deep learning Models
         type Mybackend= Autodiff<Wgpu>;
         let device=WgpuDevice::DiscreteGpu(0);
-        self.infer_lstm::<Mybackend>(device);
+        self.infer_lstm::<Mybackend>(device)
 
         // I don't know why its here in the first place
         // remove_dir_all("input").expect("can't find the input dir");
@@ -161,8 +162,8 @@ impl Controller{
         model_config.train::<B>(self.train_data.clone(), self.val_data.clone(), "lstm_artifact", device);
     }
 
-    pub fn infer_lstm<B: AutodiffBackend>(&self,device: B::Device){
-        Inference::inference::<B>("lstm_artifact", self.production_data.clone(), device, self.timestamp.clone());
+    pub fn infer_lstm<B: AutodiffBackend>(&self,device: B::Device) -> DataFrame{
+        Inference::inference::<B>("lstm_artifact", self.production_data.clone(), device, self.timestamp.clone())
     }
 
 }
