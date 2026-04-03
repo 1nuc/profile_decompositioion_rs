@@ -40,8 +40,8 @@ impl Controller{
         }
     }
 
-    pub fn data_preparation(&mut self) {
-        let data_source=Nrel::init();
+    pub fn data_preparation(&mut self, input: String) {
+        let data_source=Nrel::init(input);
         let data=data_source.data;
         let mut encoded_data=data.clone().encode_categoricals();
         let s=encoded_data.clone().collect().unwrap();
@@ -59,6 +59,7 @@ impl Controller{
         (b.to_vec(), a.to_vec())
     }
 
+    //UNUSED: a simulation method for the inference
     pub fn run_inference(&mut self){
         let artifact_dir=Path::new("lstm_artifact/");
         if artifact_dir.exists(){
@@ -68,6 +69,7 @@ impl Controller{
         self.chunks_iteration(self.test_files.clone());
     }
 
+    // a method to simulate the training for the models
     pub fn run_training(&mut self){
         let artifact_dir=Path::new("lstm_artifact/");
         if artifact_dir.exists(){
@@ -78,9 +80,10 @@ impl Controller{
     }
 
     // This is the main function to send the data for the dashboard 
-    pub fn infer_one_building(&self, building: &str){
+    pub fn infer_one_building(&mut self, building: &str){
+        // this funciton forwards the prediction of one building to the dashboard
 
-        let input_path=Path::new("input");
+        let input_path=Path::new("production_set");
         if !input_path.exists(){
             create_dir(input_path).unwrap();
         }
@@ -95,6 +98,7 @@ impl Controller{
         File::create_new(&file_path).expect("unable to create a file");
         copy(&dataset_path, file_path).expect("error in copying the data");
         // TODO: Import the data set for the inference
+        self.data_preparation("production_set".to_string());
         // ---- Deep learning Models
         type Mybackend= Autodiff<Wgpu>;
         let device=WgpuDevice::DiscreteGpu(0);
@@ -120,7 +124,7 @@ impl Controller{
                 copy(x, file_path).expect("error in copying the data");
             });
             // ---- Deep learning Models
-            self.data_preparation();
+            self.data_preparation("input".to_string());
             self.lstm_simulation();
             remove_dir_all("input").expect("can't find the input dir");
         });
@@ -142,8 +146,7 @@ impl Controller{
     pub fn lstm_simulation(&self){
         type Mybackend= Autodiff<Wgpu>;
         let device=WgpuDevice::DiscreteGpu(0);
-        // self.train_lstm::<Mybackend>(device.clone());
-        self.infer_lstm::<Mybackend>(device);
+        self.train_lstm::<Mybackend>(device.clone());
     }
 
     pub fn train_lstm<B: AutodiffBackend>(&self,device: B::Device){
@@ -152,8 +155,8 @@ impl Controller{
         model_config.train::<B>(self.train_data.clone(), self.test_data.clone(), "lstm_artifact", device);
     }
 
-    pub fn infer_lstm<B: AutodiffBackend>(&self,device: B::Device){
-        Inference::inference::<B>("lstm_artifact", self.test_data.clone(), device);
+    pub fn infer_lstm<B: AutodiffBackend>(&self,device: B::Device, data: DataFrame){
+        Inference::inference::<B>("lstm_artifact", data, device);
     }
 
 }

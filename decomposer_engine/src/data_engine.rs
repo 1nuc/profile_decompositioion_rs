@@ -14,11 +14,11 @@ impl Nrel {
         LazyFrame::scan_parquet(path, Default::default()).expect("Error reading the file")
     }
 
-    pub fn init() -> Self {
+    pub fn init(input: String) -> Self {
         let meta_data_ = Self::scan_files("../../metadata/MetaData.parquet".into())
             .process_meta_data_variants()
             .unique(None, Default::default());
-        let data_ = Self::scan_files("input/*.parquet".into())
+        let data_ = Self::scan_files(format!("{input}/*.parquet").as_str().into())
             .join(
                 meta_data_.clone(),
                 [col("bldg_id")],
@@ -277,7 +277,7 @@ impl EagerActions for DataFrame {
         array_d.into_raw_vec_and_offset().0
     }
 
-    fn train_test_split(&self) -> (DataFrame, DataFrame) {
+    fn train_test_split(&self) -> (DataFrame, DataFrame, DataFrame) {
         let data_fraction = self
             .clone()
             .sample_frac(
@@ -294,7 +294,7 @@ impl EagerActions for DataFrame {
         let train_data = data_fraction.clone().head(Some(train_size as usize));
         let test_data = data_fraction.clone().tail(Some(test_val_size as usize));
 
-        (train_data, test_data)
+        (train_data, test_data, self.clone())
     }
 }
 
