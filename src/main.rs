@@ -1,15 +1,12 @@
-use std::{fs::read_dir, path::PathBuf};
+use std::sync::Arc;
 
-use axum::{Json, Router, http::Response, response::IntoResponse, routing::get, serve};
+use axum::{Json, Router, extract::State, http::Response, response::IntoResponse, routing::get};
 use decomposer_engine::{Actions, EagerActions, data_engine::*, dl::controller::{self, Controller}, xgb};
 
 #[tokio::main]
 async fn main(){
-    let app=Router::new()
-        .route("/", get(send_data))
-        .route("/ids", get(send_bldg));
-    let listner=tokio::net::TcpListener::bind("localhost:8000").await.unwrap();
-    serve(listner, app).await.unwrap();
+    let shared_state = Arc::new(Controller::default());
+    serve(shared_state).await;
     // controller::run_training();
     // controller::process_chunks();
     // let data_source=Nrel::init();
@@ -27,9 +24,17 @@ async fn main(){
 
 }
 
+async fn serve(shared_state: Arc<Controller>){
+    let app=Router::new()
+        .route("/", get(send_data))
+        .route("/buildings", get(send_bldg)).with_state(shared_state);
+    let listner=tokio::net::TcpListener::bind("localhost:8000").await.unwrap();
+    axum::serve(listner, app).await.unwrap();
+}
+
 // Return the available buildings in the data
-async fn send_bldg()-> Json<Vec<String>>{
-    let buildings=Controller::default().return_nrel_buildings();
+async fn send_bldg(State(state): State<Arc<Controller>>)-> Json<Vec<String>>{
+    let buildings=state.return_nrel_buildings();
     Json(buildings)
 }
 
