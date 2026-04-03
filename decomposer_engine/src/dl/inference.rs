@@ -19,7 +19,7 @@ pub struct Inference {}
 
 impl Inference {
     #[allow(unused_must_use)]
-    pub fn inference<B: Backend>(artifact_dir: &str, test_data: DataFrame, device: B::Device) {
+    pub fn inference<B: Backend>(artifact_dir: &str, test_data: DataFrame, device: B::Device, timestamp: Column) {
         //Load the configurations of the model
         let config = NrelConfig::load(format!("../{artifact_dir}/config.json"))
             .expect("unable to find the file");
@@ -36,9 +36,6 @@ impl Inference {
         let test_data_cloned=test_data.clone();
         let cols= test_data_cloned.return_y_columns(); // getting the columns for prediction
                                                        // manipulation later on
-        // extracting the timestamp column before building the model
-        let timestamp= test_data_cloned.column("timestamp").expect("column do not exist");
-
         let test_data = NrelDataset::new(test_data);
         let batcher: NrelBatcher<B> = NrelBatcher::new(device.clone());
 
@@ -50,10 +47,12 @@ impl Inference {
 
         // get the predicted and target values
         let predicted = model.forward(batch.sequence);
+        println!("{:?}", predicted.dims());
         let targets = batch.target;
 
         let length=test_data_cloned.height();
         let  df=Self::process_data::<B>(predicted.clone(),length, cols, timestamp.clone());
+        println!("{:?}", df);
         Self::write_to_json(df);
 
         let loss = MseLoss::new();
@@ -97,7 +96,14 @@ impl Inference {
            .unwrap()
     }
      pub fn write_to_json(mut df: DataFrame) -> PolarsResult<()> {
-        let file= File::create_new(Path::new("data.json")).unwrap();
+        let output_path=Path::new("data.json");
+
+        let file = if !output_path.exists(){
+            File::create_new(output_path).unwrap()
+            }
+            else{
+                File::open(output_path).unwrap()
+        };
         let writer=BufWriter::new(file);
         JsonWriter::new(writer).with_json_format(JsonFormat::Json).finish(&mut df)
      }

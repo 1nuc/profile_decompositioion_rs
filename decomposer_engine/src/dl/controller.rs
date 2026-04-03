@@ -8,11 +8,10 @@
 //4. catch the method for the metrics
 //5. function to recieve the building input and process or forward the output
 
-use std::{fmt::format, fs::{File,copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}};
+use std::{fs::{File,copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}};
 
 use burn::{backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, optim::AdamWConfig, tensor::backend::AutodiffBackend};
-use ndarray::Data;
-use polars::{df, frame::DataFrame, prelude::PlRefPath};
+use polars::{frame::DataFrame, prelude::{Column, PlRefPath}};
 use crate::{Actions, EagerActions, data_engine::Nrel, dl::{inference::Inference, models::{bi_lstm::NucBiLstmConfig, hybrid_models::Seq2SeqConfig, lstm::NucLstmConfig, stacked_bi_lstm::StackedBiLstmConfig, stacked_lstm::StackedLstmConfig}, training::NrelConfig}};
 
 pub struct Controller{
@@ -21,6 +20,7 @@ pub struct Controller{
     pub production_data: DataFrame,
     pub train_files: Vec<PathBuf>,
     pub test_files: Vec<PathBuf>,
+    pub timestamp: Column,
 }
 
 impl Default for Controller{
@@ -38,7 +38,8 @@ impl Controller{
             val_data: DataFrame::default(),
             production_data: DataFrame::default(),
             train_files,
-            test_files
+            test_files,
+            timestamp: Column::default(),
         }
     }
 
@@ -48,6 +49,7 @@ impl Controller{
         let mut encoded_data=data.clone().encode_categoricals();
         let s=encoded_data.clone().collect().unwrap();
         let y_columns=s.return_y_columns();
+        self.timestamp=s.column("timestamp").expect("unable to find the column").clone();
         let data =encoded_data.standard_scalar(y_columns.clone()).return_time_sequenced().collect().unwrap();
         (self.train_data, self.val_data, self.production_data)=data.train_test_split();
     }
@@ -107,7 +109,8 @@ impl Controller{
         let device=WgpuDevice::DiscreteGpu(0);
         self.infer_lstm::<Mybackend>(device);
 
-        remove_dir_all("input").expect("can't find the input dir");
+        // I don't know why its here in the first place
+        // remove_dir_all("input").expect("can't find the input dir");
     }
 
     pub fn chunks_iteration(&mut self,files: Vec<PathBuf>){
@@ -159,7 +162,7 @@ impl Controller{
     }
 
     pub fn infer_lstm<B: AutodiffBackend>(&self,device: B::Device){
-        Inference::inference::<B>("lstm_artifact", self.production_data.clone(), device);
+        Inference::inference::<B>("lstm_artifact", self.production_data.clone(), device, self.timestamp.clone());
     }
 
 }
