@@ -12,7 +12,7 @@ use std::{fmt::format, fs::{File,copy, create_dir, read_dir, remove_dir_all}, pa
 
 use burn::{backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, optim::AdamWConfig, tensor::backend::AutodiffBackend};
 use ndarray::Data;
-use polars::{df, frame::DataFrame};
+use polars::{df, frame::DataFrame, prelude::PlRefPath};
 use crate::{Actions, EagerActions, data_engine::Nrel, dl::{inference::Inference, models::{bi_lstm::NucBiLstmConfig, hybrid_models::Seq2SeqConfig, lstm::NucLstmConfig, stacked_bi_lstm::StackedBiLstmConfig, stacked_lstm::StackedLstmConfig}, training::NrelConfig}};
 
 pub struct Controller{
@@ -42,7 +42,7 @@ impl Controller{
         }
     }
 
-    pub fn data_preparation(&mut self, input: String) {
+    pub fn data_preparation(&mut self, input: PlRefPath) {
         let data_source=Nrel::init(input);
         let data=data_source.data;
         let mut encoded_data=data.clone().encode_categoricals();
@@ -97,9 +97,9 @@ impl Controller{
         let path=Path::new(&bldg_file);
         let file_path=input_path.join(path);
         File::create_new(&file_path).expect("unable to create a file");
-        copy(&dataset_path, file_path).expect("error in copying the data");
+        copy(&dataset_path, file_path.clone()).expect("error in copying the data");
         // TODO: Import the data set for the inference
-        self.data_preparation("production_set".to_string());
+        self.data_preparation(file_path.to_str().unwrap().into());
         // ---- Deep learning Models
         type Mybackend= Autodiff<Wgpu>;
         let device=WgpuDevice::DiscreteGpu(0);
@@ -125,7 +125,7 @@ impl Controller{
                 copy(x, file_path).expect("error in copying the data");
             });
             // ---- Deep learning Models
-            self.data_preparation("input".to_string());
+            self.data_preparation(format!("input/*.parquet").as_str().into());
             self.lstm_simulation();
             remove_dir_all("input").expect("can't find the input dir");
         });
