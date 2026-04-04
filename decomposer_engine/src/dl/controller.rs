@@ -144,7 +144,7 @@ impl Controller{
                 .unwrap()
                 .to_str()
                 .unwrap()
-                .strip_suffix(".parquet")
+                .strip_suffix("-28.parquet")
                 .unwrap()
                 .to_string()
         }).collect::<Vec<String>>()
