@@ -1,7 +1,7 @@
 use std::{fs::File, io::BufWriter, path::Path};
 
 use burn::{
-    Tensor, config::Config, data::{dataloader::batcher::Batcher, dataset::Dataset}, module::Module, nn::{BatchNormConfig, loss::MseLoss}, prelude::Backend, record::{CompactRecorder, Recorder}
+    Tensor, config::Config, data::{dataloader::batcher::Batcher, dataset::Dataset}, module::Module, nn::{loss::MseLoss}, prelude::Backend, record::{CompactRecorder, Recorder}
 };
 use polars::{frame::DataFrame, prelude::*};
 
