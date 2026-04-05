@@ -21,13 +21,13 @@ async fn serve(shared_state: Arc<Mutex<Controller>>){
 
 // Return the available buildings in the data
 async fn send_bldg(State(state): State<Arc<Mutex<Controller>>>)-> Json<Vec<String>>{
-    let lock=state.lock().unwrap();
+    let lock=state.lock().expect("Error while fetching the buildings");
     let buildings=lock.return_nrel_buildings();
     Json(buildings)
 }
 
 async fn send_data(State(state): State<Arc<Mutex<Controller>>>, Path(bldg_id): Path<String>)-> Json<DataFrame>{
-    let mut lock=state.lock().unwrap();
+    let mut lock=state.lock().expect("Error while fetching the data");
     let data=lock.infer_one_building(&bldg_id);
     Json(data)
 }
