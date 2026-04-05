@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use std::{fs, io::{BufReader, Read}, sync::{Arc, Mutex}};
 
 use axum::{Json, Router, extract::{Path, State}, http::Response, response::IntoResponse, routing::get};
 use decomposer_engine::{Actions, EagerActions, data_engine::*, dl::controller::{self, Controller}, xgb};
@@ -26,10 +26,11 @@ async fn send_bldg(State(state): State<Arc<Mutex<Controller>>>)-> Json<Vec<Strin
     Json(buildings)
 }
 
-async fn send_data(State(state): State<Arc<Mutex<Controller>>>, Path(bldg_id): Path<String>)-> Json<DataFrame>{
+async fn send_data(State(state): State<Arc<Mutex<Controller>>>, Path(bldg_id): Path<String>)-> Json<serde_json::Value>{
     let mut lock=state.lock().expect("Error while fetching the data");
-    let data=lock.infer_one_building(&bldg_id);
-    Json(data)
+    lock.infer_one_building(&bldg_id);
+    let data_file=fs::read_to_string("data.json").unwrap();
+    Json(serde_json::from_str(&data_file).unwrap())
 }
 
 // async fn send_prediction(State(state): State<Arc<Controller>>)
