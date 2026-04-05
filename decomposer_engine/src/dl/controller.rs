@@ -94,11 +94,12 @@ impl Controller{
         let bldg_file=format!("{building}-28.parquet").as_str().to_owned();
         // find the original file from the main data
         let dataset_path=self.test_files.iter().filter(
-            |x| x.to_str().unwrap().contains(&bldg_file)
+            |x|  x.file_name().unwrap().to_str().unwrap().contains(&bldg_file)
             ).collect::<PathBuf>();
 
         let path=Path::new(&bldg_file);
         let file_path=input_path.join(path);
+        println!("{:?}", dataset_path);
         if !file_path.exists(){
             File::create_new(&file_path).expect("unable to create a file");
         }
