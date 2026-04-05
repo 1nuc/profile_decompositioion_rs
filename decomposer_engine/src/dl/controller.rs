@@ -111,8 +111,7 @@ impl Controller{
         let device=WgpuDevice::DiscreteGpu(0);
         self.infer_lstm::<Mybackend>(device)
 
-        // I don't know why its here in the first place
-        // remove_dir_all("input").expect("can't find the input dir");
+        remove_dir_all("production_set").expect("can't find the input dir");
     }
 
     pub fn chunks_iteration(&mut self,files: Vec<PathBuf>){
