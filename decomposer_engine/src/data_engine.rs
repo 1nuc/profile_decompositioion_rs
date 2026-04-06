@@ -15,7 +15,7 @@ impl Nrel {
     }
 
     pub fn init(path:PlRefPath) -> Self {
-        let meta_data_ = Self::scan_files("../../metadata/MetaData.parquet".into())
+        let meta_data_ = Self::scan_files("../../../metadata/MetaData.parquet".into())
             .process_meta_data_variants()
             .unique(None, Default::default());
         let data_ = Self::scan_files(path)

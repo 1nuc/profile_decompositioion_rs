@@ -2103,11 +2103,7 @@ name = "decomposer"
 version = "0.1.0"
 dependencies = [
  "axum",
- "burn",
  "decomposer_engine",
- "glob",
- "ndarray 0.17.2",
- "polars",
  "rand 0.10.0",
  "serde_json",
  "tap",
