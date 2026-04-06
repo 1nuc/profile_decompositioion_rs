@@ -108,10 +108,8 @@ impl Controller{
         self.data_preparation(file_path.to_str().unwrap().into());
         // ---- Deep learning Models
         type Mybackend= Autodiff<Wgpu>;
-        let device=WgpuDevice::DiscreteGpu(0);
+        let device=WgpuDevice::default();
         self.infer_lstm::<Mybackend>(device)
-
-        remove_dir_all("production_set").expect("can't find the input dir");
     }
 
     pub fn chunks_iteration(&mut self,files: Vec<PathBuf>){
