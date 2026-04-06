@@ -56,7 +56,7 @@ impl Controller{
     }
 
     pub fn organize_files() -> (Vec<PathBuf>, Vec<PathBuf>){
-        let dir=read_dir("../../datasets/").unwrap();
+        let dir=read_dir("../../../../datasets").unwrap();
         let files=dir.map(|x| x.unwrap().path()
             ).collect::<Vec<PathBuf>>();
         let split_inx= (files.len() as f32 * 0.1).round() as usize;
