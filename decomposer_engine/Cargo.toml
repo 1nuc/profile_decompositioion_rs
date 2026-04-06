@@ -14,4 +14,4 @@ serde = "1.0.228"
 tap = "1.0.1"
 xgboost = { version= "0.1.4"}
 [patch.crates-io]
-xgboost-sys= { path= "../patches/xgboost-sys" }
+xgboost-sys= { path= "patches/xgboost-sys" }

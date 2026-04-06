@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 axum = "0.8.8"
 burn = { version= "0.20.1", features= ["wgpu"] }
-decomposer_engine={ path="decomposer_engine" }
+decomposer_engine={ path="../decomposer_engine" }
 glob = "0.3.3"
 ndarray = "0.17.2"
 polars = { version = "0.53.0", features = ["lazy", "parquet", "is_in", "ndarray", "dynamic_group_by", "serde"] }
@@ -15,4 +15,4 @@ serde_json = "1.0.149"
 tap = "1.0.1"
 tokio = { version = "1.50.0", features = ["full"] }
 [patch.crates-io]
-xgboost-sys= { path= "./patches/xgboost-sys" }
+xgboost-sys= { path= "../decomposer_engine/patches/xgboost-sys" }

@@ -1,8 +1,7 @@
 use std::{fs, sync::{Arc, Mutex}};
-
+use std::fs::remove_dir_all;
 use axum::{Json, Router, extract::{Path, State}, http::Response, response::IntoResponse, routing::get};
-use decomposer_engine::{Actions, EagerActions, data_engine::*, dl::controller::{self, Controller}, xgb};
-use polars::frame::DataFrame;
+use decomposer_engine::{Actions, EagerActions, data_engine::*, dl::controller::{Controller}, xgb};
 
 #[tokio::main]
 async fn main(){
@@ -23,14 +22,19 @@ async fn serve(shared_state: Arc<Mutex<Controller>>){
 async fn send_bldg(State(state): State<Arc<Mutex<Controller>>>)-> Json<Vec<String>>{
     let lock=state.lock().expect("Error while fetching the buildings");
     let buildings=lock.return_nrel_buildings();
+    drop(lock);
     Json(buildings)
 }
 
+#[allow(unused_must_use)]
 async fn send_data(State(state): State<Arc<Mutex<Controller>>>, Path(bldg_id): Path<String>)-> Json<serde_json::Value>{
+
     let mut lock=state.lock().expect("Error while fetching the data");
     lock.infer_one_building(&bldg_id);
+    remove_dir_all("production_set");
     // take the predictions from the json file made and send them
     let data_file=fs::read_to_string("data.json").unwrap();
+    drop(lock);
     Json(serde_json::from_str(&data_file).unwrap())
 }
 

@@ -21,7 +21,7 @@ impl Inference {
     #[allow(unused_must_use)]
     pub fn inference<B: Backend>(artifact_dir: &str, test_data: DataFrame, device: B::Device, timestamp: Column) -> DataFrame{
         //Load the configurations of the model
-        let config = NrelConfig::load(format!("../{artifact_dir}/config.json"))
+        let config = NrelConfig::load(format!("{artifact_dir}/config.json"))
             .expect("unable to find the file");
 
         // using compact recorder, load the last saved state of the model
