@@ -129,7 +129,6 @@ impl Controller {
 
         let path = Path::new(&bldg_file);
         let file_path = input_path.join(path);
-        println!("{:?}", dataset_path);
         if !file_path.exists() {
             File::create_new(&file_path).expect("unable to create a file");
         }

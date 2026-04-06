@@ -19,6 +19,8 @@ pub trait EagerActions {
     fn train_test_split(&self) -> (DataFrame, DataFrame, DataFrame);
 
     fn to_1d_vec(&self) -> Vec<f32>;
+
+    fn transform_col_names(&mut self) -> Self;
 }
 
 pub trait Actions {
