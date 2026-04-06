@@ -30,13 +30,12 @@ impl NrelDataset {
         let y_cols = data.return_y_columns();
         let batches = data.height();
         x_cols.retain(|x| !x.eq(&"timestamp") & !x.eq(&"bldg_id")); // to avoid being exploded for
-                                                                    // timetamp and bldg_id columns
+        // timetamp and bldg_id columns
         Self {
             sequence: data.clone().select_sequence(x_cols.clone(), batches),
             target: data.clone().select_sequence(y_cols.clone(), batches),
         }
     }
-
 }
 
 //Specify the get method needed for batch to catch the elements

@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 burn = { version = "0.20.1", features= ["tui", "train", "wgpu", "tch"] }
+burn-wgpu = "0.20.1"
 ndarray = "0.17.2"
 polars = { version = "0.53.0", features = ["lazy", "parquet", "is_in", "ndarray", "dynamic_group_by","polars-io", "serde", "json", "regex"] }
 rand = "0.10.0"
