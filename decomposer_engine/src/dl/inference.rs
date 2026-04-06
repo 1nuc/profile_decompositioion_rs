@@ -1,4 +1,4 @@
-use std::{fs::File, io::BufWriter, path::Path};
+use std::{fs::{File, remove_file}, io::BufWriter, path::Path};
 
 use crate::{
     EagerActions,
@@ -119,14 +119,14 @@ impl Inference {
             .collect()
             .unwrap()
     }
+    #[allow(unused_must_use)]
     pub fn write_to_json(mut df: DataFrame) -> PolarsResult<()> {
         let output_path = Path::new("data.json");
-
-        let file = if !output_path.exists() {
-            File::create_new(output_path).unwrap()
-        } else {
-            File::open(output_path).unwrap()
-        };
+        if output_path.exists(){
+            remove_file(output_path);
+        }
+        let mut df=df.transform_col_names();
+        let file = File::create(output_path).expect("unable to write to the file");
         let writer = BufWriter::new(file);
         JsonWriter::new(writer)
             .with_json_format(JsonFormat::Json)

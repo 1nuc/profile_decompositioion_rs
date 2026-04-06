@@ -296,6 +296,17 @@ impl EagerActions for DataFrame {
 
         (train_data, test_data, self.clone())
     }
+
+    fn transform_col_names(&mut self) -> Self{
+        let old_data=self.clone();
+        let new_col_names=old_data.get_column_names()
+            .iter()
+            .map(|col| col.strip_prefix("out.electricity.").unwrap_or(col)
+                .strip_suffix(".energy_consumption..kwh").unwrap_or(col))
+            .collect::<Vec<&str>>();
+        self.set_column_names(&new_col_names).expect("unable to set column names");
+        self.clone()
+    }
 }
 
 #[cfg(test)]
