@@ -7,7 +7,7 @@ use burn::{
         loss::MseLoss,
     },
     prelude::Backend,
-    tensor::{backend::AutodiffBackend},
+    tensor::backend::AutodiffBackend,
     train::{
         InferenceStep, ItemLazy, TrainOutput, TrainStep,
         metric::{Adaptor, LossInput},

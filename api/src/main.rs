@@ -29,12 +29,12 @@ async fn send_bldg(State(state): State<Arc<Mutex<Controller>>>)-> Json<Vec<Strin
 #[allow(unused_must_use)]
 async fn send_data(State(state): State<Arc<Mutex<Controller>>>, Path(bldg_id): Path<String>)-> Json<serde_json::Value>{
 
-    let mut lock=state.lock().expect("Error while fetching the data");
-    lock.infer_one_building(&bldg_id);
+    // let mut lock=state.lock().expect("Error while fetching the data");
+    Controller::default().infer_one_building(&bldg_id);
     remove_dir_all("production_set");
     // take the predictions from the json file made and send them
     let data_file=fs::read_to_string("data.json").unwrap();
-    drop(lock);
+    // drop(lock);
     Json(serde_json::from_str(&data_file).unwrap())
 }
 
