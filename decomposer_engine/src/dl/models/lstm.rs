@@ -25,7 +25,7 @@ pub struct NucLstmConfig {
 impl Default for NucLstmConfig {
     fn default() -> Self {
         Self {
-            input_size: 22,
+            input_size: 21,
             output_size: 24,
             hidden_size: 128,
             dropout: 0.5, //weight decay to prevent overfitting
