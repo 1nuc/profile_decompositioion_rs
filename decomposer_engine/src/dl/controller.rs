@@ -181,11 +181,11 @@ impl Controller {
             let file_path = input_path.join(path);
             File::create_new(&file_path).expect("unable to create a file");
             copy(x, file_path).expect("error in copying the data");
+        });
             // ---- Deep learning Models
             self.data_preparation(("input/*.parquet").into());
             self.lstm_simulation();
             remove_dir_all("input").expect("can't find the input dir");
-        });
     }
     // return all the buildings available in the data
     pub fn return_nrel_buildings(&self) -> Vec<String> {
