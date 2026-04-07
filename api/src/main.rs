@@ -13,6 +13,7 @@ async fn serve(shared_state: Arc<Mutex<Controller>>){
     let app=Router::new()
         .route("/", get(welcome))
         .route("/buildings", get(send_bldg))
+        .route("/train_one_trail", get(trail_train))
         .route("/predictions/{bldg_id}", get(send_data)).with_state(shared_state);
     let listner=tokio::net::TcpListener::bind("localhost:8000").await.unwrap();
     axum::serve(listner, app).await.unwrap();
@@ -24,6 +25,13 @@ async fn send_bldg(State(state): State<Arc<Mutex<Controller>>>)-> Json<Vec<Strin
     let buildings=lock.return_nrel_buildings();
     drop(lock);
     Json(buildings)
+}
+
+async fn trail_train(State(state): State<Arc<Mutex<Controller>>>)-> impl IntoResponse{
+    let mut lock=state.lock().expect("Error while fetching the buildings");
+    lock.one_trail_training();
+    drop(lock);
+    Json("Training finished".to_string())
 }
 
 #[allow(unused_must_use)]
