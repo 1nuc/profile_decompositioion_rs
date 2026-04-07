@@ -114,10 +114,6 @@ impl Inference {
             .hstack_mut(&[timestamp_col])
             .expect("error stacking the timestamp column")
             .clone()
-            .lazy()
-            .select([col("*").implode()])
-            .collect()
-            .unwrap()
     }
     #[allow(unused_must_use)]
     pub fn write_to_json(mut df: DataFrame) -> PolarsResult<()> {
