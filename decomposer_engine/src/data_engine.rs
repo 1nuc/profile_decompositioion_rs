@@ -65,7 +65,7 @@ impl Actions for LazyFrame {
             .with_columns([
                 when(
                     col("day of the week")
-                        .is_in(lit(Series::new("Weekend".into(), &[6u32, 7u32])), false),
+                        .is_in(lit(Series::new("Weekend".into(), &[6u32, 7u32])).implode(), false),
                 )
                 .then(lit("Yes"))
                 .otherwise(lit("No"))
