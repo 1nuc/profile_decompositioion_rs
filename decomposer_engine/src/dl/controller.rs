@@ -163,6 +163,30 @@ impl Controller {
         });
     }
 
+    pub fn one_trail_training(&mut self){
+        let artifact_dir = Path::new("lstm_artifact/");
+        if artifact_dir.exists() {
+            remove_dir_all("input").expect("can't find the input dir");
+            remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+        }
+
+        let files=self.train_files.clone().into_iter().take(40).collect::<Vec<PathBuf>>();
+
+        files.into_iter().for_each(|x| {
+            let input_path = Path::new("input");
+            if !input_path.exists() {
+                create_dir(input_path).unwrap();
+            }
+            let path = Path::new(x.file_name().unwrap().to_str().unwrap());
+            let file_path = input_path.join(path);
+            File::create_new(&file_path).expect("unable to create a file");
+            copy(x, file_path).expect("error in copying the data");
+            // ---- Deep learning Models
+            self.data_preparation(("input/*.parquet").into());
+            self.lstm_simulation();
+            remove_dir_all("input").expect("can't find the input dir");
+        });
+    }
     // return all the buildings available in the data
     pub fn return_nrel_buildings(&self) -> Vec<String> {
         self.test_files
