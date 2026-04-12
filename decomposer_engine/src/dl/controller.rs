@@ -28,6 +28,7 @@ use crate::{
 use burn::{
     backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend
 };
+use ndarray::Data;
 use polars::{
     frame::DataFrame,
     prelude::{Column, PlRefPath},
@@ -61,7 +62,7 @@ impl Controller {
         }
     }
 
-    pub fn data_preparation(&mut self, input: PlRefPath) {
+    pub fn data_preparation(&mut self, input: PlRefPath, return_data: bool) -> Option<DataFrame>{
         let data_source = Nrel::init(input);
         let data = data_source.data;
         let mut encoded_data = data.clone().encode_categoricals();
@@ -72,15 +73,22 @@ impl Controller {
             .expect("unable to find the column")
             .clone();
         let data = encoded_data
+            .clone()
             .standard_scalar(y_columns.clone())
             .return_time_sequenced()
             .collect()
             .unwrap();
         (self.train_data, self.val_data, self.production_data) = data.train_test_split();
+        if return_data{
+            Some(encoded_data.collect().unwrap())
+        }
+        else{
+            None
+        }
     }
 
     pub fn organize_files() -> (Vec<PathBuf>, Vec<PathBuf>) {
-        let dir = read_dir("../../../datasets").unwrap();
+        let dir = read_dir("../../../../datasets").unwrap();
         let files = dir.map(|x| x.unwrap().path()).collect::<Vec<PathBuf>>();
         let split_inx = (files.len() as f32 * 0.1).round() as usize;
         let (a, b) = files.split_at(split_inx);
@@ -134,7 +142,7 @@ impl Controller {
         }
         copy(&dataset_path, file_path.clone()).expect("error in copying the data");
         // TODO: Import the data set for the inference
-        self.data_preparation(file_path.to_str().unwrap().into());
+        self.data_preparation(file_path.to_str().unwrap().into(), false);
         // ---- Deep learning Models
         type Mybackend = Wgpu;
         let device = WgpuDevice::default();
@@ -156,12 +164,13 @@ impl Controller {
                 copy(x, file_path).expect("error in copying the data");
             });
             // ---- Deep learning Models
-            self.data_preparation(("input/*.parquet").into());
+            self.data_preparation(("input/*.parquet").into(), false);
             self.lstm_simulation();
             remove_dir_all("input").expect("can't find the input dir");
         });
     }
 
+    //experience demo training with one trail training for one data set
     pub fn one_trail_training(&mut self){
         let artifact_dir = Path::new("lstm_artifact/");
         if artifact_dir.exists() {
@@ -182,7 +191,7 @@ impl Controller {
             copy(x, file_path).expect("error in copying the data");
         });
             // ---- Deep learning Models
-            self.data_preparation(("input/*.parquet").into());
+            self.data_preparation(("input/*.parquet").into(), false);
             self.lstm_simulation();
             remove_dir_all("input").expect("can't find the input dir");
     }

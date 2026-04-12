@@ -4125,6 +4125,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "ndarray-rand"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "180f724d496e84764e8ecf28fbe1da74ef231ec4ba15be65a9100be8445d73e3"
+dependencies = [
+ "ndarray 0.17.2",
+ "rand 0.9.3",
+ "rand_distr",
+]
+
+[[package]]
 name = "ndk-sys"
 version = "0.6.0+11769913"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5850,6 +5861,9 @@ name = "run"
 version = "0.1.0"
 dependencies = [
  "decomposer_engine",
+ "ndarray 0.17.2",
+ "ndarray-rand",
+ "polars",
 ]
 
 [[package]]
