@@ -1,7 +1,6 @@
 use decomposer_engine::dl::controller::Controller;
-use ndarray::Array;
-use ndarray_rand::{RandomExt, rand_distr::Uniform};
 use polars::prelude::{IntoLazy, LazyFrame, col, lit};
+use rand::seq::SliceRandom;
 use std::{fs::{File, copy, create_dir}, path::{Path, PathBuf}};
 fn main() {
     let mut controller=Controller::default();
@@ -28,13 +27,22 @@ fn main() {
 }
 
 fn cross_valid(data: LazyFrame, k: i32){
-    let rand_months=Array::random((1, k as usize), Uniform::new(1, 12).unwrap()).into_raw_vec_and_offset().0;
+    // generating random number for sampling the time series across the month
+    // defining the range
+    let mut rnd=rand::rng();
+
+    //creating a vector that contains the list of all available months
+    let mut month_vec: Vec<i8>=(1..=12).collect();
+    //shuffle the vector based on that rng
+    month_vec.shuffle(&mut rnd);
+    // extract the months with the size of k 
+    let rand_months=month_vec.iter().take(k as usize);
     println!("{:?}", rand_months);
     let mut train_sets=Vec::new();
     let mut test_sets=Vec::new();
     rand_months.into_iter().for_each(|x|{
-        let test_data=data.clone().lazy().filter(col("month of the year").eq(lit(x as i8))).collect().unwrap();
-        let train_data=data.clone().lazy().filter(col("month of the year").neq(lit(x as i8))).collect().unwrap();
+        let test_data=data.clone().lazy().filter(col("month of the year").eq(lit(x))).collect().unwrap();
+        let train_data=data.clone().lazy().filter(col("month of the year").neq(lit(x))).collect().unwrap();
         train_sets.push(train_data);
         test_sets.push(test_data);
     });

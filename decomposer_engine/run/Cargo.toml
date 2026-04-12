@@ -5,9 +5,8 @@ edition = "2024"
 
 [dependencies]
 decomposer_engine={path="../../decomposer_engine"}
-ndarray = "0.17.2"
-ndarray-rand = "0.16.0"
 polars = { version="0.53.0", features=['lazy']}
+rand = "0.10.1"
 
 [patch.crates-io]
 xgboost-sys={path="../patches/xgboost-sys"}
