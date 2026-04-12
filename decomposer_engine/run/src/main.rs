@@ -28,16 +28,16 @@ fn main() {
 }
 
 fn cross_valid(data: LazyFrame, k: i32){
-    let rand_months=Array::random((1, k as usize), Uniform::new(1., 12.).unwrap()).into_raw_vec_and_offset().0;
+    let rand_months=Array::random((1, k as usize), Uniform::new(1, 12).unwrap()).into_raw_vec_and_offset().0;
     let mut train_sets=Vec::new();
     let mut test_sets=Vec::new();
     rand_months.into_iter().for_each(|x|{
         let test_data=data.clone().lazy().filter(col("month of the year").eq(lit(x as i8))).collect().unwrap();
         let train_data=data.clone().lazy().filter(col("month of the year").neq(lit(x as i8))).collect().unwrap();
+        println!("train ... {:?}", train_data.clone());
+        println!("test ... {:?}", test_data.clone());
         train_sets.push(train_data);
         test_sets.push(test_data);
     });
 
-    println!("{:?}", train_sets.pop().unwrap());
-    println!("{:?}", test_sets.pop().unwrap());
 }
