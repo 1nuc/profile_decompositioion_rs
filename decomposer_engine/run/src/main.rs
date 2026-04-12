@@ -37,4 +37,7 @@ fn cross_valid(data: LazyFrame, k: i32){
         train_sets.push(train_data);
         test_sets.push(test_data);
     });
+
+    println!("{:?}", train_sets.pop().unwrap());
+    println!("{:?}", test_sets.pop().unwrap());
 }
