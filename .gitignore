@@ -1,5 +1,5 @@
 **/target
 **/patches
-**/*_artifact
 **/input
 **/production_set
+**/data.json

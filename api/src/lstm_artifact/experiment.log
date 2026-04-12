@@ -1,0 +1,905 @@
+2026-04-07T20:57:25.079258Z  WARN wgpu_hal::vulkan::instance: Unable to find extension: VK_EXT_physical_device_drm
+2026-04-07T20:57:25.094345Z  INFO cubecl_wgpu::runtime: Using adapter AdapterInfo { name: "NVIDIA GeForce RTX 4050 Laptop GPU", vendor: 4318, device: 10401, device_type: DiscreteGpu, driver: "NVIDIA", driver_info: "580.126.18", backend: Vulkan }
+2026-04-07T20:57:25.352748Z  INFO cubecl_wgpu::runtime: Created wgpu compute server on device Device { inner: Core(CoreDevice { context: ContextWgpuCore { type: "Native" }, id: Id(0,1), error_sink: Mutex { data: ErrorSink }, features: Features { features_wgpu: FeaturesWGPU(SHADER_FLOAT32_ATOMIC | TEXTURE_FORMAT_16BIT_NORM | TEXTURE_ADAPTER_SPECIFIC_FORMAT_FEATURES | PIPELINE_STATISTICS_QUERY | TIMESTAMP_QUERY_INSIDE_ENCODERS | TIMESTAMP_QUERY_INSIDE_PASSES | TEXTURE_BINDING_ARRAY | BUFFER_BINDING_ARRAY | STORAGE_RESOURCE_BINDING_ARRAY | SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING | STORAGE_TEXTURE_ARRAY_NON_UNIFORM_INDEXING | PARTIALLY_BOUND_BINDING_ARRAY | MULTI_DRAW_INDIRECT | MULTI_DRAW_INDIRECT_COUNT | PUSH_CONSTANTS | ADDRESS_MODE_CLAMP_TO_ZERO | ADDRESS_MODE_CLAMP_TO_BORDER | POLYGON_MODE_LINE | POLYGON_MODE_POINT | CONSERVATIVE_RASTERIZATION | VERTEX_WRITABLE_STORAGE | CLEAR_TEXTURE | SPIRV_SHADER_PASSTHROUGH | MULTIVIEW | TEXTURE_ATOMIC | TEXTURE_FORMAT_NV12 | EXPERIMENTAL_RAY_TRACING_ACCELERATION_STRUCTURE | EXPERIMENTAL_RAY_QUERY | SHADER_F64 | SHADER_I16 | SHADER_PRIMITIVE_INDEX | SHADER_EARLY_DEPTH_TEST | SHADER_INT64 | SUBGROUP | SUBGROUP_VERTEX | SUBGROUP_BARRIER | PIPELINE_CACHE | SHADER_INT64_ATOMIC_MIN_MAX | SHADER_INT64_ATOMIC_ALL_OPS | TEXTURE_INT64_ATOMIC | EXPERIMENTAL_MESH_SHADER | EXPERIMENTAL_RAY_HIT_VERTEX_RETURN | EXPERIMENTAL_MESH_SHADER_MULTIVIEW | EXTENDED_ACCELERATION_STRUCTURE_VERTEX_FORMATS), features_webgpu: FeaturesWebGPU(DEPTH_CLIP_CONTROL | DEPTH32FLOAT_STENCIL8 | TEXTURE_COMPRESSION_BC | TEXTURE_COMPRESSION_BC_SLICED_3D | TIMESTAMP_QUERY | INDIRECT_FIRST_INSTANCE | RG11B10UFLOAT_RENDERABLE | BGRA8UNORM_STORAGE | FLOAT32_FILTERABLE | DUAL_SOURCE_BLENDING | CLIP_DISTANCES) } }) } => AdapterInfo { name: "NVIDIA GeForce RTX 4050 Laptop GPU", vendor: 4318, device: 10401, device_type: DiscreteGpu, driver: "NVIDIA", driver_info: "580.126.18", backend: Vulkan }
+2026-04-07T20:57:25.387319Z  WARN wgpu_hal::vulkan::instance: Unable to find extension: VK_EXT_physical_device_drm
+2026-04-07T20:57:25.401101Z  INFO cubecl_wgpu::runtime: Using adapter AdapterInfo { name: "NVIDIA GeForce RTX 4050 Laptop GPU", vendor: 4318, device: 10401, device_type: DiscreteGpu, driver: "NVIDIA", driver_info: "580.126.18", backend: Vulkan }
+2026-04-07T20:57:25.503791Z  INFO cubecl_wgpu::runtime: Created wgpu compute server on device Device { inner: Core(CoreDevice { context: ContextWgpuCore { type: "Native" }, id: Id(0,1), error_sink: Mutex { data: ErrorSink }, features: Features { features_wgpu: FeaturesWGPU(SHADER_FLOAT32_ATOMIC | TEXTURE_FORMAT_16BIT_NORM | TEXTURE_ADAPTER_SPECIFIC_FORMAT_FEATURES | PIPELINE_STATISTICS_QUERY | TIMESTAMP_QUERY_INSIDE_ENCODERS | TIMESTAMP_QUERY_INSIDE_PASSES | TEXTURE_BINDING_ARRAY | BUFFER_BINDING_ARRAY | STORAGE_RESOURCE_BINDING_ARRAY | SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING | STORAGE_TEXTURE_ARRAY_NON_UNIFORM_INDEXING | PARTIALLY_BOUND_BINDING_ARRAY | MULTI_DRAW_INDIRECT | MULTI_DRAW_INDIRECT_COUNT | PUSH_CONSTANTS | ADDRESS_MODE_CLAMP_TO_ZERO | ADDRESS_MODE_CLAMP_TO_BORDER | POLYGON_MODE_LINE | POLYGON_MODE_POINT | CONSERVATIVE_RASTERIZATION | VERTEX_WRITABLE_STORAGE | CLEAR_TEXTURE | SPIRV_SHADER_PASSTHROUGH | MULTIVIEW | TEXTURE_ATOMIC | TEXTURE_FORMAT_NV12 | EXPERIMENTAL_RAY_TRACING_ACCELERATION_STRUCTURE | EXPERIMENTAL_RAY_QUERY | SHADER_F64 | SHADER_I16 | SHADER_PRIMITIVE_INDEX | SHADER_EARLY_DEPTH_TEST | SHADER_INT64 | SUBGROUP | SUBGROUP_VERTEX | SUBGROUP_BARRIER | PIPELINE_CACHE | SHADER_INT64_ATOMIC_MIN_MAX | SHADER_INT64_ATOMIC_ALL_OPS | TEXTURE_INT64_ATOMIC | EXPERIMENTAL_MESH_SHADER | EXPERIMENTAL_RAY_HIT_VERTEX_RETURN | EXPERIMENTAL_MESH_SHADER_MULTIVIEW | EXTENDED_ACCELERATION_STRUCTURE_VERTEX_FORMATS), features_webgpu: FeaturesWebGPU(DEPTH_CLIP_CONTROL | DEPTH32FLOAT_STENCIL8 | TEXTURE_COMPRESSION_BC | TEXTURE_COMPRESSION_BC_SLICED_3D | TIMESTAMP_QUERY | INDIRECT_FIRST_INSTANCE | RG11B10UFLOAT_RENDERABLE | BGRA8UNORM_STORAGE | FLOAT32_FILTERABLE | DUAL_SOURCE_BLENDING | CLIP_DISTANCES) } }) } => AdapterInfo { name: "NVIDIA GeForce RTX 4050 Laptop GPU", vendor: 4318, device: 10401, device_type: DiscreteGpu, driver: "NVIDIA", driver_info: "580.126.18", backend: Vulkan }
+2026-04-07T20:57:25.509858Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 1
+2026-04-07T20:57:26.147394Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T20:57:26.161545Z  INFO cubecl_runtime::tune::tune_cache: Load autotune cache ...
+2026-04-07T20:57:26.161582Z  INFO cubecl_runtime::tune::tune_cache: Loaded 3 autotune cached entries
+2026-04-07T20:57:26.161587Z  INFO cubecl_runtime::tune::tuner: Tuning ConvAutotuneKey { kernel_size: [7], stride: [1], padding: [3], dilation: [1], groups: 1, in_channels: 32, out_channels: 128, shape: [128], batch_size: 512, has_bias: true, dtype: F32, lhs_shape_align: 0, lhs_stride_align: 2, rhs_shape_align: 0, rhs_stride_align: 0 }
+2026-04-07T20:57:26.248885Z  INFO cubecl_runtime::tune::tune_cache: Load autotune cache ...
+2026-04-07T20:57:26.248922Z  INFO cubecl_runtime::tune::tune_cache: Loaded 10 autotune cached entries
+2026-04-07T20:57:26.248928Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 512, n: 128, k: 512, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 1, NumOps: 2
+2026-04-07T20:57:26.251515Z  INFO cubecl_runtime::tune::tune_cache: Load autotune cache ...
+2026-04-07T20:57:26.251546Z  INFO cubecl_runtime::tune::tune_cache: Loaded 11 autotune cached entries
+2026-04-07T20:57:26.251551Z  INFO cubecl_runtime::tune::tuner: Tuning MatmulAutotuneKey - Definition: MatmulProblemDefinition { m: 512, n: 128, k: 512, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, Analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General }
+2026-04-07T20:57:26.382320Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 512, n: 128, k: 128, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 1, NumOps: 4
+2026-04-07T20:57:26.383206Z  INFO cubecl_runtime::tune::tuner: Tuning MatmulAutotuneKey - Definition: MatmulProblemDefinition { m: 512, n: 128, k: 128, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, Analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General }
+2026-04-07T20:57:26.620887Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 512, n: 128, k: 512, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 1, NumOps: 4
+2026-04-07T20:57:28.368337Z  INFO cubecl_runtime::tune::tune_cache: Load autotune cache ...
+2026-04-07T20:57:28.368370Z  INFO cubecl_runtime::tune::tune_cache: Loaded 3 autotune cached entries
+2026-04-07T20:57:28.368375Z  INFO cubecl_runtime::tune::tuner: Tuning SumAutotuneKey { dtype: F32, length: 829440 }
+2026-04-07T20:57:28.368514Z  INFO cubecl_runtime::tune::tune_cache: Load autotune cache ...
+2026-04-07T20:57:28.368536Z  INFO cubecl_runtime::tune::tune_cache: Loaded 10 autotune cached entries
+2026-04-07T20:57:28.371617Z  INFO cubecl_runtime::tune::tuner: Tuning ReduceAutotuneKey - ElemInput: Float(F32), ElemOutput: Float(F32), ElemAcc: Float(F32), AxisIsContiguous: true, VectorSize: 1024, VectorCount: 1
+2026-04-07T20:57:28.455694Z  INFO cubecl_runtime::tune::tune_cache: Load autotune cache ...
+2026-04-07T20:57:28.455726Z  INFO cubecl_runtime::tune::tune_cache: Loaded 2 autotune cached entries
+2026-04-07T20:57:28.455731Z  INFO cubecl_runtime::tune::tuner: Tuning FusedReduceAutotuneKey - ReduceKey: ReduceAutotuneKey { elem_input: Float(F32), elem_output: Float(F32), elem_acc: Float(F32), axis_is_contiguous: false, vector_size: 1024, vector_count: 4096 }, FuseNumReads: 4, FuseNumWrites: 2, FuseNumOps: 8
+2026-04-07T20:57:28.458221Z  INFO cubecl_runtime::tune::tuner: Tuning ReduceAutotuneKey - ElemInput: Float(F32), ElemOutput: Float(F32), ElemAcc: Float(F32), AxisIsContiguous: false, VectorSize: 1024, VectorCount: 4096
+2026-04-07T20:57:28.586708Z  INFO cubecl_runtime::tune::tuner: Tuning ReduceAutotuneKey - ElemInput: Float(F32), ElemOutput: Float(F32), ElemAcc: Float(F32), AxisIsContiguous: false, VectorSize: 1024, VectorCount: 32768
+2026-04-07T20:57:28.611587Z  INFO cubecl_runtime::tune::tuner: Tuning FusedReduceAutotuneKey - ReduceKey: ReduceAutotuneKey { elem_input: Float(F32), elem_output: Float(F32), elem_acc: Float(F32), axis_is_contiguous: false, vector_size: 1024, vector_count: 512 }, FuseNumReads: 16, FuseNumWrites: 8, FuseNumOps: 64
+2026-04-07T20:57:28.614795Z  INFO cubecl_runtime::tune::tuner: Tuning ReduceAutotuneKey - ElemInput: Float(F32), ElemOutput: Float(F32), ElemAcc: Float(F32), AxisIsContiguous: false, VectorSize: 1024, VectorCount: 512
+2026-04-07T20:57:28.667713Z  INFO cubecl_runtime::tune::tuner: Tuning MatmulAutotuneKey - Definition: MatmulProblemDefinition { m: 512, n: 128, k: 128, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: MildlyPermuted { transposed: true, batch_swap: false } }, Analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General }
+2026-04-07T20:57:28.762409Z  INFO cubecl_runtime::tune::tuner: Tuning MatmulAutotuneKey - Definition: MatmulProblemDefinition { m: 128, n: 128, k: 512, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: MildlyPermuted { transposed: true, batch_swap: false }, matrix_layout_rhs: Contiguous }, Analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General }
+2026-04-07T20:57:28.792069Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 512, n: 128, k: 128, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: MildlyPermuted { transposed: true, batch_swap: false } }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 1, NumOps: 2
+2026-04-07T20:57:29.138475Z  INFO cubecl_runtime::tune::tuner: Tuning MatmulAutotuneKey - Definition: MatmulProblemDefinition { m: 512, n: 512, k: 128, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: MildlyPermuted { transposed: true, batch_swap: false } }, Analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General }
+2026-04-07T20:57:29.158404Z  INFO cubecl_runtime::tune::tuner: Tuning MatmulAutotuneKey - Definition: MatmulProblemDefinition { m: 512, n: 128, k: 512, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: MildlyPermuted { transposed: true, batch_swap: false }, matrix_layout_rhs: Contiguous }, Analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General }
+2026-04-07T20:57:29.169836Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 512, n: 512, k: 128, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: MildlyPermuted { transposed: true, batch_swap: false } }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 1, NumOps: 2
+2026-04-07T20:57:31.172729Z  INFO cubecl_runtime::tune::tuner: Tuning ConvAutotuneKey { kernel_size: [96], stride: [1], padding: [3], dilation: [1], groups: 1, in_channels: 512, out_channels: 128, shape: [128], batch_size: 32, has_bias: false, dtype: F32, lhs_shape_align: 0, lhs_stride_align: 0, rhs_shape_align: 0, rhs_stride_align: 0 }
+2026-04-07T20:57:31.737429Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T20:57:31.769422Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 512, n: 128, k: 128, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 8, NumOps: 16
+2026-04-07T20:57:34.033416Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T20:57:35.277072Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T20:57:36.528354Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T20:57:37.734432Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T20:57:37.740333Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 512, n: 128, k: 128, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 2, NumOps: 16
+2026-04-07T20:57:39.862717Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T20:57:41.101777Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T20:57:42.364870Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T20:57:42.378941Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 512, n: 128, k: 512, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 4, NumOps: 16
+2026-04-07T20:57:44.468849Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T20:57:45.720767Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T20:57:47.070560Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T20:57:48.399295Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T20:57:49.698562Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T20:57:50.872675Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T20:57:52.156240Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T20:57:53.405310Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T20:57:53.420317Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 512, n: 128, k: 512, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 2, NumOps: 4
+2026-04-07T20:57:54.930353Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T20:57:56.145034Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T20:57:57.391638Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T20:57:58.619624Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T20:57:59.961872Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T20:58:01.283567Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T20:58:02.589108Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T20:58:03.236522Z  INFO cubecl_runtime::tune::tuner: Tuning SumAutotuneKey { dtype: F32, length: 792576 }
+2026-04-07T20:58:03.916109Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T20:58:05.226271Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T20:58:06.488267Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 1
+2026-04-07T20:58:06.854820Z  INFO cubecl_runtime::tune::tuner: Tuning SumAutotuneKey { dtype: F32, length: 405504 }
+2026-04-07T20:58:07.641476Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 2
+2026-04-07T20:58:07.728768Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T20:58:09.609342Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T20:58:10.880182Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T20:58:12.166666Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T20:58:13.425012Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T20:58:14.668975Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T20:58:15.908724Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T20:58:17.145641Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T20:58:18.384003Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T20:58:19.574095Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T20:58:20.804732Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T20:58:22.114227Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T20:58:23.460043Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T20:58:24.675171Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T20:58:25.921721Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T20:58:27.209481Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T20:58:28.442322Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T20:58:29.765920Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T20:58:31.025110Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T20:58:32.308796Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T20:58:33.488947Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T20:58:34.720881Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T20:58:35.961073Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T20:58:37.219805Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T20:58:38.473052Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T20:58:39.709067Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T20:58:40.968792Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 2
+2026-04-07T20:58:42.009272Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 3
+2026-04-07T20:58:42.099759Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T20:58:44.267537Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T20:58:45.548972Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T20:58:46.846520Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T20:58:48.068393Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T20:58:49.390065Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T20:58:50.730482Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T20:58:52.052546Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T20:58:53.324277Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T20:58:54.648037Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T20:58:55.961316Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T20:58:57.289572Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T20:58:58.542039Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T20:58:59.821654Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T20:59:01.033242Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T20:59:02.312193Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T20:59:03.578407Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T20:59:04.830715Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T20:59:06.114492Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T20:59:07.382476Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T20:59:08.703269Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T20:59:10.002435Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T20:59:11.239988Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T20:59:11.245799Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 512, n: 128, k: 128, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 1, NumOps: 2
+2026-04-07T20:59:12.682984Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T20:59:13.918625Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T20:59:15.196358Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T20:59:16.543587Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 3
+2026-04-07T20:59:17.586337Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 4
+2026-04-07T20:59:17.675200Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T20:59:19.613369Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T20:59:20.914765Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T20:59:22.101258Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T20:59:23.355398Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T20:59:24.622354Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T20:59:25.871712Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T20:59:27.148247Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T20:59:28.377545Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T20:59:29.636970Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T20:59:30.858572Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T20:59:32.121861Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T20:59:33.406233Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T20:59:34.626075Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T20:59:35.879382Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T20:59:37.107341Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T20:59:38.375284Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T20:59:39.648909Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T20:59:40.948606Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T20:59:42.220685Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T20:59:43.517403Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T20:59:44.823155Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T20:59:46.098043Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T20:59:47.388448Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T20:59:48.700506Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T20:59:49.927379Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T20:59:51.205490Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 4
+2026-04-07T20:59:52.258122Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 5
+2026-04-07T20:59:52.343953Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T20:59:54.203273Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T20:59:55.471496Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T20:59:56.708609Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T20:59:58.024444Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T20:59:59.306882Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:00:00.616655Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:00:01.937475Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:00:03.240730Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:00:04.481878Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:00:05.656339Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:00:06.864774Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:00:08.104225Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:00:09.355432Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:00:10.605408Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:00:11.871845Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:00:13.114939Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:00:14.332394Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:00:15.619075Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:00:16.892086Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:00:18.157108Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:00:19.435157Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:00:20.714168Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:00:21.936517Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:00:23.211716Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:00:24.504229Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:00:25.750773Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 5
+2026-04-07T21:00:26.811754Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 6
+2026-04-07T21:00:26.899672Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:00:28.768410Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:00:29.993731Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:00:31.162436Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:00:32.384523Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:00:33.643923Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:00:34.902264Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:00:36.117576Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:00:37.324262Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:00:38.628657Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:00:39.897347Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:00:41.202824Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:00:42.497170Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:00:43.760361Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:00:45.026285Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:00:46.336451Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:00:47.618940Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:00:48.932550Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:00:50.202469Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:00:51.463708Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:00:52.719009Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:00:53.971003Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:00:55.203201Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:00:56.573794Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:00:57.949119Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:00:59.264240Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:01:00.602611Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 6
+2026-04-07T21:01:01.314512Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 512, n: 128, k: 128, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 1, NumOps: 16
+2026-04-07T21:01:01.328213Z  INFO cubecl_runtime::tune::tuner: Tuning FusedMatmulAutotuneKey - MatmulKey: MatmulAutotuneKey { definition: MatmulProblemDefinition { m: 512, n: 128, k: 128, lhs_pow2_factor: 4, lhs_stride_factor: 9, rhs_pow2_factor: 4, rhs_stride_factor: 9, elem_lhs: Scalar(Float(F32)), elem_rhs: Scalar(Float(F32)), elem_out: Scalar(Float(F32)), matrix_layout_lhs: Contiguous, matrix_layout_rhs: Contiguous }, analysis: MatmulAutotuneAnalysis { scale_global: Small, kind: General } }, NumOutBuffers: 1, NumOps: 8
+2026-04-07T21:01:01.707767Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 7
+2026-04-07T21:01:01.800332Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:01:03.621738Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:01:04.963332Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:01:06.248842Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:01:07.579058Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:01:08.862768Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:01:10.134994Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:01:11.334717Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:01:12.603668Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:01:13.840345Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:01:15.088327Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:01:16.399340Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:01:17.755302Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:01:19.027980Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:01:20.280173Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:01:21.544931Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:01:22.794849Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:01:24.084612Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:01:25.355661Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:01:26.610027Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:01:27.932218Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:01:29.214832Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:01:30.477832Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:01:31.738590Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:01:33.004620Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:01:34.282852Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:01:35.565528Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 7
+2026-04-07T21:01:36.633669Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 8
+2026-04-07T21:01:36.718006Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:01:38.579205Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:01:39.804134Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:01:41.089132Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:01:42.383121Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:01:43.682142Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:01:44.990361Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:01:46.321230Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:01:47.586391Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:01:48.828585Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:01:50.050769Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:01:51.346630Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:01:52.609573Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:01:53.878376Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:01:55.151964Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:01:56.399684Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:01:57.680835Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:01:59.009900Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:02:00.293711Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:02:01.571253Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:02:02.806583Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:02:03.992094Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:02:05.300970Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:02:06.540404Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:02:07.843526Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:02:09.109018Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:02:10.399796Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 8
+2026-04-07T21:02:11.474384Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 9
+2026-04-07T21:02:11.561206Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:02:13.498098Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:02:14.818063Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:02:16.093528Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:02:17.329661Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:02:18.592764Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:02:19.804247Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:02:21.087314Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:02:22.357441Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:02:23.593729Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:02:24.888140Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:02:26.146244Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:02:27.361520Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:02:28.655676Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:02:29.938205Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:02:31.239484Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:02:32.458893Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:02:33.782826Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:02:35.094409Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:02:36.326532Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:02:37.604909Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:02:38.850319Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:02:40.214800Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:02:41.476414Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:02:42.744349Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:02:44.013966Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:02:45.283696Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 9
+2026-04-07T21:02:46.406280Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 10
+2026-04-07T21:02:46.489330Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:02:48.371591Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:02:49.646075Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:02:50.925966Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:02:52.198009Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:02:53.483660Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:02:54.735559Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:02:56.021359Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:02:57.317924Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:02:58.609359Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:02:59.922697Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:03:01.261130Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:03:02.501477Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:03:03.739939Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:03:05.103871Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:03:06.353337Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:03:07.611613Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:03:08.926086Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:03:10.193359Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:03:11.459312Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:03:12.735171Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:03:13.991943Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:03:15.224444Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:03:16.542713Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:03:17.819263Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:03:19.154924Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:03:20.387635Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 10
+2026-04-07T21:03:21.447387Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 11
+2026-04-07T21:03:21.532572Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:03:23.519798Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:03:24.857284Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:03:26.153127Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:03:27.440779Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:03:28.704658Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:03:29.941780Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:03:31.195082Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:03:32.478170Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:03:33.701892Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:03:35.028441Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:03:36.313169Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:03:37.636683Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:03:38.871284Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:03:40.190426Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:03:41.522340Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:03:42.808831Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:03:44.101089Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:03:45.373757Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:03:46.644586Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:03:47.882640Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:03:49.226790Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:03:50.415015Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:03:51.699078Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:03:53.038050Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:03:54.340955Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:03:55.641919Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 11
+2026-04-07T21:03:56.755591Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 12
+2026-04-07T21:03:56.845287Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:03:58.859534Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:04:00.158104Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:04:01.394461Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:04:02.707403Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:04:03.946364Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:04:05.255098Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:04:06.529837Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:04:07.805921Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:04:09.081476Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:04:10.319414Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:04:11.548846Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:04:12.820654Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:04:14.109148Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:04:15.458545Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:04:16.706893Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:04:17.955654Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:04:19.231860Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:04:20.501114Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:04:21.784397Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:04:23.033072Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:04:24.360151Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:04:25.677914Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:04:26.968146Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:04:28.153263Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:04:29.449174Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:04:30.725953Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 12
+2026-04-07T21:04:31.803771Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 13
+2026-04-07T21:04:31.897720Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:04:33.856441Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:04:35.090414Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:04:36.311294Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:04:37.619711Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:04:38.939114Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:04:40.240465Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:04:41.589142Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:04:42.843968Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:04:44.132969Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:04:45.459164Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:04:46.724417Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:04:47.969569Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:04:49.241880Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:04:50.591391Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:04:51.897355Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:04:53.175917Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:04:54.466784Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:04:55.707397Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:04:56.930732Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:04:58.262175Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:04:59.564918Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:05:00.866750Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:05:02.133576Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:05:03.384225Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:05:04.673118Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:05:05.899640Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 13
+2026-04-07T21:05:06.948946Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 14
+2026-04-07T21:05:07.034532Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:05:08.898938Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:05:10.221874Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:05:11.472483Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:05:12.783967Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:05:14.065934Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:05:15.354425Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:05:16.655308Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:05:17.965135Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:05:19.234029Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:05:20.486079Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:05:21.811270Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:05:23.114301Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:05:24.330708Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:05:25.601847Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:05:26.944570Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:05:28.252154Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:05:29.461056Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:05:30.691024Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:05:31.951673Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:05:33.218566Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:05:34.509507Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:05:35.771865Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:05:37.054869Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:05:38.343446Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:05:39.614144Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:05:40.878235Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 14
+2026-04-07T21:05:41.988257Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 15
+2026-04-07T21:05:42.079354Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:05:43.986642Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:05:45.278682Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:05:46.585707Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:05:47.870381Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:05:49.099810Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:05:50.434993Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:05:51.713911Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:05:52.946638Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:05:54.155043Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:05:55.441024Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:05:56.695905Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:05:58.022407Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:05:59.337758Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:06:00.628219Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:06:01.902092Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:06:03.154366Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:06:04.393219Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:06:05.675185Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:06:06.937682Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:06:08.253736Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:06:09.503426Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:06:10.846772Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:06:12.153158Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:06:13.458625Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:06:14.791419Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:06:16.126562Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 15
+2026-04-07T21:06:17.197637Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 16
+2026-04-07T21:06:17.285659Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:06:19.119673Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:06:20.352633Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:06:21.701427Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:06:22.907839Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:06:24.221162Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:06:25.463904Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:06:26.751090Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:06:27.983859Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:06:29.249857Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:06:30.494883Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:06:31.777557Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:06:33.079235Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:06:34.368695Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:06:35.700218Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:06:37.000193Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:06:38.234868Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:06:39.499861Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:06:40.759213Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:06:42.002797Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:06:43.323438Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:06:44.609862Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:06:45.855751Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:06:47.132482Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:06:48.438231Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:06:49.764230Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:06:50.979654Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 16
+2026-04-07T21:06:52.082637Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 17
+2026-04-07T21:06:52.170139Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:06:54.041460Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:06:55.292184Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:06:56.623995Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:06:57.965725Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:06:59.218574Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:07:00.454638Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:07:01.773432Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:07:03.069994Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:07:04.286839Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:07:05.569129Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:07:06.893864Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:07:08.178374Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:07:09.470835Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:07:10.750263Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:07:11.987046Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:07:13.308647Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:07:14.638010Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:07:15.978964Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:07:17.264915Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:07:18.511589Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:07:19.776651Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:07:21.071451Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:07:22.336243Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:07:23.579693Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:07:24.823826Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:07:26.094047Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 17
+2026-04-07T21:07:27.208046Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 18
+2026-04-07T21:07:27.298407Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:07:29.245969Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:07:30.523090Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:07:31.854864Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:07:33.095847Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:07:34.416055Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:07:35.738810Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:07:37.000799Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:07:38.299307Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:07:39.607342Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:07:40.941930Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:07:42.159907Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:07:43.450412Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:07:44.761355Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:07:46.012913Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:07:47.268629Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:07:48.529395Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:07:49.874505Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:07:51.152220Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:07:52.483158Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:07:53.722284Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:07:55.047979Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:07:56.413716Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:07:57.703157Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:07:58.993028Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:08:00.264077Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:08:01.489366Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 18
+2026-04-07T21:08:02.614109Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 19
+2026-04-07T21:08:02.706505Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:08:04.605363Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:08:05.833126Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:08:07.168883Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:08:08.461407Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:08:09.804906Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:08:11.097433Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:08:12.338762Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:08:13.559555Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:08:14.903407Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:08:16.264263Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:08:17.499115Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:08:18.867872Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:08:20.093165Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:08:21.375739Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:08:22.649423Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:08:23.939906Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:08:25.224465Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:08:26.489959Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:08:27.751801Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:08:29.049680Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:08:30.419150Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:08:31.731107Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:08:32.977298Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:08:34.224631Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:08:35.504206Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:08:36.756673Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 19
+2026-04-07T21:08:37.842408Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 20
+2026-04-07T21:08:37.931724Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:08:39.783669Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:08:41.049894Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:08:42.455497Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:08:43.761919Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:08:45.074135Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:08:46.384137Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:08:47.658862Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:08:48.927388Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:08:50.224030Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:08:51.490699Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:08:52.757129Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:08:54.067451Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:08:55.338464Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:08:56.613245Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:08:57.858243Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:08:59.203849Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:09:00.522710Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:09:01.787474Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:09:03.038133Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:09:04.333688Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:09:05.608873Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:09:06.884866Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:09:08.186889Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:09:09.480476Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:09:10.767078Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:09:12.056481Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 20
+2026-04-07T21:09:13.141023Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 21
+2026-04-07T21:09:13.230564Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:09:15.131104Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:09:16.486779Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:09:17.770591Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:09:19.060731Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:09:20.380309Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:09:21.639094Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:09:22.950152Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:09:24.231598Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:09:25.483786Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:09:26.721106Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:09:27.961698Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:09:29.184650Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:09:30.443035Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:09:31.706117Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:09:32.991018Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:09:34.262174Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:09:35.540248Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:09:36.864806Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:09:38.137401Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:09:39.413699Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:09:40.693072Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:09:41.931893Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:09:43.138831Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:09:44.431553Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:09:45.755401Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:09:47.047349Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 21
+2026-04-07T21:09:48.130145Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 22
+2026-04-07T21:09:48.216929Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:09:50.024638Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:09:51.311771Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:09:52.625568Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:09:53.851799Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:09:55.158746Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:09:56.460958Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:09:57.728826Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:09:59.014130Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:10:00.287305Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:10:01.578694Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:10:02.910334Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:10:04.124983Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:10:05.479454Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:10:06.788245Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:10:08.062882Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:10:09.348113Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:10:10.640604Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:10:11.900276Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:10:13.181327Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:10:14.455021Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:10:15.756363Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:10:17.036480Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:10:18.321373Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:10:19.591940Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:10:20.862126Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:10:22.124365Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 22
+2026-04-07T21:10:23.238726Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 23
+2026-04-07T21:10:23.327061Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:10:25.196723Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:10:26.562824Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:10:27.858002Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:10:29.126210Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:10:30.426656Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:10:31.709526Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:10:33.092902Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:10:34.383471Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:10:35.567420Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:10:36.895772Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:10:38.170406Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:10:39.504652Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:10:40.838359Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:10:42.117941Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:10:43.429079Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:10:44.707955Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:10:46.014821Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:10:47.264338Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:10:48.568453Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:10:49.842051Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:10:51.135618Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:10:52.469598Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:10:53.807804Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:10:55.108960Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:10:56.463980Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:10:57.782404Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 23
+2026-04-07T21:10:58.876209Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 24
+2026-04-07T21:10:58.965663Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:11:00.904041Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:11:02.197635Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:11:03.392194Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:11:04.660985Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:11:05.935392Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:11:07.236781Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:11:08.525017Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:11:09.764615Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:11:11.030260Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:11:12.269813Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:11:13.577561Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:11:14.837509Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:11:16.191237Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:11:17.453611Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:11:18.676085Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:11:19.986188Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:11:21.310710Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:11:22.538106Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:11:23.861045Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:11:25.131962Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:11:26.466496Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:11:27.787935Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:11:29.084650Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:11:30.358928Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:11:31.575432Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:11:32.903233Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 24
+2026-04-07T21:11:34.007209Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 25
+2026-04-07T21:11:34.093657Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:11:35.999483Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:11:37.274997Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:11:38.622728Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:11:39.910684Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:11:41.234236Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:11:42.512722Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:11:43.787782Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:11:45.079531Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:11:46.359185Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:11:47.640214Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:11:48.948178Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:11:50.293383Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:11:51.613441Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:11:52.938321Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:11:54.198354Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:11:55.490140Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:11:56.745102Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:11:58.051652Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:11:59.342743Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:12:00.644810Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:12:01.954103Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:12:03.293886Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:12:04.584840Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:12:05.866779Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:12:07.146742Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:12:08.434147Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 25
+2026-04-07T21:12:09.552152Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 26
+2026-04-07T21:12:09.637731Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:12:11.523561Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:12:12.829659Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:12:14.083023Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:12:15.379393Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:12:16.621151Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:12:17.974391Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:12:19.291632Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:12:20.552919Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:12:21.864216Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:12:23.176484Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:12:24.479740Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:12:25.739720Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:12:26.995013Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:12:28.269552Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:12:29.593852Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:12:30.909162Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:12:32.233412Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:12:33.528090Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:12:34.807452Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:12:36.115445Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:12:37.381118Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:12:38.685447Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:12:39.935801Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:12:41.261102Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:12:42.546873Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:12:43.825813Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 26
+2026-04-07T21:12:44.935339Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 27
+2026-04-07T21:12:45.020416Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:12:46.856719Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:12:48.121963Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:12:49.476250Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:12:50.738543Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:12:52.018546Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:12:53.318853Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:12:54.677169Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:12:55.931990Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:12:57.182025Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:12:58.486123Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:12:59.793759Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:13:01.140268Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:13:02.417677Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:13:03.707931Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:13:04.952977Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:13:06.234919Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:13:07.555790Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:13:08.854333Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:13:10.161601Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:13:11.404548Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:13:12.598557Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:13:13.912972Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:13:15.119260Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:13:16.371135Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:13:17.686774Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:13:18.959583Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 27
+2026-04-07T21:13:20.050393Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 28
+2026-04-07T21:13:20.143092Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:13:22.021882Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:13:23.282063Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:13:24.645532Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:13:25.934075Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:13:27.211934Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:13:28.477058Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:13:29.764017Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:13:31.000633Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:13:32.313607Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:13:33.627243Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:13:34.905718Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:13:36.212322Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:13:37.504095Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:13:38.769224Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:13:40.020098Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:13:41.300660Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:13:42.555911Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:13:43.849213Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:13:45.148317Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:13:46.465306Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:13:47.758920Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:13:49.048186Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:13:50.342861Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:13:51.615606Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:13:52.914520Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:13:54.276205Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 28
+2026-04-07T21:13:55.381000Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 29
+2026-04-07T21:13:55.470247Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:13:57.351730Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:13:58.664709Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:13:59.909320Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:14:01.159135Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:14:02.447612Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:14:03.738335Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:14:05.115893Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:14:06.282138Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:14:07.613059Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:14:08.931509Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:14:10.236508Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:14:11.551804Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:14:12.801589Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:14:14.072170Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:14:15.402150Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:14:16.717398Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:14:17.992389Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:14:19.289494Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:14:20.602030Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:14:21.856645Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:14:23.143506Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:14:24.362169Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:14:25.662811Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:14:26.931260Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:14:28.227381Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:14:29.489116Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 29
+2026-04-07T21:14:30.594432Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing training step for epoch 30
+2026-04-07T21:14:30.680488Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 1
+2026-04-07T21:14:32.534045Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 2
+2026-04-07T21:14:33.877529Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 3
+2026-04-07T21:14:35.173454Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 4
+2026-04-07T21:14:36.432707Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 5
+2026-04-07T21:14:37.685644Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 6
+2026-04-07T21:14:39.097206Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 7
+2026-04-07T21:14:40.419160Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 8
+2026-04-07T21:14:41.696776Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 9
+2026-04-07T21:14:43.004139Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 10
+2026-04-07T21:14:44.259109Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 11
+2026-04-07T21:14:45.509516Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 12
+2026-04-07T21:14:46.687023Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 13
+2026-04-07T21:14:47.983895Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 14
+2026-04-07T21:14:49.356570Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 15
+2026-04-07T21:14:50.675339Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 16
+2026-04-07T21:14:51.961905Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 17
+2026-04-07T21:14:53.225399Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 18
+2026-04-07T21:14:54.504776Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 19
+2026-04-07T21:14:55.787495Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 20
+2026-04-07T21:14:57.046602Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 21
+2026-04-07T21:14:58.299306Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 22
+2026-04-07T21:14:59.639070Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 23
+2026-04-07T21:15:00.919185Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 24
+2026-04-07T21:15:02.239635Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 25
+2026-04-07T21:15:03.563965Z  INFO burn_train::learner::supervised::strategies::single::epoch: Iteration 26
+2026-04-07T21:15:04.854248Z  INFO burn_train::learner::supervised::strategies::single::epoch: Executing validation step for epoch 30
+2026-04-07T21:15:05.995357Z  INFO burn_train::renderer::tui::renderer: ======================== Learner Summary ========================
+Model:
+Seq2Seq {
+  encoder_1: Conv1d {ch_in: 21, ch_out: 128, stride: 1, kernel_size: 7, dilation: 1, groups: 1, padding: Same, params: 18944}
+  encoder_2: Conv1d {ch_in: 21, ch_out: 128, stride: 1, kernel_size: 11, dilation: 1, groups: 1, padding: Same, params: 29696}
+  encoder_3: Conv1d {ch_in: 21, ch_out: 128, stride: 1, kernel_size: 15, dilation: 1, groups: 1, padding: Same, params: 40448}
+  decoder: BiLstm {d_input: 384, d_hidden: 128, bias: true, params: 526336}
+  output_model: Linear {d_input: 256, d_output: 24, bias: true, params: 6168}
+  params: 621592
+}
+Total Epochs: 30
+
+
+| Split | Metric | Min.     | Epoch    | Max.     | Epoch    |
+|-------|--------|----------|----------|----------|----------|
+| Train | Loss   | 6.331e-4 | 30       | 3.401e-3 | 1        |
+| Valid | Loss   | 6.511e-4 | 30       | 2.170e-3 | 1        |
+
