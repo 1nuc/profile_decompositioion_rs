@@ -15,7 +15,7 @@ impl Nrel {
     }
 
     pub fn init(path: PlRefPath) -> Self {
-        let meta_data_ = Self::scan_files("../../../metadata/MetaData.parquet".into())
+        let meta_data_ = Self::scan_files("../../../../metadata/MetaData.parquet".into())
             .process_meta_data_variants()
             .unique(None, Default::default());
         let data_ = Self::scan_files(path)
@@ -86,6 +86,7 @@ impl Actions for LazyFrame {
                 col("in.occupants").cast(DataType::UInt32),
                 col("in.state").cast_to_categorical(),
                 col("in.county").cast_to_categorical(),
+                col("in.representative_income"),
                 col("in.area_median_income").cast_to_categorical(),
                 col("in.income").cast_to_categorical(),
                 col("in.income_recs_2020").cast_to_categorical(),
