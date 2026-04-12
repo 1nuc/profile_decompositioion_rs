@@ -36,7 +36,7 @@ fn cross_valid(data: LazyFrame, k: i32){
     //shuffle the vector based on that rng
     month_vec.shuffle(&mut rnd);
     // extract the months with the size of k 
-    let rand_months=month_vec.iter().take(k as usize);
+    let rand_months=month_vec.into_iter().take(k as usize + 1).collect::<Vec<i8>>();
     println!("{:?}", rand_months);
     let mut train_sets=Vec::new();
     let mut test_sets=Vec::new();
