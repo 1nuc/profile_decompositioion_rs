@@ -30,7 +30,7 @@ use burn::{
 };
 use polars::{
     frame::DataFrame,
-    prelude::{Column, PlRefPath, all, any_horizontal, *},
+    prelude::{Column, PlRefPath},
 };
 
 pub struct Controller {
@@ -64,7 +64,6 @@ impl Controller {
     pub fn data_preparation(&mut self, input: PlRefPath) {
         let data_source = Nrel::init(input);
         let data = data_source.data;
-        let meta_data=data_source.meta_data;
         let mut encoded_data = data.clone().encode_categoricals();
         let s = encoded_data.clone().collect().unwrap();
         let y_columns = s.return_y_columns();
