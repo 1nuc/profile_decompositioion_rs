@@ -1,10 +1,15 @@
 use std::{fs::{File, copy, create_dir, create_dir_all}, path::{Path, PathBuf}, sync::Arc};
-use burn::prelude::Module;
+use burn::{Tensor, module::Module, nn::{BiLstmRecord, LstmRecord}};
 use burn::{config::Config, data::dataloader::{DataLoader, DataLoaderBuilder}, optim::AdamWConfig, prelude::Backend, record::CompactRecorder, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}};
 use polars::{frame::DataFrame, prelude::{IntoLazy, LazyFrame, col, lit}};
 use rand::seq::SliceRandom;
 
-use crate::dl::{controller::Controller, dataset::{NrelBatch, NrelBatcher, NrelDataset}, models::{bi_lstm::{NucBiLstmConfig}, hybrid_models::{Seq2SeqConfig}, lstm::{NucLstmConfig}, stacked_bi_lstm::{StackedBiLstmConfig}, stacked_lstm::{StackedLstmConfig}}};
+use burn::{
+    data::{dataloader::batcher::Batcher, dataset::Dataset},
+    nn::loss::MseLoss,
+    record::Recorder
+};
+use crate::dl::{controller::Controller, dataset::{NrelBatch, NrelBatcher, NrelDataset, NrelDatasetItem}, models::{bi_lstm::{NucBiLstmConfig, NucBiLstmRecord}, hybrid_models::{Seq2SeqConfig, Seq2SeqRecord}, lstm::{NucLstmConfig, NucLstmRecord}, stacked_bi_lstm::{StackedBiLstmConfig, StackedBilstmRecord}, stacked_lstm::{StackedLstmConfig, StackedlstmRecord}}};
 
 pub struct CrossValidate{
     pub training_sets: Vec<DataFrame>,
@@ -235,49 +240,65 @@ impl CrossModels{
 
     #[allow(unused_must_use)]
     pub fn inference<B: Backend>(
+        &self,
         artifact_dir: &str,
         test_data: DataFrame,
         device: B::Device,
-        timestamp: Column,
-    ) -> DataFrame {
+    ){
         //Load the configurations of the model
-        let config = NrelConfig::load(format!("{artifact_dir}/config.json"))
+        let config = Self::load(format!("{artifact_dir}/config.json"))
             .expect("unable to find the file");
 
         // using compact recorder, load the last saved state of the model
-        let record: Seq2SeqRecord<B> = CompactRecorder::new()
-            .load(format!("{artifact_dir}/model").into(), &device)
+        let lstm_record: NucLstmRecord<B>=CompactRecorder::new()
+            .load(format!("{artifact_dir}/lstm_model").into(), &device)
             .expect("training model should exist first");
-
-        // load and initialize the model for test
-        let model = config.model.init::<B>(device.clone()).load_record(record);
+        let bilstm_record: NucBiLstmRecord<B>=CompactRecorder::new()
+            .load(format!("{artifact_dir}/bilstm_model").into(), &device)
+            .expect("training model should exist first");
+        let stackedlstm_record: StackedlstmRecord<B> = CompactRecorder::new()
+            .load(format!("{artifact_dir}/stacked_lstm_model").into(), &device)
+            .expect("training model should exist first");
+        let stacked_bilstm_record: StackedBilstmRecord<B>=CompactRecorder::new()
+            .load(format!("{artifact_dir}/stacked_bi_lstm_model").into(), &device)
+            .expect("training model should exist first");
+        let seq2seq_record: Seq2SeqRecord<B>=CompactRecorder::new()
+            .load(format!("{artifact_dir}/seq2seq_model").into(), &device)
+            .expect("training model should exist first");
+        // load and initialize all models for test
+        let lstm = config.lstm.init::<B>(device.clone()).load_record(lstm_record);
+        let bilstm = config.bi_lstm.init::<B>(device.clone()).load_record(bilstm_record);
+        let stacked_lstm = config.stacked_lstm.init::<B>(device.clone()).load_record(stackedlstm_record);
+        let stacked_bi_lstm = config.stacked_bi_lstm.init::<B>(device.clone()).load_record(stacked_bilstm_record);
+        let seq2seq = config.seq2seq.init::<B>(device.clone()).load_record(seq2seq_record);
 
         //load the test data and the batcher and initialize the data items
         let test_data_cloned = test_data.clone();
-        let cols = test_data_cloned.return_y_columns(); // getting the columns for prediction
         // manipulation later on
         let test_data = NrelDataset::new(test_data);
         let batcher: NrelBatcher<B> = NrelBatcher::new(device.clone());
 
-        let batched_data: Vec<NrelDatasetItem> = test_data.iter().collect();
+        let batched_data: Vec<NrelDatasetItem>=test_data.iter().collect();
 
         // convert the vec data into batches and start taking the inference
 
         let batch = batcher.batch(batched_data, &device);
 
         // get the predicted and target values
-        let predicted = model.forward(batch.sequence);
+        //lstm
+        let lstm_predicted = lstm.forward(batch.sequence);
+        //bilstm
+        let bilstm_predicted = bilstm.forward(batch.sequence);
+        //stacked lstm
+        let stackedlstm_predicted = stacked_lstm.forward(batch.sequence);
+        // stacked_bi_lstm
+        let stacked_bilstm_predicted = stacked_bi_lstm.forward(batch.sequence);
+        // seq2seq
+        let seq2seq_predicted = seq2seq.forward(batch.sequence);
+    
+        // main test values
         let targets = batch.target;
 
-        let length = test_data_cloned.height();
-        let df = Self::process_data::<B>(predicted.clone(), length, cols, timestamp.clone());
-        Self::write_to_json(df.clone());
-        let loss = MseLoss::new();
-        let mse_loss_3d = loss.forward(
-            predicted.clone(),
-            targets.clone(),
-            burn::nn::loss::Reduction::Mean,
-        );
         // print some statisitc
         // squeeze both predicted and targets to 1d tensor
         let predicted = predicted
@@ -294,7 +315,16 @@ impl CrossModels{
         let r2_score = Self::r2_score(predicted.clone(), targets.clone());
         println!("mse: {:?}", mse_loss_3d.to_data().to_vec::<f32>());
         println!("r2: {:?}", r2_score);
-        df
+    }
+    
+    pub fn mse<B: Backend>(data: Tensor<B, 3>, targets: Tensor<B,3>) -> Tensor<B, 1>{
+        let loss = MseLoss::new();
+        let mse_loss = loss.forward(
+            data.clone(),
+            targets.clone(),
+            burn::nn::loss::Reduction::Mean,
+        );
+        mse_loss
     }
 
     pub fn r2_score(preds: Vec<f32>, y_true: Vec<f32>) -> f32 {
