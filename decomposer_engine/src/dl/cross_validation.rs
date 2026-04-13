@@ -20,7 +20,7 @@ pub struct CrossValidate{
 impl Default for CrossValidate{
     fn default() -> Self {
         // set the default k to 8 folds
-        Self::new(8)
+        Self::new(5)
     }
 }
 impl CrossValidate{
@@ -114,7 +114,7 @@ impl CrossValidate{
                 let mut result=self.test::<InferBackend>(test_data, device);
                 let iteration=Series::new("iteration".into(), [i]);
                 let data=result.with_column(iteration.into()).unwrap();
-                results.push(data.lazy());
+                results.push(data.clone().lazy());
                 i+=1;
             });
         //concat the vector of dataframes to one dataframe
