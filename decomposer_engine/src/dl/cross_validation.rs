@@ -1,8 +1,8 @@
-use std::{fs::{File, copy, create_dir, create_dir_all}, path::{Path, PathBuf}, sync::Arc};
+use std::{fs::{File, copy, create_dir, create_dir_all, remove_file}, io::BufWriter, path::{Path, PathBuf}, sync::Arc};
 use burn::{Tensor, backend::Autodiff, module::Module };
 use burn::{config::Config, data::dataloader::{DataLoader, DataLoaderBuilder}, optim::AdamWConfig, prelude::Backend, record::CompactRecorder, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}};
 use burn_wgpu::{Wgpu, WgpuDevice};
-use polars::{df, frame::DataFrame, prelude::{IntoLazy, LazyFrame, col, lit}};
+use polars::{df, error::PolarsResult, frame::DataFrame, prelude::{IntoLazy, JsonFormat, JsonWriter, LazyFrame, UnionArgs, col, concat, lit, *}};
 use rand::seq::SliceRandom;
 
 use burn::{
@@ -95,8 +95,9 @@ impl CrossValidate{
         (train_sets, test_sets)
     }
 
+    #[allow(unused_must_use)]
     pub fn run(&self){
-        // let mut results= Vec::new();
+        let mut results= Vec::new();
         self.training_sets.clone()
             .into_iter().zip(self.testing_sets.clone()).for_each(|(train, test)|{
                 // define the training data
@@ -108,11 +109,27 @@ impl CrossValidate{
                 type InferBackend=Wgpu;
                 let device=WgpuDevice::default();
                 
-                // self.train::<Mybackend>(train_data, val_data, device.clone());
-                // let result=self.test::<InferBackend>(test_data, device);
-                // results.push(result);
+                self.train::<Mybackend>(train_data, val_data, device.clone());
+                let result=self.test::<InferBackend>(test_data, device);
+                results.push(result.lazy());
             });
-        // println!("{:?}", results);
+        //concat the vector of dataframes to one dataframe
+        let concated_data=concat(results, UnionArgs::default()).unwrap().collect().unwrap();
+        println!("{:?}", concated_data.clone());
+        self.write_to_json(concated_data);
+    }
+
+    #[allow(unused_must_use)]
+    pub fn write_to_json(&self,mut df: DataFrame) -> PolarsResult<()> {
+        let output_path = Path::new("cross_validation.json");
+        if output_path.exists(){
+            remove_file(output_path);
+        }
+        let file = File::create(output_path).expect("unable to write to the file");
+        let writer = BufWriter::new(file);
+        JsonWriter::new(writer)
+            .with_json_format(JsonFormat::Json)
+            .finish(&mut df)
     }
 
     pub fn train<B: AutodiffBackend>(&self,train: DataFrame,val: DataFrame, device: B::Device){
