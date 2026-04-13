@@ -100,6 +100,7 @@ impl CrossValidate{
         let mut results= Vec::new();
         self.training_sets.clone()
             .into_iter().zip(self.testing_sets.clone()).for_each(|(train, test)|{
+                let mut i=1;
                 // define the training data
                 let (train_data, val_data,_)=train.clone().train_test_split();
                 // define the testing data 
@@ -110,8 +111,11 @@ impl CrossValidate{
                 let device=WgpuDevice::default();
                 
                 self.train::<Mybackend>(train_data, val_data, device.clone());
-                let result=self.test::<InferBackend>(test_data, device);
-                results.push(result.lazy());
+                let mut result=self.test::<InferBackend>(test_data, device);
+                let iteration=Series::new("iteration".into(), [i]);
+                let data=result.with_column(iteration.into()).unwrap();
+                results.push(data.lazy());
+                i+=1;
             });
         //concat the vector of dataframes to one dataframe
         let concated_data=concat(results, UnionArgs::default()).unwrap().collect().unwrap();
