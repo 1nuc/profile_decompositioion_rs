@@ -1,10 +1,10 @@
 use std::{fs::{File, copy, create_dir, create_dir_all}, path::{Path, PathBuf}, sync::Arc};
 
-use burn::{data::dataloader::{DataLoader, DataLoaderBuilder}, record::CompactRecorder, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}};
+use burn::{data::dataloader::DataLoader, nn::{BiLstm, Lstm}, prelude::Backend, record::CompactRecorder, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}};
 use polars::{frame::DataFrame, prelude::{IntoLazy, LazyFrame, col, lit}, *};
 use rand::seq::SliceRandom;
 
-use crate::dl::{controller::Controller, dataset::{NrelBatch, NrelBatcher, NrelDataset}};
+use crate::dl::{controller::Controller, dataset::{NrelBatch, NrelBatcher, NrelDataset}, models::{bi_lstm::NucBiLstm, hybrid_models::Seq2Seq, lstm::NucLstm, stacked_bi_lstm::StackedBilstm, stacked_lstm::Stackedlstm}};
 
 pub struct CrossValidate{
     pub training_sets: Vec<DataFrame>,
@@ -72,6 +72,17 @@ impl CrossValidate{
         (train_sets, test_sets)
     }
     
+}
+pub struct CrossModels <B: Backend>{
+    pub lsmt: NucLstm<B>,
+    pub bi_lst: NucBiLstm<B>,
+    pub stacked_lstm: Stackedlstm<B>,
+    pub stacked_bi_lstm: StackedBilstm<B>,
+    pub seq2seq: Seq2Seq<B>,
+
+}
+impl CrossModels<B: Backend>{
+
     #[allow(unused_must_use)]
     fn create_artifact_dir<B: AutodiffBackend>(
         &self,
@@ -126,7 +137,7 @@ impl CrossValidate{
         let batcher = NrelBatcher::new(device.clone());
         let test_batcher = NrelBatcher::<B::InnerBackend>::new(device.clone());
         // Train Data
-        let train_loader = DataLoaderBuilder::new(batcher)
+        let train_loader = DataLoadeer::new(batcher)
             .batch_size(self.batch_size)
             .num_workers(self.workers)
             .shuffle(self.seed)
@@ -139,5 +150,4 @@ impl CrossValidate{
             .build(test_data);
         (train_loader, test_loader)
     }
-    fn train_folds
 }
