@@ -1,12 +1,14 @@
-use std::{fs::{File, remove_file}, io::BufWriter, path::Path};
+use std::{
+    fs::{File, remove_file},
+    io::BufWriter,
+    path::Path,
+};
 
 use crate::{
     EagerActions,
     dl::{
         dataset::{NrelBatcher, NrelDataset, NrelDatasetItem},
-        models::{
-             hybrid_models::Seq2SeqRecord,
-       },
+        models::hybrid_models::Seq2SeqRecord,
         training::NrelConfig,
     },
 };
@@ -117,10 +119,10 @@ impl Inference {
     #[allow(unused_must_use)]
     pub fn write_to_json(mut df: DataFrame) -> PolarsResult<()> {
         let output_path = Path::new("data.json");
-        if output_path.exists(){
+        if output_path.exists() {
             remove_file(output_path);
         }
-        let mut df=df.transform_col_names();
+        let mut df = df.transform_col_names();
         let file = File::create(output_path).expect("unable to write to the file");
         let writer = BufWriter::new(file);
         JsonWriter::new(writer)

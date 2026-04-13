@@ -16,16 +16,13 @@ use std::{
 use crate::{
     Actions, EagerActions,
     data_engine::Nrel,
-    dl::{
-        inference::Inference,
-        models::{
-            hybrid_models::Seq2SeqConfig,
-        },
-        training::NrelConfig,
-    },
+    dl::{inference::Inference, models::hybrid_models::Seq2SeqConfig, training::NrelConfig},
 };
 use burn::{
-    backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend
+    backend::{Autodiff, Wgpu, wgpu::WgpuDevice},
+    optim::AdamWConfig,
+    prelude::Backend,
+    tensor::backend::AutodiffBackend,
 };
 use polars::{
     frame::DataFrame,
@@ -60,7 +57,7 @@ impl Controller {
         }
     }
 
-    pub fn data_preparation(&mut self, input: PlRefPath, return_data: bool) -> Option<DataFrame>{
+    pub fn data_preparation(&mut self, input: PlRefPath, return_data: bool) -> Option<DataFrame> {
         let data_source = Nrel::init(input);
         let data = data_source.data;
         let encoded_data = data.clone().encode_categoricals();
@@ -77,10 +74,9 @@ impl Controller {
             .collect()
             .unwrap();
         (self.train_data, self.val_data, self.production_data) = data.train_test_split();
-        if return_data{
+        if return_data {
             Some(encoded_data.collect().unwrap())
-        }
-        else{
+        } else {
             None
         }
     }
@@ -169,14 +165,19 @@ impl Controller {
     }
 
     //experience demo training with one trail training for one data set
-    pub fn one_trail_training(&mut self){
+    pub fn one_trail_training(&mut self) {
         let artifact_dir = Path::new("lstm_artifact/");
         if artifact_dir.exists() {
             remove_dir_all("input").expect("can't find the input dir");
             remove_dir_all(artifact_dir).expect("can't find the artifact dir");
         }
 
-        let files=self.train_files.clone().into_iter().take(40).collect::<Vec<PathBuf>>();
+        let files = self
+            .train_files
+            .clone()
+            .into_iter()
+            .take(40)
+            .collect::<Vec<PathBuf>>();
 
         files.into_iter().for_each(|x| {
             let input_path = Path::new("input");
@@ -188,10 +189,10 @@ impl Controller {
             File::create_new(&file_path).expect("unable to create a file");
             copy(x, file_path).expect("error in copying the data");
         });
-            // ---- Deep learning Models
-            self.data_preparation(("input/*.parquet").into(), false);
-            self.lstm_simulation();
-            remove_dir_all("input").expect("can't find the input dir");
+        // ---- Deep learning Models
+        self.data_preparation(("input/*.parquet").into(), false);
+        self.lstm_simulation();
+        remove_dir_all("input").expect("can't find the input dir");
     }
     // return all the buildings available in the data
     pub fn return_nrel_buildings(&self) -> Vec<String> {
