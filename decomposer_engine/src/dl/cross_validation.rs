@@ -1,7 +1,7 @@
 use std::{fs::{File, copy, create_dir, create_dir_all}, path::{Path, PathBuf}, sync::Arc};
-use burn::{Tensor, module::Module, nn::{BiLstmRecord, LstmRecord}};
+use burn::{Tensor, module::Module };
 use burn::{config::Config, data::dataloader::{DataLoader, DataLoaderBuilder}, optim::AdamWConfig, prelude::Backend, record::CompactRecorder, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}};
-use polars::{frame::DataFrame, prelude::{IntoLazy, LazyFrame, col, lit}};
+use polars::{df, frame::DataFrame, prelude::{IntoLazy, LazyFrame, col, lit}};
 use rand::seq::SliceRandom;
 
 use burn::{
@@ -244,7 +244,7 @@ impl CrossModels{
         artifact_dir: &str,
         test_data: DataFrame,
         device: B::Device,
-    ){
+    )-> DataFrame{
         //Load the configurations of the model
         let config = Self::load(format!("{artifact_dir}/config.json"))
             .expect("unable to find the file");
@@ -286,48 +286,73 @@ impl CrossModels{
 
         // get the predicted and target values
         //lstm
-        let lstm_predicted = lstm.forward(batch.sequence);
+        let lstm_predicted = lstm.forward(batch.sequence.clone());
         //bilstm
-        let bilstm_predicted = bilstm.forward(batch.sequence);
+        let bilstm_predicted = bilstm.forward(batch.sequence.clone());
         //stacked lstm
-        let stackedlstm_predicted = stacked_lstm.forward(batch.sequence);
+        let stackedlstm_predicted = stacked_lstm.forward(batch.sequence.clone());
         // stacked_bi_lstm
-        let stacked_bilstm_predicted = stacked_bi_lstm.forward(batch.sequence);
+        let stacked_bilstm_predicted = stacked_bi_lstm.forward(batch.sequence.clone());
         // seq2seq
         let seq2seq_predicted = seq2seq.forward(batch.sequence);
     
         // main test values
         let targets = batch.target;
 
-        // print some statisitc
-        // squeeze both predicted and targets to 1d tensor
-        let predicted = predicted
+        // measurements
+        // lstm mse
+        let lstm_mse=self.mse(lstm_predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap().pop().unwrap();
+        // bilstm mse
+        let bilstm_mse=self.mse(bilstm_predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap().pop().unwrap();
+        // stackedlstm mse
+        let stacked_lstm_mse=self.mse(stackedlstm_predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap().pop().unwrap();
+        // stackedbilstm mse
+        let stacked_bi_lstm_mse=self.mse(stacked_bilstm_predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap().pop().unwrap();
+        // seq2seq mse
+        let seq2seq_mse=self.mse(seq2seq_predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap().pop().unwrap();
+        //----------------------
+        // lstm
+        let lstm_r2 = self.r2_score(lstm_predicted, targets.clone());
+        // bilstm
+        let bilstm_r2 = self.r2_score(bilstm_predicted, targets.clone());
+        // stackedlstm
+        let stacked_lstm_r2 = self.r2_score(stackedlstm_predicted, targets.clone());
+        // stackedbilstm
+        let stacked_bilstm_r2 = self.r2_score(stacked_bilstm_predicted, targets.clone());
+        // sequence to sequence
+        let seq2seq_r2 = self.r2_score(seq2seq_predicted, targets.clone());
+         
+        df!(
+            "LSTM Model"=> [lstm_mse, lstm_r2],
+            "BI Lstm Model"=> [bilstm_mse, bilstm_r2],
+            "Stacked Lstm Model" => [stacked_lstm_mse, stacked_lstm_r2],
+            "Stacked BiLstm Model" => [stacked_bi_lstm_mse, stacked_bilstm_r2],
+            " Sequence To Sequence Model"=> [seq2seq_mse, seq2seq_r2],
+            " Metrics"=> ["MSE", "R2"],
+        ).unwrap()
+    }
+    
+    pub fn mse<B: Backend>(&self,data: Tensor<B, 3>, targets: Tensor<B,3>) -> Tensor<B, 1>{
+        let loss = MseLoss::new();
+        loss.forward(
+            data.clone(),
+            targets.clone(),
+            burn::nn::loss::Reduction::Mean,
+        )
+    }
+
+    pub fn r2_score<B: Backend>(&self,predicted: Tensor<B, 3>, targets: Tensor<B,3>) -> f32 {
+        let preds = predicted
             .flatten::<2>(1, 2)
             .into_data()
             .to_vec::<f32>()
             .unwrap();
-        let targets = targets
+        let y_true = targets
             .flatten::<2>(1, 2)
             .into_data()
             .to_vec::<f32>()
             .unwrap();
         // display the difference between targets and predicted values
-        let r2_score = Self::r2_score(predicted.clone(), targets.clone());
-        println!("mse: {:?}", mse_loss_3d.to_data().to_vec::<f32>());
-        println!("r2: {:?}", r2_score);
-    }
-    
-    pub fn mse<B: Backend>(data: Tensor<B, 3>, targets: Tensor<B,3>) -> Tensor<B, 1>{
-        let loss = MseLoss::new();
-        let mse_loss = loss.forward(
-            data.clone(),
-            targets.clone(),
-            burn::nn::loss::Reduction::Mean,
-        );
-        mse_loss
-    }
-
-    pub fn r2_score(preds: Vec<f32>, y_true: Vec<f32>) -> f32 {
         //1- Total sum of residuals / total sum of squares
         let mean = y_true.iter().sum::<f32>() / y_true.len() as f32;
         let total_sum_residuals = y_true
