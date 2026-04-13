@@ -79,10 +79,11 @@ impl CrossValidate{
     }
 
     pub fn run(&self){
-        let results= Vec::new();
+        let mut results= Vec::new();
         self.training_sets.clone()
             .into_iter().zip(self.testing_sets.clone()).for_each(|(train, test)|{
-                let y_columns=train.clone().return_y_columns();
+                let train_copy=train.clone();
+                let y_columns=train_copy.return_y_columns();
                 // define the training data
                 let (train_data, val_data,_)=train.clone().lazy()
                     .standard_scalar(y_columns.clone())
@@ -100,7 +101,10 @@ impl CrossValidate{
                 type Mybackend= Autodiff<Wgpu>;
                 type InferBackend=Wgpu;
                 let device=WgpuDevice::default();
-
+                
+                self.train::<Mybackend>(train_data, val_data, device.clone());
+                let result=self.test::<InferBackend>(test_data, device);
+                results.push(result);
             });
     }
 
