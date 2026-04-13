@@ -1,10 +1,10 @@
 use std::{fs::{File, copy, create_dir, create_dir_all}, path::{Path, PathBuf}, sync::Arc};
 
-use burn::{data::dataloader::DataLoader, nn::{BiLstm, Lstm}, prelude::Backend, record::CompactRecorder, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}};
+use burn::{config::Config, data::dataloader::DataLoader, nn::{BiLstm, Lstm}, optim::AdamConfig, prelude::Backend, record::CompactRecorder, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}};
 use polars::{frame::DataFrame, prelude::{IntoLazy, LazyFrame, col, lit}, *};
 use rand::seq::SliceRandom;
 
-use crate::dl::{controller::Controller, dataset::{NrelBatch, NrelBatcher, NrelDataset}, models::{bi_lstm::NucBiLstm, hybrid_models::Seq2Seq, lstm::NucLstm, stacked_bi_lstm::StackedBilstm, stacked_lstm::Stackedlstm}};
+use crate::dl::{controller::Controller, dataset::{NrelBatch, NrelBatcher, NrelDataset}, models::{bi_lstm::{NucBiLstm, NucBiLstmConfig}, hybrid_models::{Seq2Seq, Seq2SeqConfig}, lstm::{NucLstm, NucLstmConfig}, stacked_bi_lstm::{StackedBiLstmConfig, StackedBilstm}, stacked_lstm::{StackedLstmConfig, Stackedlstm}}};
 
 pub struct CrossValidate{
     pub training_sets: Vec<DataFrame>,
@@ -73,15 +73,24 @@ impl CrossValidate{
     }
     
 }
-pub struct CrossModels <B: Backend>{
-    pub lsmt: NucLstm<B>,
-    pub bi_lst: NucBiLstm<B>,
-    pub stacked_lstm: Stackedlstm<B>,
-    pub stacked_bi_lstm: StackedBilstm<B>,
-    pub seq2seq: Seq2Seq<B>,
-
+#[derive(Debug, Config)]
+pub struct CrossModels{
+    pub lsmt: NucLstmConfig,
+    pub bi_lst: NucBiLstmConfig,
+    pub stacked_lstm: StackedLstmConfig,
+    pub stacked_bi_lstm:StackedBiLstmConfig,
+    pub seq2seq: Seq2SeqConfig,
+    pub num_epoch: usize,
+    #[config(default = 4)]
+    pub workers: usize,
+    #[config(default = 42)]
+    pub seed: u64,
+    pub opt: AdamConfig,
+    #[config(default = 360)]
+    pub batch_size: usize,
 }
-impl CrossModels<B: Backend>{
+
+impl CrossModels{
 
     #[allow(unused_must_use)]
     fn create_artifact_dir<B: AutodiffBackend>(
