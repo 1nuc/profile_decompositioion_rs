@@ -110,7 +110,7 @@ impl Default for CrossModels{
 impl CrossModels{
 
     #[allow(unused_must_use)]
-    fn create_artifact_dir<B: AutodiffBackend>(
+    fn create_artifact_dir(
         &self,
         artifact_dir: &str,
     ) {
@@ -125,7 +125,7 @@ impl CrossModels{
         artifact_dir: &str,
         device: B::Device,
     ) {
-        self.create_artifact_dir::<B>(
+        self.create_artifact_dir(
             artifact_dir,
         );
         // define the models for training
