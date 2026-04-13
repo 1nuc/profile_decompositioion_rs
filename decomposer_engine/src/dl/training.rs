@@ -1,5 +1,5 @@
 use burn::{
-    config::Config, data::dataloader::{DataLoader, DataLoaderBuilder}, module::Module, optim::AdamWConfig, prelude::Backend, record::{CompactRecorder, Recorder}, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}
+    config::Config, data::dataloader::{DataLoader, DataLoaderBuilder}, module::Module, optim::AdamWConfig, record::{CompactRecorder, Recorder}, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}
 };
 use polars::frame::DataFrame;
 use std::{fmt::Debug, fs::*, path::Path, sync::Arc};
