@@ -19,8 +19,7 @@ use crate::{
     dl::{
         inference::Inference,
         models::{
-            bi_lstm::NucBiLstmConfig, hybrid_models::Seq2SeqConfig, lstm::NucLstmConfig,
-            stacked_bi_lstm::StackedBiLstmConfig, stacked_lstm::StackedLstmConfig,
+            hybrid_models::Seq2SeqConfig,
         },
         training::NrelConfig,
     },
@@ -28,7 +27,6 @@ use crate::{
 use burn::{
     backend::{Autodiff, Wgpu, wgpu::WgpuDevice}, optim::AdamWConfig, prelude::Backend, tensor::backend::AutodiffBackend
 };
-use ndarray::Data;
 use polars::{
     frame::DataFrame,
     prelude::{Column, PlRefPath},
