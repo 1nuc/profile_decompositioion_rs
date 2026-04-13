@@ -65,7 +65,7 @@ impl Controller {
     pub fn data_preparation(&mut self, input: PlRefPath, return_data: bool) -> Option<DataFrame>{
         let data_source = Nrel::init(input);
         let data = data_source.data;
-        let mut encoded_data = data.clone().encode_categoricals();
+        let encoded_data = data.clone().encode_categoricals();
         let s = encoded_data.clone().collect().unwrap();
         let y_columns = s.return_y_columns();
         self.timestamp = s
