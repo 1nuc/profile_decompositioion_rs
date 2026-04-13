@@ -211,7 +211,7 @@ impl Controller {
 
     pub fn lstm_simulation(&self) {
         type Mybackend = Autodiff<Wgpu>;
-        let device = WgpuDevice::DiscreteGpu(0);
+        let device = WgpuDevice::default();
         self.train_lstm::<Mybackend>(device.clone());
     }
 
