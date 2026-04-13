@@ -77,7 +77,7 @@ impl CrossValidate{
                 .filter(col("timestamp").dt().month().eq(lit(x)))
                 .standard_scalar(columns.clone())
                 .return_time_sequenced()
-                .filter(col("count").neq(lit(96u32)))
+                .filter(col("count").eq(lit(96u32)))
                 .collect()
                 .unwrap();
 
@@ -86,7 +86,7 @@ impl CrossValidate{
                 .filter(col("timestamp").dt().month().neq(lit(x)))
                 .standard_scalar(columns.clone())
                 .return_time_sequenced()
-                .filter(col("count").neq(lit(96u32)))
+                .filter(col("count").eq(lit(96u32)))
                 .collect()
                 .unwrap();
             train_sets.push(train_data);
@@ -96,22 +96,23 @@ impl CrossValidate{
     }
 
     pub fn run(&self){
-        let mut results= Vec::new();
+        // let mut results= Vec::new();
         self.training_sets.clone()
             .into_iter().zip(self.testing_sets.clone()).for_each(|(train, test)|{
                 // define the training data
                 let (train_data, val_data,_)=train.clone().train_test_split();
                 // define the testing data 
                 let test_data=test.clone();
+                println!("{:?}", train_data.return_x_columns());
                 type Mybackend= Autodiff<Wgpu>;
                 type InferBackend=Wgpu;
                 let device=WgpuDevice::default();
                 
-                self.train::<Mybackend>(train_data, val_data, device.clone());
-                let result=self.test::<InferBackend>(test_data, device);
-                results.push(result);
+                // self.train::<Mybackend>(train_data, val_data, device.clone());
+                // let result=self.test::<InferBackend>(test_data, device);
+                // results.push(result);
             });
-        println!("{:?}", results);
+        // println!("{:?}", results);
     }
 
     pub fn train<B: AutodiffBackend>(&self,train: DataFrame,val: DataFrame, device: B::Device){
