@@ -1,6 +1,7 @@
 use std::{fs::{File, copy, create_dir, create_dir_all}, path::{Path, PathBuf}, sync::Arc};
-use burn::{Tensor, module::Module };
+use burn::{Tensor, backend::Autodiff, module::Module };
 use burn::{config::Config, data::dataloader::{DataLoader, DataLoaderBuilder}, optim::AdamWConfig, prelude::Backend, record::CompactRecorder, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}};
+use burn_wgpu::{Wgpu, WgpuDevice};
 use polars::{df, frame::DataFrame, prelude::{IntoLazy, LazyFrame, col, lit}};
 use rand::seq::SliceRandom;
 
@@ -9,7 +10,7 @@ use burn::{
     nn::loss::MseLoss,
     record::Recorder
 };
-use crate::dl::{controller::Controller, dataset::{NrelBatch, NrelBatcher, NrelDataset, NrelDatasetItem}, models::{bi_lstm::{NucBiLstmConfig, NucBiLstmRecord}, hybrid_models::{Seq2SeqConfig, Seq2SeqRecord}, lstm::{NucLstmConfig, NucLstmRecord}, stacked_bi_lstm::{StackedBiLstmConfig, StackedBilstmRecord}, stacked_lstm::{StackedLstmConfig, StackedlstmRecord}}};
+use crate::{Actions, EagerActions, dl::{controller::Controller, dataset::{NrelBatch, NrelBatcher, NrelDataset, NrelDatasetItem}, models::{bi_lstm::{NucBiLstmConfig, NucBiLstmRecord}, hybrid_models::{Seq2SeqConfig, Seq2SeqRecord}, lstm::{NucLstmConfig, NucLstmRecord}, stacked_bi_lstm::{StackedBiLstmConfig, StackedBilstmRecord}, stacked_lstm::{StackedLstmConfig, StackedlstmRecord}}}};
 
 pub struct CrossValidate{
     pub training_sets: Vec<DataFrame>,
@@ -75,6 +76,42 @@ impl CrossValidate{
             test_sets.push(test_data);
         });
         (train_sets, test_sets)
+    }
+
+    pub fn run(&self){
+        let results= Vec::new();
+        self.training_sets.clone()
+            .into_iter().zip(self.testing_sets.clone()).for_each(|(train, test)|{
+                let y_columns=train.clone().return_y_columns();
+                // define the training data
+                let (train_data, val_data,_)=train.clone().lazy()
+                    .standard_scalar(y_columns.clone())
+                    .return_time_sequenced()
+                    .collect()
+                    .unwrap()
+                    .train_test_split();
+                // define the testing data 
+                let test_data=test.clone().lazy()
+                    .standard_scalar(y_columns)
+                    .return_time_sequenced()
+                    .collect()
+                    .unwrap();
+
+                type Mybackend= Autodiff<Wgpu>;
+                type InferBackend=Wgpu;
+                let device=WgpuDevice::default();
+
+            });
+    }
+
+    pub fn train<B: AutodiffBackend>(&self,train: DataFrame,val: DataFrame, device: B::Device){
+        let cross_models=CrossModels::default();
+        cross_models.train::<B>(train, val, "cross_validation", device);
+    }
+ 
+    pub fn test<B: Backend>(&self,data: DataFrame, device: B::Device)-> DataFrame{
+        let cross_models=CrossModels::default();
+        cross_models.inference::<B>("cross_validation", data, device)
     }
     
 }
