@@ -143,7 +143,7 @@ impl Actions for LazyFrame {
         self.clone()
             .sort(vec![PlSmallStr::from_str("timestamp")], Default::default())
             .group_by_dynamic(col("timestamp"), [col("bldg_id")], options)
-            .agg([col("*").cast(DataType::Float32)])
+            .agg([col("*").cast(DataType::Float32), len().alias("count")])
             .with_columns([
                 col("timestamp")
                     .dt()
@@ -228,7 +228,7 @@ impl ExpressionActions for Expr {
 }
 impl EagerActions for DataFrame {
     fn select_sequence(&self, cols: Vec<&str>, batches: usize) -> Array3<f32> {
-        self.select(cols.clone())
+        self.drop("count").unwrap().select(cols.clone())
             .expect("Columns do not exist")
             .explode(
                 cols.clone(),

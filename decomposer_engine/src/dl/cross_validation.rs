@@ -69,9 +69,26 @@ impl CrossValidate{
         let rand_months=month_vec.into_iter().take(k + 1).collect::<Vec<i8>>();
         let mut train_sets=Vec::new();
         let mut test_sets=Vec::new();
+        let data_cloned=data.clone().collect().unwrap();
+        let columns=data_cloned.return_y_columns();
         rand_months.into_iter().for_each(|x|{
-            let test_data=data.clone().lazy().filter(col("month of the year").eq(lit(x))).collect().unwrap();
-            let train_data=data.clone().lazy().filter(col("month of the year").neq(lit(x))).collect().unwrap();
+            let test_data=data.clone()
+                .lazy()
+                .filter(col("timestamp").dt().month().eq(lit(x)))
+                .standard_scalar(columns.clone())
+                .return_time_sequenced()
+                .filter(col("count").neq(lit(96u32)))
+                .collect()
+                .unwrap();
+
+            let train_data=data.clone()
+                .lazy()
+                .filter(col("timestamp").dt().month().neq(lit(x)))
+                .standard_scalar(columns.clone())
+                .return_time_sequenced()
+                .filter(col("count").neq(lit(96u32)))
+                .collect()
+                .unwrap();
             train_sets.push(train_data);
             test_sets.push(test_data);
         });
@@ -82,22 +99,10 @@ impl CrossValidate{
         let mut results= Vec::new();
         self.training_sets.clone()
             .into_iter().zip(self.testing_sets.clone()).for_each(|(train, test)|{
-                let train_copy=train.clone();
-                let y_columns=train_copy.return_y_columns();
                 // define the training data
-                let (train_data, val_data,_)=train.clone().lazy()
-                    .standard_scalar(y_columns.clone())
-                    .return_time_sequenced()
-                    .collect()
-                    .unwrap()
-                    .train_test_split();
+                let (train_data, val_data,_)=train.clone().train_test_split();
                 // define the testing data 
-                let test_data=test.clone().lazy()
-                    .standard_scalar(y_columns)
-                    .return_time_sequenced()
-                    .collect()
-                    .unwrap();
-
+                let test_data=test.clone();
                 type Mybackend= Autodiff<Wgpu>;
                 type InferBackend=Wgpu;
                 let device=WgpuDevice::default();
@@ -106,6 +111,7 @@ impl CrossValidate{
                 let result=self.test::<InferBackend>(test_data, device);
                 results.push(result);
             });
+        println!("{:?}", results);
     }
 
     pub fn train<B: AutodiffBackend>(&self,train: DataFrame,val: DataFrame, device: B::Device){
