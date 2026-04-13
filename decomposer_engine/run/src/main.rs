@@ -19,10 +19,6 @@ fn main() {
     });
     let data=controller.data_preparation(("input/*").into(), true).unwrap();
     // months format from 0 to 12
-    let months=data.column("month of the year").unwrap().unique().unwrap();
-
-    // let test_data=data.clone().lazy().filter(col("month of the year").eq(lit(2))).collect().unwrap();
-    // let train_data=data.lazy().filter(col("month of the year").neq(lit(2))).collect().unwrap();
     cross_valid(data.lazy(), 7);
 }
 
@@ -37,7 +33,6 @@ fn cross_valid(data: LazyFrame, k: i32){
     month_vec.shuffle(&mut rnd);
     // extract the months with the size of k 
     let rand_months=month_vec.into_iter().take(k as usize + 1).collect::<Vec<i8>>();
-    println!("{:?}", rand_months);
     let mut train_sets=Vec::new();
     let mut test_sets=Vec::new();
     rand_months.into_iter().for_each(|x|{
