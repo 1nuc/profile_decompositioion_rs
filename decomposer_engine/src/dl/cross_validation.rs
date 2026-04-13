@@ -1,9 +1,10 @@
-use std::{fs::{File, copy, create_dir}, path::{Path, PathBuf}};
+use std::{fs::{File, copy, create_dir, create_dir_all}, path::{Path, PathBuf}, sync::Arc};
 
+use burn::{data::dataloader::{DataLoader, DataLoaderBuilder}, record::CompactRecorder, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}};
 use polars::{frame::DataFrame, prelude::{IntoLazy, LazyFrame, col, lit}, *};
 use rand::seq::SliceRandom;
 
-use crate::dl::controller::Controller;
+use crate::dl::{controller::Controller, dataset::{NrelBatch, NrelBatcher, NrelDataset}};
 
 pub struct CrossValidate{
     pub training_sets: Vec<DataFrame>,
@@ -75,16 +76,9 @@ impl CrossValidate{
     fn create_artifact_dir<B: AutodiffBackend>(
         &self,
         artifact_dir: &str,
-        train_data: DataFrame,
-        test_data: DataFrame,
-        device: B::Device,
     ) {
         let artifact_path = Path::new(artifact_dir);
-        if artifact_path.exists() {
-            self.inference_learning::<B>(artifact_dir, train_data, test_data, device);
-        } else {
-            create_dir_all(artifact_dir);
-        }
+        create_dir_all(artifact_path);
     }
 
     pub fn train<B: AutodiffBackend>(
@@ -96,9 +90,6 @@ impl CrossValidate{
     ) {
         self.create_artifact_dir::<B>(
             artifact_dir,
-            train_data.clone(),
-            test_data.clone(),
-            device.clone(),
         );
         let model = self.model.init::<B>(device.clone());
         let (train_loader, test_loader) = self.prepare_training::<B>(train_data, test_data, &device);
@@ -132,7 +123,7 @@ impl CrossValidate{
         //TODO: split the data into train and validate
         let train_data = NrelDataset::new(train_data);
         let test_data = NrelDataset::new(test_data);
-        let batcher = NrelBatcher::<B>::new(device.clone());
+        let batcher = NrelBatcher::new(device.clone());
         let test_batcher = NrelBatcher::<B::InnerBackend>::new(device.clone());
         // Train Data
         let train_loader = DataLoaderBuilder::new(batcher)
