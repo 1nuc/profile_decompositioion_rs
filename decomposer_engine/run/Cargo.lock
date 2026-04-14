@@ -2104,6 +2104,7 @@ version = "0.1.0"
 dependencies = [
  "burn",
  "burn-wgpu",
+ "cubecl-core",
  "ndarray 0.17.2",
  "polars",
  "rand 0.10.1",
