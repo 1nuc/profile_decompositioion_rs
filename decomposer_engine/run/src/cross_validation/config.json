@@ -1,0 +1,44 @@
+{
+  "lstm": {
+    "input_size": 21,
+    "output_size": 24,
+    "hidden_size": 128,
+    "dropout": 0.5
+  },
+  "bi_lstm": {
+    "input_size": 21,
+    "output_size": 24,
+    "hidden_size": 128,
+    "dropout": 0.5
+  },
+  "stacked_lstm": {
+    "input_size": 21,
+    "output_size": 24,
+    "hidden_size": 128,
+    "dropout": 0.5
+  },
+  "stacked_bi_lstm": {
+    "input_size": 21,
+    "output_size": 24,
+    "hidden_size": 128,
+    "dropout": 0.5
+  },
+  "seq2seq": {
+    "input_size": 21,
+    "output_size": 24,
+    "hidden_size": 128,
+    "dropout": 0.5
+  },
+  "num_epoch": 30,
+  "workers": 4,
+  "seed": 42,
+  "opt": {
+    "grad_clipping": null,
+    "beta_1": 0.9,
+    "beta_2": 0.999,
+    "epsilon": 0.00001,
+    "weight_decay": 0.001,
+    "cautious_weight_decay": false
+  },
+  "batch_size": 360
+}
