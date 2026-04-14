@@ -1,11 +1,9 @@
 use std::{fs::{File, copy, create_dir, create_dir_all, remove_file}, io::BufWriter, path::{Path, PathBuf}, sync::Arc};
-use burn::{Tensor, backend::Autodiff, module::Module };
+use burn::{Tensor, backend::{Autodiff, LibTorch, libtorch::LibTorchDevice}, module::Module };
 use burn::{config::Config, data::dataloader::{DataLoader, DataLoaderBuilder}, optim::AdamWConfig, prelude::Backend, record::CompactRecorder, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}};
-use burn_wgpu::{RuntimeOptions, Wgpu, WgpuDevice, WgpuRuntime, graphics::AutoGraphicsApi, init_device, init_setup};
-use cubecl_core::{Runtime, future::block_on};
+use burn_ndarray::{NdArray, NdArrayDevice};
 use polars::{df, error::PolarsResult, frame::DataFrame, prelude::{IntoLazy, JsonFormat, JsonWriter, LazyFrame, UnionArgs, col, concat, lit, *}};
 use rand::seq::SliceRandom;
-
 use burn::{
     data::{dataloader::batcher::Batcher, dataset::Dataset},
     nn::loss::MseLoss,
@@ -100,11 +98,6 @@ impl CrossValidate{
     pub fn run(&self){
         let mut results= Vec::new();
         // edit the setup to make the page exclusive
-        let setup=init_setup::<AutoGraphicsApi>(&WgpuDevice::DefaultDevice, RuntimeOptions{
-            tasks_max: 32,
-            memory_config: burn_wgpu::MemoryConfiguration::ExclusivePages,
-        });
-        let device=init_device(setup, RuntimeOptions { tasks_max: 32, memory_config: burn_wgpu::MemoryConfiguration::ExclusivePages });
         self.training_sets.clone()
             .into_iter().zip(self.testing_sets.clone()).for_each(|(train, test)|{
                 let mut i=1;
@@ -112,18 +105,18 @@ impl CrossValidate{
                 let (train_data, val_data,_)=train.clone().train_test_split();
                 // define the testing data 
                 let test_data=test.clone();
-                type Mybackend= Autodiff<Wgpu>;
-                type InferBackend=Wgpu;
-                self.train::<Mybackend>(train_data, val_data, device.clone());
-                let mut result=self.test::<InferBackend>(test_data, device.clone());
+                // type Mybackend= Autodiff<LibTorch>;
+                // type InferBackend=LibTorch;
+                // let device=LibTorchDevice::Cuda(0);
+                type Mybackend=Autodiff<NdArray>;
+                type InferBackend=NdArray;
+                let device=NdArrayDevice::Cpu;
+                self.train::<Mybackend>(train_data, val_data, device);
+                let mut result=self.test::<InferBackend>(test_data, device);
                 let iteration=Series::new("iteration".into(), [i]);
                 let data=result.with_column(iteration.into()).unwrap();
                 results.push(data.clone().lazy());
                 i+=1;
-                let client=WgpuRuntime::client(&device);
-                client.flush();
-                block_on(client.sync()).unwrap();
-                client.memory_cleanup();
             });
         //concat the vector of dataframes to one dataframe
         let concated_data=concat(results, UnionArgs::default()).unwrap().collect().unwrap();
