@@ -153,11 +153,6 @@ impl Controller {
         type Mybackend= Autodiff<Wgpu>;
         let device=WgpuDevice::default();
         self.train_lstm::<Mybackend>(device.clone());
-        // clean up the memory 
-        let client=WgpuRuntime::client(&device.clone());
-        client.flush();
-        block_on(client.sync()).unwrap();
-        client.memory_cleanup();
     }
 
     // --------------------------------------Single Process---------------------------------------
