@@ -1,5 +1,5 @@
 use std::{fs::{File, copy, create_dir, create_dir_all, remove_file}, io::BufWriter, path::{Path, PathBuf}, sync::Arc};
-use burn::{Tensor, backend::{Autodiff, LibTorch, libtorch::LibTorchDevice}, module::Module };
+use burn::{Tensor, backend::{Autodiff}, module::Module };
 use burn::{config::Config, data::dataloader::{DataLoader, DataLoaderBuilder}, optim::AdamWConfig, prelude::Backend, record::CompactRecorder, tensor::backend::AutodiffBackend, train::{Learner, SupervisedTraining, metric::LossMetric}};
 use burn_ndarray::{NdArray, NdArrayDevice};
 use polars::{df, error::PolarsResult, frame::DataFrame, prelude::{IntoLazy, JsonFormat, JsonWriter, LazyFrame, UnionArgs, col, concat, lit, *}};
@@ -94,7 +94,7 @@ impl CrossValidate{
         (train_sets, test_sets)
     }
 
-    #[allow(unused_must_use)]
+    #[allow(unused_must_use, unused_assignments)]
     pub fn run(&self){
         let mut results= Vec::new();
         // edit the setup to make the page exclusive
