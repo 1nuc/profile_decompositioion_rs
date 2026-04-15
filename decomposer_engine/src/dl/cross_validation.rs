@@ -279,6 +279,7 @@ impl CrossModels{
             .expect("Error in saving the trained model");
     }
 
+    #[allow(clippy::complexity)]
     fn prepare_training<B: AutodiffBackend>(
         &self,
         train_data: DataFrame,
