@@ -143,27 +143,23 @@ impl Controller {
         });
     }
 
-    fn client_side_training(&self){
-        // ---- Deep learning Models
+    pub fn client_side_training(&mut self){
         self.data_preparation(("padding_data/*.parquet").into(), false);
-        {
-            let model = Seq2SeqConfig::default();
-            let model_config = NrelConfig::new(model, AdamWConfig::new().with_weight_decay(1e-3));
-            model_config.train::<Mybackend>(
-                self.train_data.clone(),
-                self.val_data.clone(),
-                "lstm_artifact",
-                device.clone(),
-            );
-        }
+        self.lstm_simulation();
         remove_dir_all("input").expect("can't find the input dir");
+    }
+
+    pub fn lstm_simulation(&self) {
+        type Mybackend= Autodiff<Wgpu>;
+        let device=WgpuDevice::default();
+        self.train_lstm::<Mybackend>(device.clone());
         // clean up the memory 
         let client=WgpuRuntime::client(&device.clone());
         client.flush();
         block_on(client.sync()).unwrap();
         client.memory_cleanup();
-    });
     }
+
     // --------------------------------------Single Process---------------------------------------
     // a method to simulate the training for the models
     pub fn run_training_single_process(&mut self) {
@@ -268,11 +264,6 @@ impl Controller {
         self.data_preparation(("input/*.parquet").into(), false);
         self.lstm_simulation();
         remove_dir_all("input").expect("can't find the input dir");
-    }
-    pub fn lstm_simulation(&self) {
-        type Mybackend= Autodiff<Wgpu>;
-        let device=WgpuDevice::default();
-        self.train_lstm::<Mybackend>(device);
     }
 
     //---------------------------------Inference--------------------------------
