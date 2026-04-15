@@ -9,7 +9,7 @@
 //5. function to recieve the building input and process or forward the output
 
 use std::{
-    fs::{File, copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}, process::Command
+    env, fs::{File, copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}, process::Command
 };
 
 use crate::{
@@ -142,7 +142,7 @@ impl Controller {
             });
             Command::new("cargo")
                 .args(["r", "--release"])
-                .current_dir("../../train/")
+                .current_dir("../../train/src/")
                 .status()
                 .expect("Error occured in the client process");
         });

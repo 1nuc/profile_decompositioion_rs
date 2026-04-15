@@ -1,3 +1,5 @@
+use decomposer_engine::dl::controller::Controller;
+
 fn main() {
-    println!("Hello, world!");
+    Controller::default().client_side_training();
 }
