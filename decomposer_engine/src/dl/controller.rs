@@ -142,6 +142,7 @@ impl Controller {
             });
             Command::new("cargo")
                 .args(["r", "--release"])
+                .current_dir("../../train/")
                 .status()
                 .expect("Error occured in the client process");
         });

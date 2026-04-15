@@ -5853,8 +5853,6 @@ name = "run"
 version = "0.1.0"
 dependencies = [
  "decomposer_engine",
- "polars",
- "rand 0.10.1",
 ]
 
 [[package]]
