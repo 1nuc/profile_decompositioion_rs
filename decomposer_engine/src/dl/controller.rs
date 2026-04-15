@@ -155,16 +155,20 @@ impl Controller {
     pub fn chunks_iteration(&mut self, files: Vec<PathBuf>) {
         // Join the file names first
         // then copy the content of the files there
+        // initialize customized options
         let mem_opt=MemoryPoolOptions{
             pool_type: cubecl_runtime::memory_management::PoolType::SlicedPages {
                 page_size: 2 * Self::GB, max_slice_size: 512 * Self::MB },
             dealloc_period: Some(20),
         };
+        // initialize runtime options
         let runtime_opt=burn_wgpu::RuntimeOptions {
             tasks_max: 1200, memory_config:
             burn_wgpu::MemoryConfiguration::Custom { pool_options:vec![mem_opt.clone()] 
          }};
+        //prepare the backend setup
         let setup=init_setup::<AutoGraphicsApi>(&WgpuDevice::default(),runtime_opt);
+        //initialize the device
         let device=init_device(setup, burn_wgpu::RuntimeOptions {
             tasks_max: 1200, memory_config:
             burn_wgpu::MemoryConfiguration::Custom { pool_options:vec![mem_opt] 
