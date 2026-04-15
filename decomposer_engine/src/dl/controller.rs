@@ -59,6 +59,34 @@ impl Controller {
         }
     }
 
+    //------------------------Files Operations----------------------
+    // return all the buildings available in the data
+    // this function is required by the api to fetch all building for the utility people
+    pub fn return_nrel_buildings(&self) -> Vec<String> {
+        self.test_files
+            .iter()
+            .map(|x| {
+                x.file_name()
+                    .unwrap()
+                    .to_str()
+                    .unwrap()
+                    .strip_suffix("-28.parquet")
+                    .unwrap()
+                    .to_string()
+            })
+            .collect::<Vec<String>>()
+    }
+
+    // Arranging and managing files for test and train
+    pub fn organize_files() -> (Vec<PathBuf>, Vec<PathBuf>) {
+        let dir = read_dir("../../../../datasets").unwrap();
+        let files = dir.map(|x| x.unwrap().path()).collect::<Vec<PathBuf>>();
+        let split_inx = (files.len() as f32 * 0.1).round() as usize;
+        let (a, b) = files.split_at(split_inx);
+        (b.to_vec(), a.to_vec())
+    }
+
+    // -------------------------------Data Preparation---------------------------
     pub fn data_preparation(&mut self, input: PlRefPath, return_data: bool) -> Option<DataFrame> {
         let data_source = Nrel::init(input);
         let data = data_source.data;
@@ -83,26 +111,62 @@ impl Controller {
         }
     }
 
-    pub fn organize_files() -> (Vec<PathBuf>, Vec<PathBuf>) {
-        let dir = read_dir("../../../../datasets").unwrap();
-        let files = dir.map(|x| x.unwrap().path()).collect::<Vec<PathBuf>>();
-        let split_inx = (files.len() as f32 * 0.1).round() as usize;
-        let (a, b) = files.split_at(split_inx);
-        (b.to_vec(), a.to_vec())
-    }
-
-    //UNUSED: a simulation method for the inference
-    pub fn run_inference(&mut self) {
+    // ------------------------------Multiple Process Training---------------------------------
+    // initialize the training in multiple processes to optimize speed for the training
+    pub fn run_training_multiple_processes(&mut self) {
         let artifact_dir = Path::new("lstm_artifact/");
+        let input = Path::new("../../train/src/padding_data");
         if artifact_dir.exists() {
-            remove_dir_all("input").expect("can't find the input dir");
             remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+
         }
-        self.chunks_iteration(self.test_files.clone());
+        if input.exists() {
+            remove_dir_all(input).expect("can't find the input dir");
+        }
+        self.process_iteration(self.train_files.clone());
     }
 
+    // Initiate the main process for training 
+    // this process will be run using the run binary
+    pub fn process_iteration(&mut self, files: Vec<PathBuf>) {
+        files.chunks(40).for_each(|x| {
+            let input_path = Path::new("../../train/src/padding_data");
+            if !input_path.exists() {
+                create_dir(input_path).unwrap();
+            }
+            x.iter().for_each(|x| {
+                let path = Path::new(x.file_name().unwrap().to_str().unwrap());
+                let file_path = input_path.join(path);
+                File::create_new(&file_path).expect("unable to create a file");
+                copy(x, file_path).expect("error in copying the data");
+            });
+        });
+    }
+
+    fn client_side_training(&self){
+        // ---- Deep learning Models
+        self.data_preparation(("padding_data/*.parquet").into(), false);
+        {
+            let model = Seq2SeqConfig::default();
+            let model_config = NrelConfig::new(model, AdamWConfig::new().with_weight_decay(1e-3));
+            model_config.train::<Mybackend>(
+                self.train_data.clone(),
+                self.val_data.clone(),
+                "lstm_artifact",
+                device.clone(),
+            );
+        }
+        remove_dir_all("input").expect("can't find the input dir");
+        // clean up the memory 
+        let client=WgpuRuntime::client(&device.clone());
+        client.flush();
+        block_on(client.sync()).unwrap();
+        client.memory_cleanup();
+    });
+    }
+    // --------------------------------------Single Process---------------------------------------
     // a method to simulate the training for the models
-    pub fn run_training(&mut self) {
+    pub fn run_training_single_process(&mut self) {
         let artifact_dir = Path::new("lstm_artifact/");
         let input = Path::new("input");
         if artifact_dir.exists() {
@@ -115,39 +179,6 @@ impl Controller {
         self.chunks_iteration(self.train_files.clone());
     }
 
-    // This is the main function to send the data for the dashboard
-    pub fn infer_one_building(&mut self, building: &str) -> DataFrame {
-        let input_path = Path::new("production_set");
-        if !input_path.exists() {
-            create_dir(input_path).unwrap();
-        }
-        let bldg_file = format!("{building}-28.parquet").as_str().to_owned();
-        // find the original file from the main data
-        let dataset_path = self
-            .test_files
-            .iter()
-            .filter(|x| {
-                x.file_name()
-                    .unwrap()
-                    .to_str()
-                    .unwrap()
-                    .contains(&bldg_file)
-            })
-            .collect::<PathBuf>();
-
-        let path = Path::new(&bldg_file);
-        let file_path = input_path.join(path);
-        if !file_path.exists() {
-            File::create_new(&file_path).expect("unable to create a file");
-        }
-        copy(&dataset_path, file_path.clone()).expect("error in copying the data");
-        // TODO: Import the data set for the inference
-        self.data_preparation(file_path.to_str().unwrap().into(), false);
-        // ---- Deep learning Models
-        type Mybackend = Wgpu;
-        let device = WgpuDevice::default();
-        self.infer_lstm::<Mybackend>(device)
-    }
     // Training the models in one shot
     // -- This requires heavy computational gpu
     const MB: u64 = 1024 * 1024;
@@ -238,26 +269,21 @@ impl Controller {
         self.lstm_simulation();
         remove_dir_all("input").expect("can't find the input dir");
     }
-    // return all the buildings available in the data
-    pub fn return_nrel_buildings(&self) -> Vec<String> {
-        self.test_files
-            .iter()
-            .map(|x| {
-                x.file_name()
-                    .unwrap()
-                    .to_str()
-                    .unwrap()
-                    .strip_suffix("-28.parquet")
-                    .unwrap()
-                    .to_string()
-            })
-            .collect::<Vec<String>>()
-    }
-
     pub fn lstm_simulation(&self) {
         type Mybackend= Autodiff<Wgpu>;
         let device=WgpuDevice::default();
         self.train_lstm::<Mybackend>(device);
+    }
+
+    //---------------------------------Inference--------------------------------
+    //UNUSED: a simulation method for the inference
+    pub fn run_inference(&mut self) {
+        let artifact_dir = Path::new("lstm_artifact/");
+        if artifact_dir.exists() {
+            remove_dir_all("input").expect("can't find the input dir");
+            remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+        }
+        self.chunks_iteration(self.test_files.clone());
     }
 
     pub fn train_lstm<B: AutodiffBackend>(&self, device: B::Device) {
@@ -269,6 +295,40 @@ impl Controller {
             "lstm_artifact",
             device,
         );
+    }
+
+    // This is the main function to send the data for the dashboard
+    pub fn infer_one_building(&mut self, building: &str) -> DataFrame {
+        let input_path = Path::new("production_set");
+        if !input_path.exists() {
+            create_dir(input_path).unwrap();
+        }
+        let bldg_file = format!("{building}-28.parquet").as_str().to_owned();
+        // find the original file from the main data
+        let dataset_path = self
+            .test_files
+            .iter()
+            .filter(|x| {
+                x.file_name()
+                    .unwrap()
+                    .to_str()
+                    .unwrap()
+                    .contains(&bldg_file)
+            })
+            .collect::<PathBuf>();
+
+        let path = Path::new(&bldg_file);
+        let file_path = input_path.join(path);
+        if !file_path.exists() {
+            File::create_new(&file_path).expect("unable to create a file");
+        }
+        copy(&dataset_path, file_path.clone()).expect("error in copying the data");
+        // TODO: Import the data set for the inference
+        self.data_preparation(file_path.to_str().unwrap().into(), false);
+        // ---- Deep learning Models
+        type Mybackend = Wgpu;
+        let device = WgpuDevice::default();
+        self.infer_lstm::<Mybackend>(device)
     }
 
     pub fn infer_lstm<B: Backend>(&self, device: B::Device) -> DataFrame {
