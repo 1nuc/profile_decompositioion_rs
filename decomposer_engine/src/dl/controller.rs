@@ -205,9 +205,12 @@ impl Controller {
     //experience demo training with one trail training for one data set
     pub fn one_trail_training(&mut self) {
         let artifact_dir = Path::new("lstm_artifact/");
+        let input=Path::new("input");
         if artifact_dir.exists() {
-            // remove_dir_all("input").expect("can't find the input dir");
             remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+        }
+        if input.exists() {
+            remove_dir_all(input).expect("can't find the input dir");
         }
         let files = self
             .train_files
