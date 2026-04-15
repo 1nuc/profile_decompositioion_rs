@@ -9,13 +9,13 @@
 //5. function to recieve the building input and process or forward the output
 
 use std::{
-    fs::{File, copy, create_dir, read_dir, remove_dir_all}, ops::ControlFlow, path::{Path, PathBuf}, process
+    fs::{File, copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}
 };
 
 use crate::{
     Actions, EagerActions,
     data_engine::Nrel,
-    dl::{inference::Inference, models::{hybrid_models::Seq2SeqConfig, lstm::NucLstmConfig}, training::NrelConfig},
+    dl::{inference::Inference, models::{hybrid_models::Seq2SeqConfig}, training::NrelConfig},
 };
 use burn::{
     backend::{Autodiff, Wgpu, wgpu::WgpuDevice},
@@ -23,8 +23,8 @@ use burn::{
     prelude::Backend,
     tensor::backend::AutodiffBackend,
 };
-use burn_wgpu::{RuntimeOptions, WgpuRuntime, graphics::{AutoGraphicsApi, GraphicsApi}, init_device, init_setup};
-use cubecl_core::{Runtime, device, future::block_on};
+use burn_wgpu::{WgpuRuntime, graphics::{AutoGraphicsApi}, init_device, init_setup};
+use cubecl_core::{Runtime,future::block_on};
 use cubecl_runtime::memory_management::MemoryPoolOptions;
 use polars::{
     frame::DataFrame,
