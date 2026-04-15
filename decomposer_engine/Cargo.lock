@@ -2106,6 +2106,7 @@ dependencies = [
  "burn-ndarray",
  "burn-wgpu",
  "cubecl-core",
+ "cubecl-runtime",
  "ndarray 0.17.2",
  "polars",
  "rand 0.10.0",

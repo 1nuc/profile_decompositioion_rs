@@ -1,2 +1,2 @@
-[streaming]
-persistent_memory = "disabled"
+# [streaming]
+# persistent_memory = "disabled"

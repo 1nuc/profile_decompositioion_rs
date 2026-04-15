@@ -9,14 +9,13 @@
 //5. function to recieve the building input and process or forward the output
 
 use std::{
-    fs::{File, copy, create_dir, read_dir, remove_dir_all},
-    path::{Path, PathBuf},
+    fs::{File, copy, create_dir, read_dir, remove_dir_all}, ops::ControlFlow, path::{Path, PathBuf}, process
 };
 
 use crate::{
     Actions, EagerActions,
     data_engine::Nrel,
-    dl::{inference::Inference, models::hybrid_models::Seq2SeqConfig, training::NrelConfig},
+    dl::{inference::Inference, models::{hybrid_models::Seq2SeqConfig, lstm::NucLstmConfig}, training::NrelConfig},
 };
 use burn::{
     backend::{Autodiff, Wgpu, wgpu::WgpuDevice},
@@ -24,6 +23,9 @@ use burn::{
     prelude::Backend,
     tensor::backend::AutodiffBackend,
 };
+use burn_wgpu::{RuntimeOptions, WgpuRuntime, graphics::{AutoGraphicsApi, GraphicsApi}, init_device, init_setup};
+use cubecl_core::{Runtime, device, future::block_on};
+use cubecl_runtime::memory_management::MemoryPoolOptions;
 use polars::{
     frame::DataFrame,
     prelude::{Column, PlRefPath},
@@ -102,9 +104,13 @@ impl Controller {
     // a method to simulate the training for the models
     pub fn run_training(&mut self) {
         let artifact_dir = Path::new("lstm_artifact/");
+        let input = Path::new("input");
         if artifact_dir.exists() {
-            remove_dir_all("input").expect("can't find the input dir");
             remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+
+        }
+        if input.exists() {
+            remove_dir_all(input).expect("can't find the input dir");
         }
         self.chunks_iteration(self.train_files.clone());
     }
@@ -142,10 +148,28 @@ impl Controller {
         let device = WgpuDevice::default();
         self.infer_lstm::<Mybackend>(device)
     }
-
+    // Training the models in one shot
+    // -- This requires heavy computational gpu
+    const MB: u64 = 1024 * 1024;
+    const GB: u64 = 1024 * Self::MB;
     pub fn chunks_iteration(&mut self, files: Vec<PathBuf>) {
         // Join the file names first
         // then copy the content of the files there
+        let mem_opt=MemoryPoolOptions{
+            pool_type: cubecl_runtime::memory_management::PoolType::SlicedPages {
+                page_size: 2 * Self::GB, max_slice_size: 512 * Self::MB },
+            dealloc_period: Some(20),
+        };
+        let runtime_opt=burn_wgpu::RuntimeOptions {
+            tasks_max: 1200, memory_config:
+            burn_wgpu::MemoryConfiguration::Custom { pool_options:vec![mem_opt.clone()] 
+         }};
+        let setup=init_setup::<AutoGraphicsApi>(&WgpuDevice::default(),runtime_opt);
+        let device=init_device(setup, burn_wgpu::RuntimeOptions {
+            tasks_max: 1200, memory_config:
+            burn_wgpu::MemoryConfiguration::Custom { pool_options:vec![mem_opt] 
+         }});
+        type Mybackend = Autodiff<Wgpu>;
         files.chunks(40).for_each(|x| {
             let input_path = Path::new("input");
             if !input_path.exists() {
@@ -159,8 +183,22 @@ impl Controller {
             });
             // ---- Deep learning Models
             self.data_preparation(("input/*.parquet").into(), false);
-            self.lstm_simulation();
+            {
+                let model = Seq2SeqConfig::default();
+                let model_config = NrelConfig::new(model, AdamWConfig::new().with_weight_decay(1e-3));
+                model_config.train::<Mybackend>(
+                    self.train_data.clone(),
+                    self.val_data.clone(),
+                    "lstm_artifact",
+                    device.clone(),
+                );
+            }
             remove_dir_all("input").expect("can't find the input dir");
+            // clean up the memory 
+            let client=WgpuRuntime::client(&device.clone());
+            client.flush();
+            block_on(client.sync()).unwrap();
+            client.memory_cleanup();
         });
     }
 
@@ -168,10 +206,9 @@ impl Controller {
     pub fn one_trail_training(&mut self) {
         let artifact_dir = Path::new("lstm_artifact/");
         if artifact_dir.exists() {
-            remove_dir_all("input").expect("can't find the input dir");
+            // remove_dir_all("input").expect("can't find the input dir");
             remove_dir_all(artifact_dir).expect("can't find the artifact dir");
         }
-
         let files = self
             .train_files
             .clone()
@@ -211,9 +248,9 @@ impl Controller {
     }
 
     pub fn lstm_simulation(&self) {
-        type Mybackend = Autodiff<Wgpu>;
-        let device = WgpuDevice::default();
-        self.train_lstm::<Mybackend>(device.clone());
+        type Mybackend= Autodiff<Wgpu>;
+        let device=WgpuDevice::default();
+        self.train_lstm::<Mybackend>(device);
     }
 
     pub fn train_lstm<B: AutodiffBackend>(&self, device: B::Device) {

@@ -8,6 +8,7 @@ burn = { version = "0.20.1", features= ["tui", "train", "wgpu", "tch"] }
 burn-ndarray = "0.20.1"
 burn-wgpu = "0.20.1"
 cubecl-core = "0.9.0"
+cubecl-runtime = "0.9.0"
 ndarray = "0.17.2"
 polars = { version = "0.53.0", features = ["lazy", "parquet", "is_in", "ndarray", "dynamic_group_by","polars-io", "serde", "json", "regex"] }
 rand = "0.10.0"
