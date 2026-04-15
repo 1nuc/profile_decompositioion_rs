@@ -9,7 +9,7 @@
 //5. function to recieve the building input and process or forward the output
 
 use std::{
-    fs::{File, copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}
+    fs::{File, copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}, process::Command
 };
 
 use crate::{
@@ -140,13 +140,17 @@ impl Controller {
                 File::create_new(&file_path).expect("unable to create a file");
                 copy(x, file_path).expect("error in copying the data");
             });
+            Command::new("cargo")
+                .args(["r", "--release"])
+                .status()
+                .expect("Error occured in the client process");
         });
     }
 
     pub fn client_side_training(&mut self){
         self.data_preparation(("padding_data/*.parquet").into(), false);
         self.lstm_simulation();
-        remove_dir_all("input").expect("can't find the input dir");
+        remove_dir_all("padding_data").expect("can't find the input dir");
     }
 
     pub fn lstm_simulation(&self) {
