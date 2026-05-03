@@ -1,0 +1,6 @@
+outs:
+- md5: 6e2eab3e90b21e081809e4f847c17be8.dir
+  size: 11055357
+  nfiles: 73
+  hash: md5
+  path: cross_validation

@@ -1,0 +1,6 @@
+outs:
+- md5: 26d72404f52c8f7b9b155693c15b1a52.dir
+  size: 161906563
+  nfiles: 72
+  hash: md5
+  path: lstm_artifact
