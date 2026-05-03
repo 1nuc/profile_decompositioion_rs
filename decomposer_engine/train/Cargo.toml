@@ -1,0 +1,10 @@
+[package]
+name = "train"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+decomposer_engine={path="../../decomposer_engine"}
+
+[patch.crates-io]
+xgboost-sys={path="../patches/xgboost-sys"}

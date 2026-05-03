@@ -1,0 +1,333 @@
+//TODO: Define the logic for training
+//TODO: Define the logic for testing and validation
+//TODO: Must make a function to split the dat into train, test and split
+//TODO: steps:
+//1. One struct that contains the data that will be red through the data engine
+//2. define the default implementation for the controller, the data backend, and many more
+//3. method for training and predicting
+//4. catch the method for the metrics
+//5. function to recieve the building input and process or forward the output
+
+use std::{
+    env, fs::{File, copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}, process::Command
+};
+
+use crate::{
+    Actions, EagerActions,
+    data_engine::Nrel,
+    dl::{inference::Inference, models::{hybrid_models::Seq2SeqConfig}, training::NrelConfig},
+};
+use burn::{
+    backend::{Autodiff, Wgpu, wgpu::WgpuDevice},
+    optim::AdamWConfig,
+    prelude::Backend,
+    tensor::backend::AutodiffBackend,
+};
+use burn_wgpu::{WgpuRuntime, graphics::{AutoGraphicsApi}, init_device, init_setup};
+use cubecl_core::{Runtime,future::block_on};
+use cubecl_runtime::memory_management::MemoryPoolOptions;
+use polars::{
+    frame::DataFrame,
+    prelude::{Column, PlRefPath},
+};
+
+pub struct Controller {
+    pub train_data: DataFrame,
+    pub val_data: DataFrame,
+    pub production_data: DataFrame,
+    pub train_files: Vec<PathBuf>,
+    pub test_files: Vec<PathBuf>,
+    pub timestamp: Column,
+}
+
+impl Default for Controller {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Controller {
+    pub fn new() -> Self {
+        let (train_files, test_files) = Self::organize_files();
+        Self {
+            train_data: DataFrame::default(),
+            val_data: DataFrame::default(),
+            production_data: DataFrame::default(),
+            train_files,
+            test_files,
+            timestamp: Column::default(),
+        }
+    }
+
+    //------------------------Files Operations----------------------
+    // return all the buildings available in the data
+    // this function is required by the api to fetch all building for the utility people
+    pub fn return_nrel_buildings(&self) -> Vec<String> {
+        self.test_files
+            .iter()
+            .map(|x| {
+                x.file_name()
+                    .unwrap()
+                    .to_str()
+                    .unwrap()
+                    .strip_suffix("-28.parquet")
+                    .unwrap()
+                    .to_string()
+            })
+            .collect::<Vec<String>>()
+    }
+
+    // Arranging and managing files for test and train
+    pub fn organize_files() -> (Vec<PathBuf>, Vec<PathBuf>) {
+        let dir = read_dir("../../../../datasets").unwrap();
+        let files = dir.map(|x| x.unwrap().path()).collect::<Vec<PathBuf>>();
+        let split_inx = (files.len() as f32 * 0.1).round() as usize;
+        let (a, b) = files.split_at(split_inx);
+        (b.to_vec(), a.to_vec())
+    }
+
+    // -------------------------------Data Preparation---------------------------
+    pub fn data_preparation(&mut self, input: PlRefPath, return_data: bool) -> Option<DataFrame> {
+        let data_source = Nrel::init(input);
+        let data = data_source.data;
+        let encoded_data = data.clone().encode_categoricals();
+        let s = encoded_data.clone().collect().unwrap();
+        let y_columns = s.return_y_columns();
+        self.timestamp = s
+            .column("timestamp")
+            .expect("unable to find the column")
+            .clone();
+        let data = encoded_data
+            .clone()
+            .standard_scalar(y_columns.clone())
+            .return_time_sequenced()
+            .collect()
+            .unwrap();
+        (self.train_data, self.val_data, self.production_data) = data.train_test_split();
+        if return_data {
+            Some(encoded_data.collect().unwrap())
+        } else {
+            None
+        }
+    }
+
+    // ------------------------------Multiple Process Training---------------------------------
+    // initialize the training in multiple processes to optimize speed for the training
+    pub fn run_training_multiple_processes(&mut self) {
+        let artifact_dir = Path::new("lstm_artifact/");
+        let input = Path::new("../../train/src/padding_data");
+        if artifact_dir.exists() {
+            remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+
+        }
+        if input.exists() {
+            remove_dir_all(input).expect("can't find the input dir");
+        }
+        self.process_iteration(self.train_files.clone());
+    }
+
+    // Initiate the main process for training 
+    // this process will be run using the run binary
+    pub fn process_iteration(&mut self, files: Vec<PathBuf>) {
+        files.chunks(40).for_each(|x| {
+            let input_path = Path::new("../../train/src/padding_data");
+            if !input_path.exists() {
+                create_dir(input_path).unwrap();
+            }
+            x.iter().for_each(|x| {
+                let path = Path::new(x.file_name().unwrap().to_str().unwrap());
+                let file_path = input_path.join(path);
+                File::create_new(&file_path).expect("unable to create a file");
+                copy(x, file_path).expect("error in copying the data");
+            });
+            Command::new("cargo")
+                .args(["r", "--release"])
+                .current_dir("../../train/src/")
+                .status()
+                .expect("Error occured in the client process");
+        });
+    }
+
+    pub fn client_side_training(&mut self){
+        self.data_preparation(("padding_data/*.parquet").into(), false);
+        self.lstm_simulation();
+        remove_dir_all("padding_data").expect("can't find the input dir");
+    }
+
+    pub fn lstm_simulation(&self) {
+        type Mybackend= Autodiff<Wgpu>;
+        let device=WgpuDevice::default();
+        self.train_lstm::<Mybackend>(device.clone());
+    }
+
+    // --------------------------------------Single Process---------------------------------------
+    // a method to simulate the training for the models
+    pub fn run_training_single_process(&mut self) {
+        let artifact_dir = Path::new("lstm_artifact/");
+        let input = Path::new("input");
+        if artifact_dir.exists() {
+            remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+
+        }
+        if input.exists() {
+            remove_dir_all(input).expect("can't find the input dir");
+        }
+        self.chunks_iteration(self.train_files.clone());
+    }
+
+    // Training the models in one shot
+    // -- This requires heavy computational gpu
+    const MB: u64 = 1024 * 1024;
+    const GB: u64 = 1024 * Self::MB;
+    pub fn chunks_iteration(&mut self, files: Vec<PathBuf>) {
+        // Join the file names first
+        // then copy the content of the files there
+        // initialize customized options
+        let mem_opt=MemoryPoolOptions{
+            pool_type: cubecl_runtime::memory_management::PoolType::SlicedPages {
+                page_size: 2 * Self::GB, max_slice_size: 512 * Self::MB },
+            dealloc_period: Some(20),
+        };
+        // initialize runtime options
+        let runtime_opt=burn_wgpu::RuntimeOptions {
+            tasks_max: 1200, memory_config:
+            burn_wgpu::MemoryConfiguration::Custom { pool_options:vec![mem_opt.clone()] 
+         }};
+        //prepare the backend setup
+        let setup=init_setup::<AutoGraphicsApi>(&WgpuDevice::default(),runtime_opt);
+        //initialize the device
+        let device=init_device(setup, burn_wgpu::RuntimeOptions {
+            tasks_max: 1200, memory_config:
+            burn_wgpu::MemoryConfiguration::Custom { pool_options:vec![mem_opt] 
+         }});
+        type Mybackend = Autodiff<Wgpu>;
+        files.chunks(40).for_each(|x| {
+            let input_path = Path::new("input");
+            if !input_path.exists() {
+                create_dir(input_path).unwrap();
+            }
+            x.iter().for_each(|x| {
+                let path = Path::new(x.file_name().unwrap().to_str().unwrap());
+                let file_path = input_path.join(path);
+                File::create_new(&file_path).expect("unable to create a file");
+                copy(x, file_path).expect("error in copying the data");
+            });
+            // ---- Deep learning Models
+            self.data_preparation(("input/*.parquet").into(), false);
+            {
+                let model = Seq2SeqConfig::default();
+                let model_config = NrelConfig::new(model, AdamWConfig::new().with_weight_decay(1e-3));
+                model_config.train::<Mybackend>(
+                    self.train_data.clone(),
+                    self.val_data.clone(),
+                    "lstm_artifact",
+                    device.clone(),
+                );
+            }
+            remove_dir_all("input").expect("can't find the input dir");
+            // clean up the memory 
+            let client=WgpuRuntime::client(&device.clone());
+            client.flush();
+            block_on(client.sync()).unwrap();
+            client.memory_cleanup();
+        });
+    }
+
+    //experience demo training with one trail training for one data set
+    pub fn one_trail_training(&mut self) {
+        let artifact_dir = Path::new("lstm_artifact/");
+        let input=Path::new("input");
+        if artifact_dir.exists() {
+            remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+        }
+        if input.exists() {
+            remove_dir_all(input).expect("can't find the input dir");
+        }
+        let files = self
+            .train_files
+            .clone()
+            .into_iter()
+            .take(40)
+            .collect::<Vec<PathBuf>>();
+
+        files.into_iter().for_each(|x| {
+            let input_path = Path::new("input");
+            if !input_path.exists() {
+                create_dir(input_path).unwrap();
+            }
+            let path = Path::new(x.file_name().unwrap().to_str().unwrap());
+            let file_path = input_path.join(path);
+            File::create_new(&file_path).expect("unable to create a file");
+            copy(x, file_path).expect("error in copying the data");
+        });
+        // ---- Deep learning Models
+        self.data_preparation(("input/*.parquet").into(), false);
+        self.lstm_simulation();
+        remove_dir_all("input").expect("can't find the input dir");
+    }
+
+    //---------------------------------Inference--------------------------------
+    //UNUSED: a simulation method for the inference
+    pub fn run_inference(&mut self) {
+        let artifact_dir = Path::new("lstm_artifact/");
+        if artifact_dir.exists() {
+            remove_dir_all("input").expect("can't find the input dir");
+            remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+        }
+        self.chunks_iteration(self.test_files.clone());
+    }
+
+    pub fn train_lstm<B: AutodiffBackend>(&self, device: B::Device) {
+        let model = Seq2SeqConfig::default();
+        let model_config = NrelConfig::new(model, AdamWConfig::new().with_weight_decay(1e-3));
+        model_config.train::<B>(
+            self.train_data.clone(),
+            self.val_data.clone(),
+            "lstm_artifact",
+            device,
+        );
+    }
+
+    // This is the main function to send the data for the dashboard
+    pub fn infer_one_building(&mut self, building: &str) -> DataFrame {
+        let input_path = Path::new("production_set");
+        if !input_path.exists() {
+            create_dir(input_path).unwrap();
+        }
+        let bldg_file = format!("{building}-28.parquet").as_str().to_owned();
+        // find the original file from the main data
+        let dataset_path = self
+            .test_files
+            .iter()
+            .filter(|x| {
+                x.file_name()
+                    .unwrap()
+                    .to_str()
+                    .unwrap()
+                    .contains(&bldg_file)
+            })
+            .collect::<PathBuf>();
+
+        let path = Path::new(&bldg_file);
+        let file_path = input_path.join(path);
+        if !file_path.exists() {
+            File::create_new(&file_path).expect("unable to create a file");
+        }
+        copy(&dataset_path, file_path.clone()).expect("error in copying the data");
+        // TODO: Import the data set for the inference
+        self.data_preparation(file_path.to_str().unwrap().into(), false);
+        // ---- Deep learning Models
+        type Mybackend = Wgpu;
+        let device = WgpuDevice::default();
+        self.infer_lstm::<Mybackend>(device)
+    }
+
+    pub fn infer_lstm<B: Backend>(&self, device: B::Device) -> DataFrame {
+        Inference::inference::<B>(
+            "lstm_artifact",
+            self.production_data.clone(),
+            device,
+            self.timestamp.clone(),
+        )
+    }
+}
