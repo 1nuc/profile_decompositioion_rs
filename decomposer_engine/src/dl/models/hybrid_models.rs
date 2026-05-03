@@ -104,9 +104,9 @@ impl<B: Backend> Seq2Seq<B> {
         // get the output from the first encoder
         let encoder_output_1 = self.encoder_1.forward(data.clone());
         //get the output from the second encoder
-        let encoder_output_2 = self.encoder_1.forward(data.clone());
+        let encoder_output_2 = self.encoder_2.forward(data.clone());
         // get the output from the third encoder
-        let encoder_output_3 = self.encoder_1.forward(data);
+        let encoder_output_3 = self.encoder_3.forward(data);
 
         //concatinate all the results to the column dimension so it will be 128 * 3
         let cnn_output = Tensor::cat(

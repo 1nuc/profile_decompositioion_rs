@@ -1,6 +1,6 @@
 **/target
 **/patches
 **/input
-**/padding_input
+**/padding_data
 **/production_set
 **/data.json
