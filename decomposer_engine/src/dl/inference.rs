@@ -116,17 +116,17 @@ impl Inference {
             predicted.clone(),
             targets.clone(),
             burn::nn::loss::Reduction::Mean,
-        ).to_data().to_vec::<u8>().unwrap();
+        ).to_data().to_vec::<f32>().unwrap();
         // print some statisitc
         // display the difference between targets and predicted values
         let r2_score = Self::r2_score(predicted.clone(), targets.clone());
-        let mae=Self::mae(predicted.clone(), targets.clone()).to_data().to_vec::<u8>().unwrap();
-        let rmse=Self::rmse(predicted, targets, device).to_data().to_vec::<u8>().unwrap();
+        let mae=Self::mae(predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap();
+        let rmse=Self::rmse(predicted, targets, device).to_data().to_vec::<f32>().unwrap();
         let metrics=df!(
-            "MSE"=>[mse],
+            "MSE"=>mse,
             "R2_score"=>[r2_score],
-            "MAE" =>[mae],
-            "RMSE" => [rmse]
+            "MAE" =>mae,
+            "RMSE" => rmse
         ).unwrap();
         Self::write_to_json(metrics, "metrics.json")
     }
@@ -135,7 +135,7 @@ impl Inference {
         (predictions - targets).abs().mean() 
     } 
     pub fn rmse<B: Backend, const D: usize>(predictions: Tensor<B, D>, targets: Tensor<B, D>, device: B::Device) -> Tensor<B, 1>{
-        let sqaures=Tensor::<B, D>::from_floats([2.0], &device);
+        let sqaures=Tensor::<B, D>::from_floats([[[2.0]]], &device);
         predictions.sub(targets).powf(sqaures).mean().sqrt()
     } 
 

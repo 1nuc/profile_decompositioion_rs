@@ -21,7 +21,7 @@ async fn serve(shared_state: Arc<Mutex<Controller>>){
         .route("/buildings", get(send_bldg))
         .route("/train_one_trail", get(trail_train))
         .route("/predictions/{bldg_id}", get(send_data)).with_state(shared_state.clone())
-        .route("/metrics/", get(send_metrics)).with_state(shared_state);
+        .route("/metrics", get(send_metrics)).with_state(shared_state);
     let listner=tokio::net::TcpListener::bind("localhost:8000").await.unwrap();
     axum::serve(listner, app).await.unwrap();
 }
@@ -64,7 +64,6 @@ async fn send_metrics(State(state): State<Arc<Mutex<Controller>>>)-> Json<Metric
     Json(metrics_object)
 }
 
-// async fn send_prediction(State(state): State<Arc<Controller>>)
 async fn welcome()-> impl IntoResponse{
     let msg="Decomposer says hi".to_string();
     Response::new(msg)
