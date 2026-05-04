@@ -31,6 +31,7 @@ use polars::{
     prelude::{Column, PlRefPath},
 };
 
+//TODO: fix the artifact calling and make it parameteric
 pub struct Controller {
     pub train_data: DataFrame,
     pub val_data: DataFrame,
@@ -113,13 +114,15 @@ impl Controller {
 
     // ------------------------------Multiple Process Training---------------------------------
     // initialize the training in multiple processes to optimize speed for the training
+    #[allow(unused_variables)]
     pub fn run_training_multiple_processes(&mut self) {
         let artifact_dir = Path::new("lstm_artifact/");
         let input = Path::new("../../train/src/padding_data");
-        if artifact_dir.exists() {
-            remove_dir_all(artifact_dir).expect("can't find the artifact dir");
-
-        }
+        // comment it for now to avoid deletion by mistake
+        // if artifact_dir.exists() {
+        //     remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+        //
+        // }
         if input.exists() {
             remove_dir_all(input).expect("can't find the input dir");
         }
@@ -150,14 +153,14 @@ impl Controller {
 
     pub fn client_side_training(&mut self){
         self.data_preparation(("padding_data/*.parquet").into(), false);
-        self.lstm_simulation();
+        self.lstm_simulation("lstm_artifact");
         remove_dir_all("padding_data").expect("can't find the input dir");
     }
 
-    pub fn lstm_simulation(&self) {
+    pub fn lstm_simulation(&self, artifact_dir: &str) {
         type Mybackend= Autodiff<Wgpu>;
         let device=WgpuDevice::default();
-        self.train_lstm::<Mybackend>(device.clone());
+        self.train_lstm::<Mybackend>(device.clone(), artifact_dir);
     }
 
     // --------------------------------------Single Process---------------------------------------
@@ -184,7 +187,7 @@ impl Controller {
         // then copy the content of the files there
         // initialize customized options
         let mem_opt=MemoryPoolOptions{
-            pool_type: cubecl_runtime::memory_management::PoolType::SlicedPages {
+                pool_type: cubecl_runtime::memory_management::PoolType::SlicedPages {
                 page_size: 2 * Self::GB, max_slice_size: 512 * Self::MB },
             dealloc_period: Some(20),
         };
@@ -235,7 +238,7 @@ impl Controller {
 
     //experience demo training with one trail training for one data set
     pub fn one_trail_training(&mut self) {
-        let artifact_dir = Path::new("lstm_artifact/");
+        let artifact_dir = Path::new("lstm_demo_artifact/");
         let input=Path::new("input");
         if artifact_dir.exists() {
             remove_dir_all(artifact_dir).expect("can't find the artifact dir");
@@ -262,7 +265,7 @@ impl Controller {
         });
         // ---- Deep learning Models
         self.data_preparation(("input/*.parquet").into(), false);
-        self.lstm_simulation();
+        self.lstm_simulation(artifact_dir.to_str().unwrap());
         remove_dir_all("input").expect("can't find the input dir");
     }
 
@@ -277,13 +280,13 @@ impl Controller {
         self.chunks_iteration(self.test_files.clone());
     }
 
-    pub fn train_lstm<B: AutodiffBackend>(&self, device: B::Device) {
+    pub fn train_lstm<B: AutodiffBackend>(&self, device: B::Device, artifact_dir: &str) {
         let model = Seq2SeqConfig::default();
         let model_config = NrelConfig::new(model, AdamWConfig::new().with_weight_decay(1e-3));
         model_config.train::<B>(
             self.train_data.clone(),
             self.val_data.clone(),
-            "lstm_artifact",
+            artifact_dir,
             device,
         );
     }

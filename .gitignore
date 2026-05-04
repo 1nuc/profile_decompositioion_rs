@@ -2,7 +2,7 @@
 **/patches
 **/input
 **/padding_data
-**/data.json
 **/lstm_artifact
 **/cross_validation/cross_validation
 **/data.json
+**/production_set
