@@ -37,7 +37,7 @@ impl CrossValidate{
     pub fn split_temporal_data(k: usize)-> (Vec<DataFrame>, Vec<DataFrame>){
 
         let mut controller=Controller::default();
-        let files=controller.train_files.clone().into_iter().take(10).collect::<Vec<PathBuf>>();
+        let files=controller.train_files.clone().into_iter().take(40).collect::<Vec<PathBuf>>();
         files.into_iter().for_each(|x|{
             let input_path=Path::new("input");
             if !input_path.exists(){
