@@ -4,5 +4,5 @@
 **/padding_data
 **/lstm_artifact
 **/cross_validation/cross_validation
-**/data.json
+**/*.json
 **/production_set
