@@ -322,12 +322,12 @@ impl Controller {
         // ---- Deep learning Models
         type Mybackend = Wgpu;
         let device = WgpuDevice::default();
-        self.infer_lstm::<Mybackend>(device)
+        self.infer_lstm::<Mybackend>(device, "lstm_artifact")
     }
 
-    pub fn infer_lstm<B: Backend>(&self, device: B::Device) -> DataFrame {
+    pub fn infer_lstm<B: Backend>(&self, device: B::Device, artifact_dir: &str) -> DataFrame {
         Inference::inference::<B>(
-            "lstm_artifact",
+            artifact_dir,
             self.production_data.clone(),
             device,
             self.timestamp.clone(),
