@@ -98,9 +98,9 @@ impl CrossValidate{
     pub fn run(&self){
         let mut results= Vec::new();
         // edit the setup to make the page exclusive
+        let mut i=1;
         self.training_sets.clone()
             .into_iter().zip(self.testing_sets.clone()).for_each(|(train, test)|{
-                let mut i=1;
                 // define the training data
                 let (train_data, val_data,_)=train.clone().train_test_split();
                 // define the testing data 
