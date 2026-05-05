@@ -40,14 +40,14 @@ impl Default for Seq2SeqConfig {
 //Initializing the model configurations
 impl Seq2SeqConfig {
     pub fn init<B: Backend>(&self, device: B::Device) -> Seq2Seq<B> {
-        let encoder_1 = Conv1dConfig::new(self.input_size, self.hidden_size, 3)
-            .with_padding(nn::PaddingConfig1d::Explicit(3))
+        let encoder_1 = Conv1dConfig::new(self.input_size, self.hidden_size, 7)
+            .with_padding(nn::PaddingConfig1d::Same)
             .init(&device);
-        let encoder_2 = Conv1dConfig::new(self.input_size, self.hidden_size, 5)
-            .with_padding(nn::PaddingConfig1d::Explicit(5))
+        let encoder_2 = Conv1dConfig::new(self.input_size, self.hidden_size, 11)
+            .with_padding(nn::PaddingConfig1d::Same)
             .init(&device);
-        let encoder_3 = Conv1dConfig::new(self.input_size, self.hidden_size, 7)
-            .with_padding(nn::PaddingConfig1d::Explicit(7))
+        let encoder_3 = Conv1dConfig::new(self.input_size, self.hidden_size, 15)
+            .with_padding(nn::PaddingConfig1d::Same)
             .init(&device);
         let decoder = BiLstmConfig::new(self.hidden_size * 3, self.hidden_size, true)
             .with_batch_first(true)
