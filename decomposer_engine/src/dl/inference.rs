@@ -94,9 +94,10 @@ impl Inference {
             .collect::<Vec<Column>>();
         DataFrame::new(length * 96, columns)
             .unwrap()
+            .lazy().with_columns([col("*").sum().alias("Total")])
+            .collect().unwrap()
             .hstack_mut(&[timestamp_col])
-            .expect("error stacking the timestamp column")
-            .clone()
+            .expect("error stacking the timestamp column").clone()
     }
     #[allow(unused_must_use)]
     pub fn write_to_json(mut df: DataFrame, file_path: &str) -> PolarsResult<()> {
