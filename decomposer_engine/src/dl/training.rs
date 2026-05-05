@@ -119,7 +119,7 @@ impl NrelConfig {
             .num_epochs(self.num_epoch)
             .summary();
 
-        let result = train.launch(Learner::new(model, self.opt.init(), 1e-3));
+        let result = train.launch(Learner::new(model, config.opt.init(), 1e-3));
         //TODO: save the configurations
         self.save(format!("{artifact_dir}/config.json").as_str())
             .unwrap();
