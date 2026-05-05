@@ -40,12 +40,13 @@ pub struct NrelConfig {
     pub batch_size: usize,
 }
 impl NrelConfig {
+
     #[allow(unused_must_use)]
-    fn create_artifact_dir<B: AutodiffBackend>(
+    pub fn trainer<B: AutodiffBackend>(
         &self,
-        artifact_dir: &str,
         train_data: DataFrame,
         test_data: DataFrame,
+        artifact_dir: &str,
         device: B::Device,
     ) {
         let artifact_path = Path::new(artifact_dir);
@@ -53,9 +54,9 @@ impl NrelConfig {
             self.inference_learning::<B>(artifact_dir, train_data, test_data, device);
         } else {
             create_dir_all(artifact_dir);
+            self.train::<B>(train_data, test_data, artifact_dir, device);
         }
     }
-
     pub fn train<B: AutodiffBackend>(
         &self,
         train_data: DataFrame,
@@ -63,12 +64,6 @@ impl NrelConfig {
         artifact_dir: &str,
         device: B::Device,
     ) {
-        self.create_artifact_dir::<B>(
-            artifact_dir,
-            train_data.clone(),
-            test_data.clone(),
-            device.clone(),
-        );
         let model = self.model.init::<B>(device.clone());
         let (train_loader, test_loader) =
             self.prepare_training::<B>(train_data, test_data, &device);

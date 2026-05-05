@@ -9,7 +9,7 @@
 //5. function to recieve the building input and process or forward the output
 
 use std::{
-    env, fs::{File, copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}, process::Command
+    env, fs::{File, copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}, process::{Command, ExitStatus}, thread, time::Duration
 };
 
 use crate::{
@@ -80,7 +80,7 @@ impl Controller {
 
     // Arranging and managing files for test and train
     pub fn organize_files() -> (Vec<PathBuf>, Vec<PathBuf>) {
-        let dir = read_dir("../../../datasets").unwrap();
+        let dir = read_dir("../../../../datasets").unwrap();
         let files = dir.map(|x| x.unwrap().path()).collect::<Vec<PathBuf>>();
         let split_inx = (files.len() as f32 * 0.1).round() as usize;
         let (a, b) = files.split_at(split_inx);
@@ -116,7 +116,7 @@ impl Controller {
     // initialize the training in multiple processes to optimize speed for the training
     #[allow(unused_variables)]
     pub fn run_training_multiple_processes(&mut self) {
-        let artifact_dir = Path::new("lstm_artifact/");
+        let artifact_dir = Path::new("test/");
         let input = Path::new("../../train/src/padding_data");
         // comment it for now to avoid deletion by mistake
         // if artifact_dir.exists() {
@@ -126,13 +126,13 @@ impl Controller {
         if input.exists() {
             remove_dir_all(input).expect("can't find the input dir");
         }
-        self.process_iteration(self.train_files.clone());
+        self.process_iteration(self.test_files.clone());
     }
 
     // Initiate the main process for training 
     // this process will be run using the run binary
     pub fn process_iteration(&mut self, files: Vec<PathBuf>) {
-        files.chunks(40).for_each(|x| {
+        files.chunks(1).for_each(|x| {
             let input_path = Path::new("../../train/src/padding_data");
             if !input_path.exists() {
                 create_dir(input_path).unwrap();
@@ -143,17 +143,20 @@ impl Controller {
                 File::create_new(&file_path).expect("unable to create a file");
                 copy(x, file_path).expect("error in copying the data");
             });
-            Command::new("cargo")
+            let process=Command::new("cargo")
                 .args(["r", "--release"])
                 .current_dir("../../train/src/")
                 .status()
                 .expect("Error occured in the client process");
+            println!("{:?}", process);
+            thread::sleep(Duration::from_secs(5));
         });
     }
 
     pub fn client_side_training(&mut self){
         self.data_preparation(("padding_data/*.parquet").into(), false);
-        self.lstm_simulation("lstm_artifact");
+        println!("starting");
+        // self.lstm_simulation("test");
         remove_dir_all("padding_data").expect("can't find the input dir");
     }
 
