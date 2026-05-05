@@ -40,14 +40,14 @@ impl Default for Seq2SeqConfig {
 //Initializing the model configurations
 impl Seq2SeqConfig {
     pub fn init<B: Backend>(&self, device: B::Device) -> Seq2Seq<B> {
-        let encoder_1 = Conv1dConfig::new(self.input_size, self.hidden_size, 7)
-            .with_padding(nn::PaddingConfig1d::Same)
+        let encoder_1 = Conv1dConfig::new(self.input_size, self.hidden_size, 3)
+            .with_padding(nn::PaddingConfig1d::Explicit(3))
             .init(&device);
-        let encoder_2 = Conv1dConfig::new(self.input_size, self.hidden_size, 11)
-            .with_padding(nn::PaddingConfig1d::Same)
+        let encoder_2 = Conv1dConfig::new(self.input_size, self.hidden_size, 5)
+            .with_padding(nn::PaddingConfig1d::Explicit(5))
             .init(&device);
-        let encoder_3 = Conv1dConfig::new(self.input_size, self.hidden_size, 15)
-            .with_padding(nn::PaddingConfig1d::Same)
+        let encoder_3 = Conv1dConfig::new(self.input_size, self.hidden_size, 7)
+            .with_padding(nn::PaddingConfig1d::Explicit(7))
             .init(&device);
         let decoder = BiLstmConfig::new(self.hidden_size * 3, self.hidden_size, true)
             .with_batch_first(true)
@@ -102,11 +102,11 @@ impl<B: Backend> Seq2Seq<B> {
     pub fn forward(&self, input: Tensor<B, 3>) -> Tensor<B, 3> {
         let data = input.permute([0, 2, 1]);
         // get the output from the first encoder
-        let encoder_output_1 = Relu::new().forward(self.encoder_1.forward(data.clone()));
+        let encoder_output_1 = self.encoder_1.forward(data.clone());
         //get the output from the second encoder
-        let encoder_output_2 = Relu::new().forward(self.encoder_2.forward(data.clone()));
+        let encoder_output_2 = self.encoder_2.forward(data.clone());
         // get the output from the third encoder
-        let encoder_output_3 = Relu::new().forward(self.encoder_3.forward(data.clone()));
+        let encoder_output_3 = self.encoder_3.forward(data);
 
         //concatinate all the results to the column dimension so it will be 128 * 3
         let cnn_output = Tensor::cat(
