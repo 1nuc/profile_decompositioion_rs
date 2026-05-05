@@ -102,11 +102,11 @@ impl<B: Backend> Seq2Seq<B> {
     pub fn forward(&self, input: Tensor<B, 3>) -> Tensor<B, 3> {
         let data = input.permute([0, 2, 1]);
         // get the output from the first encoder
-        let encoder_output_1 = self.encoder_1.forward(data.clone());
+        let encoder_output_1 = Relu::new().forward(self.encoder_1.forward(data.clone()));
         //get the output from the second encoder
-        let encoder_output_2 = self.encoder_2.forward(data.clone());
+        let encoder_output_2 = Relu::new().forward(self.encoder_2.forward(data.clone()));
         // get the output from the third encoder
-        let encoder_output_3 = self.encoder_3.forward(data);
+        let encoder_output_3 = Relu::new().forward(self.encoder_3.forward(data.clone()));
 
         //concatinate all the results to the column dimension so it will be 128 * 3
         let cnn_output = Tensor::cat(

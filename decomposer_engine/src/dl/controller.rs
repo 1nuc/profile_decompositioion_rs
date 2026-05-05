@@ -116,13 +116,12 @@ impl Controller {
     // initialize the training in multiple processes to optimize speed for the training
     #[allow(unused_variables)]
     pub fn run_training_multiple_processes(&mut self) {
-        let artifact_dir = Path::new("test/");
+        let artifact_dir = Path::new("lstm_artifact/");
         let input = Path::new("../../train/src/padding_data");
-        // comment it for now to avoid deletion by mistake
-        // if artifact_dir.exists() {
-        //     remove_dir_all(artifact_dir).expect("can't find the artifact dir");
-        //
-        // }
+        if artifact_dir.exists() {
+            remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+
+        }
         if input.exists() {
             remove_dir_all(input).expect("can't find the input dir");
         }
@@ -132,7 +131,7 @@ impl Controller {
     // Initiate the main process for training 
     // this process will be run using the run binary
     pub fn process_iteration(&mut self, files: Vec<PathBuf>) {
-        files.chunks(1).for_each(|x| {
+        files.chunks(40).for_each(|x| {
             let input_path = Path::new("../../train/src/padding_data");
             if !input_path.exists() {
                 create_dir(input_path).unwrap();
@@ -143,20 +142,17 @@ impl Controller {
                 File::create_new(&file_path).expect("unable to create a file");
                 copy(x, file_path).expect("error in copying the data");
             });
-            let process=Command::new("cargo")
+            Command::new("cargo")
                 .args(["r", "--release"])
                 .current_dir("../../train/src/")
                 .status()
                 .expect("Error occured in the client process");
-            println!("{:?}", process);
-            thread::sleep(Duration::from_secs(5));
         });
     }
 
     pub fn client_side_training(&mut self){
         self.data_preparation(("padding_data/*.parquet").into(), false);
-        println!("starting");
-        // self.lstm_simulation("test");
+        self.lstm_simulation("lstm_artifact");
         remove_dir_all("padding_data").expect("can't find the input dir");
     }
 
@@ -286,7 +282,7 @@ impl Controller {
     pub fn train_lstm<B: AutodiffBackend>(&self, device: B::Device, artifact_dir: &str) {
         let model = Seq2SeqConfig::default();
         let model_config = NrelConfig::new(model, AdamWConfig::new().with_weight_decay(1e-3));
-        model_config.train::<B>(
+        model_config.trainer::<B>(
             self.train_data.clone(),
             self.val_data.clone(),
             artifact_dir,

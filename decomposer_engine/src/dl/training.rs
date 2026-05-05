@@ -36,7 +36,7 @@ pub struct NrelConfig {
     #[config(default = 42)]
     pub seed: u64,
     pub opt: AdamWConfig,
-    #[config(default = 360)]
+    #[config(default = 500)]
     pub batch_size: usize,
 }
 impl NrelConfig {
