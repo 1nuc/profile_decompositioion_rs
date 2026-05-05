@@ -94,7 +94,7 @@ impl Inference {
             .collect::<Vec<Column>>();
         DataFrame::new(length * 96, columns)
             .unwrap()
-            .lazy().with_columns([polars::lazy::dsl::sum_horizontal([col("*")], true).unwrap().alias("Total Consumption")])
+            .lazy().with_columns([polars::lazy::dsl::sum_horizontal([col("*")], true).unwrap().alias("Total")])
             .collect().unwrap()
             .hstack_mut(&[timestamp_col])
             .expect("error stacking the timestamp column").clone()
