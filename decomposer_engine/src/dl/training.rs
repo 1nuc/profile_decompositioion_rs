@@ -69,6 +69,7 @@ impl NrelConfig {
         let (train_loader, test_loader) =
             self.prepare_training::<B>(train_data, test_data, &device);
         // Initiate the training
+        println!("First Iteration is Starting");
         let train = SupervisedTraining::new(artifact_dir, train_loader, test_loader)
             .metric_train_numeric(LossMetric::new())
             .metric_valid_numeric(LossMetric::new())
@@ -90,7 +91,6 @@ impl NrelConfig {
             format!("{artifact_dir}/optim").into())
             .expect("Unable to record the optimizer");
 
-        println!("First Iteration is over");
     }
 
     pub fn inference_learning<B: AutodiffBackend>(
@@ -100,6 +100,7 @@ impl NrelConfig {
         test_data: DataFrame,
         device: B::Device,
     ) {
+        println!("Inference Learning Iteration Begins");
         //Load the configurations of the model
         let config = NrelConfig::load(format!("{artifact_dir}/config.json"))
             .expect("unable to find the file");
@@ -141,7 +142,6 @@ impl NrelConfig {
             format!("{artifact_dir}/optim").into())
             .expect("Unable to record the optimizer");
 
-        println!("Inference Learning Iteration Begins");
     }
 
     #[allow(clippy::complexity)]

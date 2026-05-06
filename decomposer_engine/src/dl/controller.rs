@@ -120,7 +120,6 @@ impl Controller {
         let input = Path::new("../../train/src/padding_data");
         if artifact_dir.exists() {
             remove_dir_all(artifact_dir).expect("can't find the artifact dir");
-
         }
         if input.exists() {
             remove_dir_all(input).expect("can't find the input dir");
