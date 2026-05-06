@@ -1,15 +1,16 @@
 use burn::{
     config::Config,
     data::dataloader::{DataLoader, DataLoaderBuilder},
-    module::Module,
-    optim::AdamWConfig,
-    record::{CompactRecorder, Recorder},
+    module::{Module, ParamId},
+    optim::{AdamW, AdamWConfig, Optimizer, record::AdaptorRecord},
+    record::{BinFileRecorder, CompactRecorder, FullPrecisionSettings, Recorder},
     tensor::backend::AutodiffBackend,
     train::{Learner, SupervisedTraining, metric::LossMetric},
 };
 use polars::frame::DataFrame;
 use std::{fmt::Debug, fs::*, path::Path, sync::Arc};
-
+use hashbrown::HashMap;
+use crate::dl::models::hybrid_models::Seq2Seq;
 #[allow(unused_imports)]
 use crate::dl::{
     dataset::{NrelBatch, NrelBatcher, NrelDataset},
@@ -74,7 +75,8 @@ impl NrelConfig {
             .with_file_checkpointer(CompactRecorder::new())
             .num_epochs(self.num_epoch)
             .summary();
-        let result = train.launch(Learner::new(model, self.opt.init(), 1e-3));
+        let opt=self.opt.init();
+        let result = train.launch(Learner::new(model,  opt.clone(),1e-3));
         //TODO: save the configurations
         self.save(format!("{artifact_dir}/config.json").as_str())
             .unwrap();
@@ -83,6 +85,12 @@ impl NrelConfig {
             .model
             .save_file(format!("{artifact_dir}/model"), &CompactRecorder::new())
             .expect("Error in saving the trained model");
+
+        BinFileRecorder::<FullPrecisionSettings>::default().record(opt.to_record(),
+            format!("{artifact_dir}/optim").into())
+            .expect("Unable to record the optimizer");
+
+        println!("First Iteration is over");
     }
 
     pub fn inference_learning<B: AutodiffBackend>(
@@ -96,13 +104,18 @@ impl NrelConfig {
         let config = NrelConfig::load(format!("{artifact_dir}/config.json"))
             .expect("unable to find the file");
 
-        // using compact recorder, load the last saved state of the model
+        //load the optimizer to continue the training
+        let adaptor: HashMap<ParamId,AdaptorRecord<AdamW,B>>=BinFileRecorder::<FullPrecisionSettings>::new()
+            .load(format!("{artifact_dir}/optim").into(), &device).expect("Error loading the optimizer");
+
+        let opt=config.opt.init::<B, Seq2Seq<B>>().load_record(adaptor);
+        // load and initialize the model to continue the training
         let record: Seq2SeqRecord<B> = CompactRecorder::new()
             .load(format!("{artifact_dir}/model").into(), &device)
             .expect("First batch is not trained yet");
 
-        // load and initialize the model for test
         let model = config.model.init::<B>(device.clone()).load_record(record);
+        
         let (train_loader, test_loader) =
             self.prepare_training::<B>(train_data, test_data, &device);
 
@@ -114,7 +127,7 @@ impl NrelConfig {
             .num_epochs(self.num_epoch)
             .summary();
 
-        let result = train.launch(Learner::new(model, config.opt.init(), 1e-3));
+        let result = train.launch(Learner::new(model, opt.clone(), 1e-3));
         //TODO: save the configurations
         self.save(format!("{artifact_dir}/config.json").as_str())
             .unwrap();
@@ -123,6 +136,12 @@ impl NrelConfig {
             .model
             .save_file(format!("{artifact_dir}/model"), &CompactRecorder::new())
             .expect("Error in saving the trained model");
+
+        BinFileRecorder::<FullPrecisionSettings>::default().record(opt.to_record(),
+            format!("{artifact_dir}/optim").into())
+            .expect("Unable to record the optimizer");
+
+        println!("Inference Learning Iteration Begins");
     }
 
     #[allow(clippy::complexity)]
