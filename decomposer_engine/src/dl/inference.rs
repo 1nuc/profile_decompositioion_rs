@@ -120,12 +120,12 @@ impl Inference {
         ).to_data().to_vec::<f32>().unwrap();
         // print some statisitc
         // display the difference between targets and predicted values
-        let r2_score = Self::r2_score(predicted.clone(), targets.clone());
+        let r2_score = Self::r2_score(predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap();
         let mae=Self::mae(predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap();
         let rmse=Self::rmse(predicted, targets, device).to_data().to_vec::<f32>().unwrap();
         let metrics=df!(
             "MSE"=>mse,
-            "R2_score"=>[r2_score],
+            "R2_score"=>r2_score,
             "MAE" =>mae,
             "RMSE" => rmse
         ).unwrap();
@@ -140,28 +140,11 @@ impl Inference {
         predictions.sub(targets).powf(sqaures).mean().sqrt()
     } 
 
-    pub fn r2_score<B: Backend, const D: usize>(preds: Tensor<B, D>, y_true: Tensor<B, D>) -> f32 {
+    pub fn r2_score<B: Backend, const D: usize>(preds: Tensor<B, D>, y_true: Tensor<B, D>) -> Tensor<B,1> {
         //1- Total sum of residuals / total sum of squares
         // squeeze both predicted and targets to 1d tensor
-        let predicted =preds 
-            .flatten::<2>(1, 2)
-            .into_data()
-            .to_vec::<f32>()
-            .unwrap();
-        let targets =y_true
-            .flatten::<2>(1, 2)
-            .into_data()
-            .to_vec::<f32>()
-            .unwrap();
-
-        let mean = targets.iter().sum::<f32>() / targets.len() as f32;
-        let total_sum_residuals = targets
-            .iter()
-            .zip(predicted.iter())
-            .map(|(x, y)| (x - y).powi(2))
-            .sum::<f32>();
-        let total_sum_squares = targets.iter().map(|x| (x - mean).powi(2)).sum::<f32>();
-
+        let total_sum_residuals=(y_true.clone() - preds.clone()).powf_scalar(2.0).sum();
+        let total_sum_squares=(y_true.clone() - y_true.mean().unsqueeze()).powf_scalar(2.0).sum();
         1_f32 - (total_sum_residuals / total_sum_squares)
     }
 }
