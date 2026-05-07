@@ -29,11 +29,13 @@ impl NrelDataset {
         let mut x_cols = data.return_x_columns();
         let y_cols = data.return_y_columns();
         let batches = data.height();
+        let x_data=data.clone().select(x_cols.clone()).expect("unable to selec the data");
+        let y_data=data.select(y_cols.clone()).expect("unable to select the data");
         x_cols.retain(|x| !x.eq(&"timestamp") & !x.eq(&"bldg_id")); // to avoid being exploded for
         // timetamp and bldg_id columns
         Self {
-            sequence: data.clone().select_sequence(x_cols.clone(), batches),
-            target: data.clone().select_sequence(y_cols.clone(), batches),
+            sequence: x_data.select_sequence(x_cols.clone(), batches, 2_usize),
+            target: y_data.select_sequence(y_cols.clone(), batches, 0_usize),
         }
     }
 }

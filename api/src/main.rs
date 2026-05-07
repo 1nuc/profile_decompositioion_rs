@@ -11,6 +11,7 @@ struct Metrics{
 }
 #[tokio::main]
 async fn main(){
+    tracing_subscriber::fmt::init();
     let shared_state = Arc::new(Mutex::new(Controller::default()));
     serve(shared_state).await;
 }

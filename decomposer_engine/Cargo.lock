@@ -2115,6 +2115,7 @@ dependencies = [
  "regex",
  "serde",
  "tap",
+ "tracing",
  "xgboost",
 ]
 

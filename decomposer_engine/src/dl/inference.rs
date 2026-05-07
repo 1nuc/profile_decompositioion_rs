@@ -18,9 +18,10 @@ use burn::{
     data::{dataloader::batcher::Batcher, dataset::Dataset},
     module::Module,
     nn::loss::MseLoss,
-    prelude::Backend,
+    prelude::{Backend, ToElement},
     record::{CompactRecorder, Recorder},
 };
+use tracing::{info, warn};
 use polars::{frame::DataFrame, prelude::*};
 
 //TODO: a function to forward the data based on the number or the id of the building
@@ -67,8 +68,8 @@ impl Inference {
         let df = Self::process_data::<B>(predicted.clone(), length, cols, timestamp.clone());
         Self::write_to_json(df.clone().transform_col_names(), "data.json");
         match Self::statisitcs(predicted, targets){
-            Ok(_)=> println!("Predictions Submitted"),
-            Err(_)=> println!("Error sending predictions"),
+            Ok(_)=> info!("Predictions Submitted"),
+            Err(_)=> warn!("Error sending predictions"),
         }
         df
     }
@@ -122,12 +123,14 @@ impl Inference {
         // display the difference between targets and predicted values
         let r2_score = Self::r2_score(predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap();
         let mae=Self::mae(predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap();
-        let rmse=Self::rmse(predicted, targets).to_data().to_vec::<f32>().unwrap();
+        let rmse=Self::rmse(predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap();
+        let mappe=Self::mappe(predicted, targets);
         let metrics=df!(
             "MSE"=>mse,
             "R2_score"=>r2_score,
             "MAE" =>mae,
-            "RMSE" => rmse
+            "RMSE" => rmse,
+            "MAPPE" =>[mappe] 
         ).unwrap();
         Self::write_to_json(metrics, "metrics.json")
     }
@@ -139,6 +142,10 @@ impl Inference {
         predictions.sub(targets).powf_scalar(2.0).mean().sqrt()
     } 
 
+    pub fn mappe<B: Backend, const D: usize>(predictions: Tensor<B, D>, targets: Tensor<B, D>) ->  f32{
+        let error=(targets.clone() - predictions.clone()) / targets.abs();
+        error.mean().into_scalar().to_f32() * 100.00
+    } 
     pub fn r2_score<B: Backend, const D: usize>(preds: Tensor<B, D>, y_true: Tensor<B, D>) -> Tensor<B,1> {
         //1- Total sum of residuals / total sum of squares
         // squeeze both predicted and targets to 1d tensor

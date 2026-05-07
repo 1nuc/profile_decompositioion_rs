@@ -17,6 +17,7 @@ rayon = "1.11.0"
 regex = "1.12.3"
 serde = "1.0.228"
 tap = "1.0.1"
+tracing = "0.1.44"
 xgboost = { version= "0.1.4"}
 [patch.crates-io]
 xgboost-sys= { path= "patches/xgboost-sys" }

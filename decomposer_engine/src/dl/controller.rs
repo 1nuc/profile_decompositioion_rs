@@ -11,6 +11,7 @@
 use std::{
     fs::{File, copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}, process::{Command}
 };
+use tracing::*;
 
 use crate::{
     Actions, EagerActions,
@@ -64,6 +65,7 @@ impl Controller {
     // return all the buildings available in the data
     // this function is required by the api to fetch all building for the utility people
     pub fn return_nrel_buildings(&self) -> Vec<String> {
+        info!("Submitting available buildings");
         self.test_files
             .iter()
             .map(|x| {
@@ -80,7 +82,7 @@ impl Controller {
 
     // Arranging and managing files for test and train
     pub fn organize_files() -> (Vec<PathBuf>, Vec<PathBuf>) {
-        let dir = read_dir("../../../datasets").unwrap();
+        let dir = read_dir("../../../../datasets").unwrap();
         let files = dir.map(|x| x.unwrap().path()).collect::<Vec<PathBuf>>();
         let split_inx = (files.len() as f32 * 0.1).round() as usize;
         let (a, b) = files.split_at(split_inx);
@@ -309,6 +311,7 @@ impl Controller {
             })
             .collect::<PathBuf>();
 
+        info!("Sending predictions for building {}", building);
         let path = Path::new(&bldg_file);
         let file_path = input_path.join(path);
         if !file_path.exists() {
@@ -320,6 +323,7 @@ impl Controller {
         // ---- Deep learning Models
         type Mybackend = Wgpu;
         let device = WgpuDevice::default();
+        info!("Inference is on the way");
         self.infer_lstm::<Mybackend>(device, "lstm")
     }
 

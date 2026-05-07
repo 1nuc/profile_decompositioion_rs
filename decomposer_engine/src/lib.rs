@@ -10,7 +10,7 @@ pub mod preprocessor_engine;
 pub mod xgb;
 
 pub trait EagerActions {
-    fn select_sequence(&self, cols: Vec<&str>, batches: usize) -> Array3<f32>;
+    fn select_sequence(&self, cols: Vec<&str>, batches: usize, value: usize) -> Array3<f32>;
 
     fn return_x_columns(&self) -> Vec<&str>;
 

@@ -15,7 +15,7 @@ impl Nrel {
     }
 
     pub fn init(path: PlRefPath) -> Self {
-        let meta_data_ = Self::scan_files("../../../metadata/MetaData.parquet".into())
+        let meta_data_ = Self::scan_files("../../../../metadata/MetaData.parquet".into())
             .process_meta_data_variants()
             .unique(None, Default::default());
         let data_ = Self::scan_files(path)
@@ -226,24 +226,20 @@ impl ExpressionActions for Expr {
     }
 }
 impl EagerActions for DataFrame {
-    fn select_sequence(&self, cols: Vec<&str>, batches: usize) -> Array3<f32> {
-        self.drop("count")
-            .unwrap()
-            .select(cols.clone())
-            .expect("Columns do not exist")
+    fn select_sequence(&self, cols: Vec<&str>, batches: usize, value: usize) -> Array3<f32> {
+        let data=self
             .explode(
                 cols.clone(),
                 ExplodeOptions {
                     empty_as_null: false,
                     keep_nulls: false,
                 },
-            )
-            .expect("unable to explode the data")
-            .to_ndarray::<Float32Type>(Default::default())
-            .expect("Error in converting to ndarray")
-            .to_shape((batches, 96, cols.len()))
-            .expect("error in shaping the data")
-            .to_owned()
+            ).expect("unable to explode the data");
+        data.to_ndarray::<Float32Type>(Default::default())
+        .expect("Error in converting to ndarray")
+        .to_shape((batches, 96, cols.len()+value))
+        .expect("error in shaping the data")
+        .to_owned()
     }
 
     fn return_x_columns(&self) -> Vec<&str> {

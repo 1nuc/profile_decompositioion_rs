@@ -2109,6 +2109,7 @@ dependencies = [
  "serde_json",
  "tap",
  "tokio",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -2128,6 +2129,7 @@ dependencies = [
  "regex",
  "serde",
  "tap",
+ "tracing",
  "xgboost",
 ]
 

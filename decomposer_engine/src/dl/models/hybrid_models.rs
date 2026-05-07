@@ -26,7 +26,7 @@ pub struct Seq2SeqConfig {
 impl Default for Seq2SeqConfig {
     fn default() -> Self {
         Self {
-            input_size: 21,
+            input_size: 23,
             output_size: 24,
             hidden_size: 128,
         }
@@ -55,7 +55,7 @@ impl Seq2SeqConfig {
             decoder,
             output_model,
             // Initializing the dropout layer with 0,3
-            dropout: Dropout { prob: 0.3},
+            dropout: Dropout { prob: 0.2},
         }
     }
 }
