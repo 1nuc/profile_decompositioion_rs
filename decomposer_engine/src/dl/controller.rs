@@ -80,7 +80,7 @@ impl Controller {
 
     // Arranging and managing files for test and train
     pub fn organize_files() -> (Vec<PathBuf>, Vec<PathBuf>) {
-        let dir = read_dir("../../../../datasets").unwrap();
+        let dir = read_dir("../../../datasets").unwrap();
         let files = dir.map(|x| x.unwrap().path()).collect::<Vec<PathBuf>>();
         let split_inx = (files.len() as f32 * 0.1).round() as usize;
         let (a, b) = files.split_at(split_inx);
@@ -119,7 +119,7 @@ impl Controller {
         let artifact_dir = Path::new("lstm_artifact/");
         let input = Path::new("../../train/src/padding_data");
         if artifact_dir.exists() {
-            remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+            // remove_dir_all(artifact_dir).expect("can't find the artifact dir");
         }
         if input.exists() {
             remove_dir_all(input).expect("can't find the input dir");
