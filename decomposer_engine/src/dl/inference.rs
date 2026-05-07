@@ -66,7 +66,7 @@ impl Inference {
         let length = test_data_cloned.height();
         let df = Self::process_data::<B>(predicted.clone(), length, cols, timestamp.clone());
         Self::write_to_json(df.clone().transform_col_names(), "data.json");
-        match Self::statisitcs(predicted, targets, device){
+        match Self::statisitcs(predicted, targets){
             Ok(_)=> println!("Predictions Submitted"),
             Err(_)=> println!("Error sending predictions"),
         }
@@ -111,7 +111,7 @@ impl Inference {
             .with_json_format(JsonFormat::Json)
             .finish(&mut df)
     }
-    pub fn statisitcs<B: Backend, const D: usize>(predicted: Tensor<B, D>, targets: Tensor<B, D>, device: B::Device)-> PolarsResult<()>{
+    pub fn statisitcs<B: Backend, const D: usize>(predicted: Tensor<B, D>, targets: Tensor<B, D>)-> PolarsResult<()>{
         let loss = MseLoss::new();
         let mse= loss.forward(
             predicted.clone(),
@@ -122,7 +122,7 @@ impl Inference {
         // display the difference between targets and predicted values
         let r2_score = Self::r2_score(predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap();
         let mae=Self::mae(predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap();
-        let rmse=Self::rmse(predicted, targets, device).to_data().to_vec::<f32>().unwrap();
+        let rmse=Self::rmse(predicted, targets).to_data().to_vec::<f32>().unwrap();
         let metrics=df!(
             "MSE"=>mse,
             "R2_score"=>r2_score,
@@ -135,16 +135,16 @@ impl Inference {
     pub fn mae<B: Backend, const D: usize>(predictions: Tensor<B, D>, targets: Tensor<B, D>) -> Tensor<B, 1>{
         (predictions - targets).abs().mean() 
     } 
-    pub fn rmse<B: Backend, const D: usize>(predictions: Tensor<B, D>, targets: Tensor<B, D>, device: B::Device) -> Tensor<B, 1>{
-        let sqaures=Tensor::<B, D>::from_floats([[[2.0]]], &device);
-        predictions.sub(targets).powf(sqaures).mean().sqrt()
+    pub fn rmse<B: Backend, const D: usize>(predictions: Tensor<B, D>, targets: Tensor<B, D>) -> Tensor<B, 1>{
+        predictions.sub(targets).powf_scalar(2.0).mean().sqrt()
     } 
 
     pub fn r2_score<B: Backend, const D: usize>(preds: Tensor<B, D>, y_true: Tensor<B, D>) -> Tensor<B,1> {
         //1- Total sum of residuals / total sum of squares
         // squeeze both predicted and targets to 1d tensor
+        let mean=y_true.clone().mean();
         let total_sum_residuals=(y_true.clone() - preds.clone()).powf_scalar(2.0).sum();
-        let total_sum_squares=(y_true.clone() - y_true.mean().unsqueeze()).powf_scalar(2.0).sum();
+        let total_sum_squares=(y_true.clone() - mean.unsqueeze()).powf_scalar(2.0).sum();
         1_f32 - (total_sum_residuals / total_sum_squares)
     }
 }

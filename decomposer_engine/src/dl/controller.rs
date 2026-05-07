@@ -9,7 +9,7 @@
 //5. function to recieve the building input and process or forward the output
 
 use std::{
-    env, fs::{File, copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}, process::{Command, ExitStatus}, thread, time::Duration
+    fs::{File, copy, create_dir, read_dir, remove_dir_all}, path::{Path, PathBuf}, process::{Command}
 };
 
 use crate::{
@@ -116,7 +116,7 @@ impl Controller {
     // initialize the training in multiple processes to optimize speed for the training
     #[allow(unused_variables)]
     pub fn run_training_multiple_processes(&mut self) {
-        let artifact_dir = Path::new("lstm_artifact/");
+        let artifact_dir = Path::new("lstm/");
         let input = Path::new("../../train/src/padding_data");
         if artifact_dir.exists() {
             // remove_dir_all(artifact_dir).expect("can't find the artifact dir");
@@ -151,7 +151,7 @@ impl Controller {
 
     pub fn client_side_training(&mut self){
         self.data_preparation(("padding_data/*.parquet").into(), false);
-        self.lstm_simulation("lstm_artifact");
+        self.lstm_simulation("lstm");
         remove_dir_all("padding_data").expect("can't find the input dir");
     }
 
@@ -305,7 +305,7 @@ impl Controller {
                     .unwrap()
                     .to_str()
                     .unwrap()
-                    .contains(&bldg_file)
+                    .eq(&bldg_file)
             })
             .collect::<PathBuf>();
 
@@ -320,7 +320,7 @@ impl Controller {
         // ---- Deep learning Models
         type Mybackend = Wgpu;
         let device = WgpuDevice::default();
-        self.infer_lstm::<Mybackend>(device, "lstm_artifact")
+        self.infer_lstm::<Mybackend>(device, "lstm")
     }
 
     pub fn infer_lstm<B: Backend>(&self, device: B::Device, artifact_dir: &str) -> DataFrame {

@@ -2,9 +2,7 @@ use burn::{
     config::Config,
     module::Module,
     nn::{
-        BiLstm, BiLstmConfig, Linear, LinearConfig, Relu,
-        conv::{Conv1d, Conv1dConfig},
-        loss::MseLoss,
+        BiLstm, BiLstmConfig, Dropout, Linear, LinearConfig, Relu, conv::{Conv1d, Conv1dConfig}, loss::MseLoss
     },
     prelude::Backend,
     tensor::backend::AutodiffBackend,
@@ -23,8 +21,6 @@ pub struct Seq2SeqConfig {
     input_size: usize,
     output_size: usize,
     hidden_size: usize,
-    // num_layers: usize,
-    dropout: f32,
 }
 //Implementing default for NucLstmConfig
 impl Default for Seq2SeqConfig {
@@ -33,7 +29,6 @@ impl Default for Seq2SeqConfig {
             input_size: 21,
             output_size: 24,
             hidden_size: 128,
-            dropout: 0.5, //weight decay to prevent overfitting
         }
     }
 }
@@ -59,6 +54,8 @@ impl Seq2SeqConfig {
             encoder_3,
             decoder,
             output_model,
+            // Initializing the dropout layer with 0,3
+            dropout: Dropout { prob: 0.3},
         }
     }
 }
@@ -95,6 +92,7 @@ pub struct Seq2Seq<B: Backend> {
     encoder_3: Conv1d<B>,
     decoder: BiLstm<B>,
     output_model: Linear<B>,
+    dropout: Dropout,
 }
 
 impl<B: Backend> Seq2Seq<B> {
@@ -116,7 +114,8 @@ impl<B: Backend> Seq2Seq<B> {
         //set the order back to what it was
         let output = cnn_output.permute([0, 2, 1]);
         let (lstm_output, _) = self.decoder.forward(output, None);
-        Relu::new().forward(self.output_model.forward(lstm_output))
+        let final_output=Relu::new().forward(self.output_model.forward(lstm_output));
+        self.dropout.forward(final_output)
     }
     // Calculating the loss function of the forward step
     pub fn forward_step(&self, items: NrelBatch<B>) -> NrelSequenceOutput<B> {
