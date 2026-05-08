@@ -124,13 +124,11 @@ impl Inference {
         let r2_score = Self::r2_score(predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap();
         let mae=Self::mae(predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap();
         let rmse=Self::rmse(predicted.clone(), targets.clone()).to_data().to_vec::<f32>().unwrap();
-        let mappe=Self::mappe(predicted, targets);
         let metrics=df!(
             "MSE"=>mse,
             "R2_score"=>r2_score,
             "MAE" =>mae,
-            "RMSE" => rmse,
-            "MAPPE" =>[mappe] 
+            "RMSE" => rmse
         ).unwrap();
         Self::write_to_json(metrics, "metrics.json")
     }
@@ -142,11 +140,6 @@ impl Inference {
         predictions.sub(targets).powf_scalar(2.0).mean().sqrt()
     } 
 
-    pub fn mappe<B: Backend, const D: usize>(predictions: Tensor<B, D>, targets: Tensor<B, D>) ->  f32{
-        let e=1e-8;
-        let error=(targets.clone() - predictions.clone()).abs() / (targets.abs()+e);
-        error.mean().into_scalar().elem::<f32>() * 100.00
-    } 
     pub fn r2_score<B: Backend, const D: usize>(preds: Tensor<B, D>, y_true: Tensor<B, D>) -> Tensor<B,1> {
         //1- Total sum of residuals / total sum of squares
         // squeeze both predicted and targets to 1d tensor
