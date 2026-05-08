@@ -26,7 +26,7 @@ pub struct Seq2SeqConfig {
 impl Default for Seq2SeqConfig {
     fn default() -> Self {
         Self {
-            input_size: 23,
+            input_size: 21,
             output_size: 24,
             hidden_size: 128,
         }

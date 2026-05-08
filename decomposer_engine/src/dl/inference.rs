@@ -19,7 +19,7 @@ use burn::{
     module::Module,
     nn::loss::MseLoss,
     prelude::{Backend, ToElement},
-    record::{CompactRecorder, Recorder},
+    record::{CompactRecorder, Recorder}, tensor::ElementConversion,
 };
 use tracing::{info, warn};
 use polars::{frame::DataFrame, prelude::*};
@@ -143,8 +143,9 @@ impl Inference {
     } 
 
     pub fn mappe<B: Backend, const D: usize>(predictions: Tensor<B, D>, targets: Tensor<B, D>) ->  f32{
-        let error=(targets.clone() - predictions.clone()) / targets.abs();
-        error.mean().into_scalar().to_f32() * 100.00
+        let e=1e-8;
+        let error=(targets.clone() - predictions.clone()).abs() / (targets.abs()+e);
+        error.mean().into_scalar().elem::<f32>() * 100.00
     } 
     pub fn r2_score<B: Backend, const D: usize>(preds: Tensor<B, D>, y_true: Tensor<B, D>) -> Tensor<B,1> {
         //1- Total sum of residuals / total sum of squares

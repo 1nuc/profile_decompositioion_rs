@@ -77,7 +77,7 @@ impl NrelConfig {
             .num_epochs(self.num_epoch)
             .summary();
         let opt=self.opt.init();
-        let result = train.launch(Learner::new(model,  opt.clone(),1e-3));
+        let result = train.launch(Learner::new(model,  opt.clone(),1e-4));
         //TODO: save the configurations
         self.save(format!("{artifact_dir}/config.json").as_str())
             .unwrap();
@@ -128,7 +128,7 @@ impl NrelConfig {
             .num_epochs(self.num_epoch)
             .summary();
 
-        let result = train.launch(Learner::new(model, opt.clone(), 1e-3));
+        let result = train.launch(Learner::new(model, opt.clone(), 1e-4));
         //TODO: save the configurations
         self.save(format!("{artifact_dir}/config.json").as_str())
             .unwrap();
