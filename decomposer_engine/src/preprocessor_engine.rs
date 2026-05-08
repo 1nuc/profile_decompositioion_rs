@@ -67,7 +67,7 @@ impl Preprocessor {
         (x, y)
     }
 
-    fn extract_labels<'a>(d: DataFrame) -> Vec<String> {
+    fn extract_labels(d: DataFrame) -> Vec<String> {
         d.get_column_names()
             .iter()
             .map(|x| x.to_owned().as_str().to_string())
