@@ -2109,6 +2109,7 @@ dependencies = [
  "serde_json",
  "tap",
  "tokio",
+ "tracing",
  "tracing-subscriber",
 ]
 

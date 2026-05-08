@@ -1,9 +1,10 @@
 use std::{fs, sync::{Arc, Mutex}};
 use std::fs::remove_dir_all;
 use serde::Serialize;
-use axum::{Json, Router, extract::{Path, State}, http::Response, response::IntoResponse, routing::get};
+use axum::{Json, Router, extract::{Path, State}, response::IntoResponse, routing::get};
 use decomposer_engine::{dl::controller::{Controller} };
 
+use tracing::*;
 #[derive(Serialize)]
 struct Metrics{
     eval_metrics: String,
@@ -66,6 +67,7 @@ async fn send_metrics(State(state): State<Arc<Mutex<Controller>>>)-> Json<Metric
 }
 
 async fn welcome()-> impl IntoResponse{
-    let msg="Decomposer says hi".to_string();
-    Response::new(msg)
+    let msg="Server is On".to_string();
+    info!("server is active");
+    Json(msg)
 }
