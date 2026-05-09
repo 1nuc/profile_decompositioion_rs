@@ -44,7 +44,7 @@ async fn trail_train(State(state): State<Arc<Mutex<Controller>>>)-> impl IntoRes
 }
 
 #[allow(unused_must_use, unused_variables)]
-async fn send_data(State(state): State<Arc<Mutex<Controller>>>, Path(bldg_id): Path<String>)-> impl IntoResponse{
+async fn send_data(State(state): State<Arc<Mutex<Controller>>>, Path(bldg_id): Path<String>)-> Json<serde_json::Value>{
 
     let mut lock=state.lock().expect("Error while fetching the data");
     match lock.infer_one_building(&bldg_id){
@@ -57,9 +57,9 @@ async fn send_data(State(state): State<Arc<Mutex<Controller>>>, Path(bldg_id): P
         },
         None => {
             let err="File is not found";
-            Json(err)
+            Json(serde_json::from_str(err).unwrap())
         }
-    };
+    }
 }
 async fn send_metrics(State(state): State<Arc<Mutex<Controller>>>)-> Json<Metrics>{
 
