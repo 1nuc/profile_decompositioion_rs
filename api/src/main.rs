@@ -56,8 +56,8 @@ async fn send_data(State(state): State<Arc<Mutex<Controller>>>, Path(bldg_id): P
             Json(serde_json::from_str(&data_file).unwrap())
         },
         None => {
-            let err="File is not found";
-            Json(serde_json::from_str(err).unwrap())
+           let err = serde_json::json!({"error": "File is not found"});
+           Json(err)
         }
     }
 }
