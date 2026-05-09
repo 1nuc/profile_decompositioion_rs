@@ -72,7 +72,7 @@ impl Controller {
 
     // Arranging and managing files for test and train
     pub fn organize_files() -> (Vec<PathBuf>, Vec<PathBuf>) {
-        let dir = read_dir("../../../datasets").unwrap();
+        let dir = read_dir("../../../../datasets").unwrap();
         let files = dir.map(|x| x.unwrap().path()).collect::<Vec<PathBuf>>();
         let split_inx = (files.len() as f32 * 0.1).round() as usize;
         let (a, b) = files.split_at(split_inx);
@@ -111,7 +111,7 @@ impl Controller {
         let artifact_dir = Path::new("lstm/");
         let input = Path::new("../../train/src/padding_data");
         if artifact_dir.exists() {
-            // remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+            remove_dir_all(artifact_dir).expect("can't find the artifact dir");
         }
         if input.exists() {
             remove_dir_all(input).expect("can't find the input dir");
@@ -122,7 +122,7 @@ impl Controller {
     // Initiate the main process for training 
     // this process will be run using the run binary
     pub fn process_iteration(&mut self, files: Vec<PathBuf>) {
-        files.chunks(40).for_each(|x| {
+        files.chunks(80).for_each(|x| {
             let input_path = Path::new("../../train/src/padding_data");
             if !input_path.exists() {
                 create_dir(input_path).unwrap();
@@ -143,7 +143,7 @@ impl Controller {
 
     pub fn client_side_training(&mut self){
         self.data_preparation(("padding_data/*.parquet").into(), false);
-        self.lstm_simulation("lstm");
+        self.lstm_simulation("lstm_artifact");
         remove_dir_all("padding_data").expect("can't find the input dir");
     }
 
@@ -315,7 +315,7 @@ impl Controller {
                 type Mybackend = Wgpu;
                 let device = WgpuDevice::default();
                 info!("Inference is on the way");
-                Some(self.infer_lstm::<Mybackend>(device, "lstm"))
+                Some(self.infer_lstm::<Mybackend>(device, "lstm_artifact"))
             }
             Err(e)=>{
                 warn!("error in copying the data {e}");

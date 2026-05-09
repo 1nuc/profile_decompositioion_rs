@@ -3,7 +3,7 @@ use decomposer_engine::{Actions, data_engine::Nrel, dl::controller::Controller, 
 
 fn main(){
     // -- Deep learning training
-    // Controller::default().run_training_multiple_processes();
+    Controller::default().run_training_multiple_processes();
 
     // --Xgboost training
     // let data_source = Nrel::init("../../../../input/*".into());
