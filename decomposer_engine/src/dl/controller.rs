@@ -108,7 +108,7 @@ impl Controller {
     // initialize the training in multiple processes to optimize speed for the training
     #[allow(unused_variables)]
     pub fn run_training_multiple_processes(&mut self) {
-        let artifact_dir = Path::new("lstm/");
+        let artifact_dir = Path::new("lstm_artifact/");
         let input = Path::new("../../train/src/padding_data");
         if artifact_dir.exists() {
             remove_dir_all(artifact_dir).expect("can't find the artifact dir");
