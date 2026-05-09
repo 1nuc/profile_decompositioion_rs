@@ -43,16 +43,23 @@ async fn trail_train(State(state): State<Arc<Mutex<Controller>>>)-> impl IntoRes
     Json("Training finished".to_string())
 }
 
-#[allow(unused_must_use)]
-async fn send_data(State(state): State<Arc<Mutex<Controller>>>, Path(bldg_id): Path<String>)-> Json<serde_json::Value>{
+#[allow(unused_must_use, unused_variables)]
+async fn send_data(State(state): State<Arc<Mutex<Controller>>>, Path(bldg_id): Path<String>)-> impl IntoResponse{
 
     let mut lock=state.lock().expect("Error while fetching the data");
-    lock.infer_one_building(&bldg_id);
-    remove_dir_all("production_set");
-    // take the predictions from the json file made and send them
-    let data_file=fs::read_to_string("data.json").unwrap();
-    drop(lock);
-    Json(serde_json::from_str(&data_file).unwrap())
+    match lock.infer_one_building(&bldg_id){
+        Some(df)=>{
+            remove_dir_all("production_set");
+            // take the predictions from the json file made and send them
+            let data_file=fs::read_to_string("data.json").unwrap();
+            drop(lock);
+            Json(serde_json::from_str(&data_file).unwrap())
+        },
+        None => {
+            let err="File is not found";
+            Json(err)
+        }
+    };
 }
 async fn send_metrics(State(state): State<Arc<Mutex<Controller>>>)-> Json<Metrics>{
 
