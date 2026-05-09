@@ -24,7 +24,7 @@ async fn serve(shared_state: Arc<Mutex<Controller>>){
         .route("/train_one_trail", get(trail_train))
         .route("/predictions/{bldg_id}", get(send_data)).with_state(shared_state.clone())
         .route("/metrics", get(send_metrics)).with_state(shared_state);
-    let listner=tokio::net::TcpListener::bind("localhost:8000").await.unwrap();
+    let listner=tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
     axum::serve(listner, app).await.unwrap();
 }
 

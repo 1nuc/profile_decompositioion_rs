@@ -18,8 +18,8 @@ use burn::{
     data::{dataloader::batcher::Batcher, dataset::Dataset},
     module::Module,
     nn::loss::MseLoss,
-    prelude::{Backend, ToElement},
-    record::{CompactRecorder, Recorder}, tensor::ElementConversion,
+    prelude::{Backend},
+    record::{CompactRecorder, Recorder}
 };
 use tracing::{info, warn};
 use polars::{frame::DataFrame, prelude::*};

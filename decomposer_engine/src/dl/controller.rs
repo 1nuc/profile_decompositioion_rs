@@ -282,7 +282,7 @@ impl Controller {
     }
 
     // This is the main function to send the data for the dashboard
-    pub fn infer_one_building(&mut self, building: &str) -> DataFrame {
+    pub fn infer_one_building(&mut self, building: &str) -> Option<DataFrame,> {
         let input_path = Path::new("production_set");
         if !input_path.exists() {
             create_dir(input_path).unwrap();
@@ -307,14 +307,21 @@ impl Controller {
         if !file_path.exists() {
             File::create_new(&file_path).expect("unable to create a file");
         }
-        copy(&dataset_path, file_path.clone()).expect("error in copying the data");
-        // TODO: Import the data set for the inference
-        self.data_preparation(file_path.to_str().unwrap().into(), false);
-        // ---- Deep learning Models
-        type Mybackend = Wgpu;
-        let device = WgpuDevice::default();
-        info!("Inference is on the way");
-        self.infer_lstm::<Mybackend>(device, "lstm")
+        match copy(&dataset_path, file_path.clone()){
+            Ok(i) => {
+                info!("success: {i}");
+                self.data_preparation(file_path.to_str().unwrap().into(), false);
+                // ---- Deep learning Models
+                type Mybackend = Wgpu;
+                let device = WgpuDevice::default();
+                info!("Inference is on the way");
+                Some(self.infer_lstm::<Mybackend>(device, "lstm"))
+            }
+            Err(e)=>{
+                warn!("error in copying the data {e}");
+                None
+            }
+        }
     }
 
     pub fn infer_lstm<B: Backend>(&self, device: B::Device, artifact_dir: &str) -> DataFrame {
