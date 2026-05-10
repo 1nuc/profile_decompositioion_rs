@@ -110,13 +110,13 @@ impl Controller {
     pub fn run_training_multiple_processes(&mut self) {
         let artifact_dir = Path::new("lstm_artifact/");
         let input = Path::new("../../train/src/padding_data");
-        if artifact_dir.exists() {
-            remove_dir_all(artifact_dir).expect("can't find the artifact dir");
-        }
+        // if artifact_dir.exists() {
+        //     remove_dir_all(artifact_dir).expect("can't find the artifact dir");
+        // }
         if input.exists() {
             remove_dir_all(input).expect("can't find the input dir");
         }
-        self.process_iteration(self.test_files.clone());
+        self.process_iteration(self.train_files.clone());
     }
 
     // Initiate the main process for training 

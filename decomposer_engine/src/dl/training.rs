@@ -30,9 +30,9 @@ pub struct NrelConfig {
     // pub model: StackedLstmConfig,
     // pub model: StackedBiLstmConfig,
     pub model: Seq2SeqConfig,
-    #[config(default = 30)]
+    #[config(default = 25)]
     pub num_epoch: usize,
-    #[config(default = 4)]
+    #[config(default = 5)]
     pub workers: usize,
     #[config(default = 42)]
     pub seed: u64,
